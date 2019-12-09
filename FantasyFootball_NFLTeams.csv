@@ -1,33 +1,1 @@
-abbrev,name
-ARI,Arizona
-ATL,Atlanta
-BAL,Baltimore
-BUF,Buffalo
-CAR,Carolina
-CHI,Chicago
-CIN,Cincinnati
-CLE,Cleveland
-DAL,Dallas
-DEN,Denver
-DET,Detroit
-GNB,Green Bay
-HOU,Houston
-IND,Indianapolis
-JAX,Jacksonville
-KAN,Kansas City
-LAC,Los Angeles Chargers
-LAR,Los Angeles Rams
-MIA,Miami
-MIN,Minnesota
-NOR,New Orleans
-NWE,New England
-NYG,New York Giants
-NYJ,New York Jets
-OAK,Oakland
-PHI,Philadelphia
-PIT,Pittsburgh
-SEA,Seattle
-SFO,San Francisco
-TAM,Tampa Bay
-TEN,Tennessee
-WAS,Washington
+abbrev,real_abbrev,nameARI,CRD,ArizonaATL,ATL,AtlantaBAL,RAV,BaltimoreBUF,BUF,BuffaloCAR,CAR,CarolinaCHI,CHI,ChicagoCIN,CIN,CincinnatiCLE,CLE,ClevelandDAL,DAL,DallasDEN,DEN,DenverDET,DET,DetroitGNB,GNB,Green BayHOU,HTX,HoustonIND,CLT,IndianapolisJAX,JAX,JacksonvilleKAN,KAN,Kansas CityLAC,SDG,Los Angeles ChargersLAR,RAM,Los Angeles RamsMIA,MIA,MiamiMIN,MIN,MinnesotaNOR,NOR,New OrleansNWE,NWE,New EnglandNYG,NYG,New York GiantsNYJ,NYJ,New York JetsOAK,RAI,OaklandPHI,PHI,PhiladelphiaPIT,PIT,PittsburghSEA,SEA,SeattleSFO,SFO,San FranciscoTAM,TAM,Tampa BayTEN,OTI,TennesseeWAS,WAS,Washington
