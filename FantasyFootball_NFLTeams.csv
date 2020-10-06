@@ -1,33 +1,33 @@
-abbrev,real_abbrev,name,yahoo
-ARI,CRD,Arizona,Ari
-ATL,ATL,Atlanta,Atl
-BAL,RAV,Baltimore,Bal
-BUF,BUF,Buffalo,Buf
-CAR,CAR,Carolina,Car
-CHI,CHI,Chicago,Chi
-CIN,CIN,Cincinnati,Cin
-CLE,CLE,Cleveland,Cle
-DAL,DAL,Dallas,Dal
-DEN,DEN,Denver,Den
-DET,DET,Detroit,Det
-GNB,GNB,Green Bay,GB
-HOU,HTX,Houston,Hou
-IND,CLT,Indianapolis,Ind
-JAX,JAX,Jacksonville,Jax
-KAN,KAN,Kansas City,KC
-LAC,SDG,Los Angeles Chargers,LAC
-LAR,RAM,Los Angeles Rams,LAR
-MIA,MIA,Miami,Mia
-MIN,MIN,Minnesota,Min
-NOR,NOR,New Orleans,NO
-NWE,NWE,New England,NE
-NYG,NYG,New York Giants,NYG
-NYJ,NYJ,New York Jets,NYJ
-OAK,RAI,Las Vegas,LV
-PHI,PHI,Philadelphia,Phi
-PIT,PIT,Pittsburgh,Pit
-SEA,SEA,Seattle,Sea
-SFO,SFO,San Francisco,SF
-TAM,TAM,Tampa Bay,TB
-TEN,OTI,Tennessee,Ten
-WAS,WAS,Washington,Was
+abbrev,real_abbrev,name,yahoo,fivethirtyeight
+ARI,CRD,Arizona,Ari,ARI
+ATL,ATL,Atlanta,Atl,ATL
+BAL,RAV,Baltimore,Bal,BAL
+BUF,BUF,Buffalo,Buf,BUF
+CAR,CAR,Carolina,Car,CAR
+CHI,CHI,Chicago,Chi,CHI
+CIN,CIN,Cincinnati,Cin,CIN
+CLE,CLE,Cleveland,Cle,CLE
+DAL,DAL,Dallas,Dal,DAL
+DEN,DEN,Denver,Den,DEN
+DET,DET,Detroit,Det,DET
+GNB,GNB,Green Bay,GB,GB
+HOU,HTX,Houston,Hou,HOU
+IND,CLT,Indianapolis,Ind,IND
+JAX,JAX,Jacksonville,Jax,JAX
+KAN,KAN,Kansas City,KC,KC
+LAC,SDG,Los Angeles Chargers,LAC,LAC
+LAR,RAM,Los Angeles Rams,LAR,LAR
+MIA,MIA,Miami,Mia,MIA
+MIN,MIN,Minnesota,Min,MIN
+NOR,NOR,New Orleans,NO,NO
+NWE,NWE,New England,NE,NE
+NYG,NYG,New York Giants,NYG,NYG
+NYJ,NYJ,New York Jets,NYJ,NYJ
+OAK,RAI,Las Vegas,LV,OAK
+PHI,PHI,Philadelphia,Phi,PHI
+PIT,PIT,Pittsburgh,Pit,PIT
+SEA,SEA,Seattle,Sea,SEA
+SFO,SFO,San Francisco,SF,SF
+TAM,TAM,Tampa Bay,TB,TB
+TEN,OTI,Tennessee,Ten,TEN
+WAS,WAS,Washington,Was,WSH
