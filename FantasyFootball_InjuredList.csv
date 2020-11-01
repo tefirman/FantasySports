@@ -2,7 +2,7 @@ name,position,current_team,until
 Damien Williams,RB,KAN,17
 Derrius Guice,RB,WAS,17
 Marlon Mack,RB,IND,17
-Antonio Brown,WR,NWE,17
+Antonio Brown,WR,NWE,8
 Blake Jarwin,TE,DAL,17
 Brandon Allen,QB,CIN,17
 Chase McLaughlin,K,IND,17
@@ -153,11 +153,10 @@ Parris Campbell,WR,IND,10
 Phillip Dorsett,WR,SEA,8
 Raheem Mostert,RB,SFO,9
 Saquon Barkley,RB,NYG,17
-Tevin Coleman,RB,SFO,8
+Tevin Coleman,RB,SFO,7
 Breshad Perriman,WR,NYJ,8
 DJ Chark,WR,JAX,3
 Delanie Walker,TE,TEN,17
-Jalen Reagor,WR,PHI,9
 Jimmy Garoppolo,QB,SFO,4
 Taylor Gabriel,WR,CHI,17
 Zack Moss,RB,BUF,3
@@ -170,7 +169,6 @@ Henry Ruggs III,WR,OAK,4
 James White,RB,NWE,3
 Josiah Deguara,TE,GNB,17
 Justin Jackson,RB,LAC,3
-Dallas Goedert,TE,PHI,8
 Jordan Reed,TE,SFO,10
 Tarik Cohen,RB,CHI,17
 Younghoe Koo,K,ATL,4
@@ -237,7 +235,6 @@ Joe Mixon,RB,CIN,8
 John Brown,WR,BUF,7
 Miles Sanders,RB,PHI,8
 Aaron Jones,RB,GNB,8
-Chris Thompson,RB,JAX,9
 Deebo Samuel,WR,SFO,8
 Odell Beckham Jr.,WR,CLE,17
 Blake Bortles,QB,DEN,17
@@ -258,3 +255,11 @@ Marquez Callaway,WR,NOR,8
 N'Keal Harry,WR,NWE,8
 Tyler Eifert,TE,JAX,8
 Will Grier,QB,CAR,17
+Antonio Gandy-Golden,WR,WAS,8
+Dan Chisena,WR,MIN,8
+Devonta Freeman,RB,NYG,8
+Jason Moore,WR,LAC,17
+Michael Walker,WR,JAX,17
+Rod Smith,RB,NYG,17
+Sergio Castillo,K,NYJ,17
+Ventell Bryant,WR,DAL,17
