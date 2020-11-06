@@ -135,7 +135,7 @@ Vyncint Smith,WR,NYJ,6
 Xavier Grimble,TE,IND,17
 George Kittle,TE,SFO,17
 A.J. Brown,WR,TEN,3
-Alshon Jeffery,WR,PHI,8
+Alshon Jeffery,WR,PHI,9
 Chris Godwin,WR,TAM,8
 Jamison Crowder,WR,NYJ,8
 Kenny Golladay,WR,DET,9
@@ -150,7 +150,7 @@ Damion Willis,WR,CIN,17
 Drew Lock,QB,DEN,5
 Maxx Williams,TE,ARI,17
 Parris Campbell,WR,IND,10
-Phillip Dorsett,WR,SEA,8
+Phillip Dorsett,WR,SEA,17
 Raheem Mostert,RB,SFO,9
 Saquon Barkley,RB,NYG,17
 Tevin Coleman,RB,SFO,9
@@ -182,33 +182,33 @@ Leonard Fournette,RB,TAM,5
 Michael Pittman Jr.,WR,IND,7
 Mike Williams,WR,LAC,4
 Rico Gafford,WR,OAK,4
-Steven Sims,WR,WAS,8
+Steven Sims,WR,WAS,9
 Cam Newton,QB,NWE,5
 Adam Humphries,WR,TEN,5
 Austin Ekeler,RB,LAC,9
 Nick Chubb,RB,CLE,10
 O.J. Howard,TE,TAM,17
-Sony Michel,RB,NWE,8
+Sony Michel,RB,NWE,9
 Charles Jones,TE,JAX,17
 Elliott Fry,K,ATL,17
 Isaiah Zuber,WR,NWE,17
 Mohamed Sanu,WR,SFO,17
 Scott Simonson,TE,NYG,17
 Tommylee Lewis,WR,CAR,17
-Carlos Hyde,RB,SEA,8
+Carlos Hyde,RB,SEA,9
 Chad Williams,WR,KAN,17
 Corey Davis,WR,TEN,6
 Dak Prescott,QB,DAL,17
 Dede Westbrook,WR,JAX,17
 Deontay Burnett,WR,PHI,17
 Deonte Harris,WR,NOR,5
-John Ross,WR,CIN,8
+John Ross,WR,CIN,9
 Jordan Akins,TE,HOU,8
 Jordan Howard,RB,MIA,5
 Julio Jones,WR,ATL,5
 K.J. Osborn,WR,MIN,6
 KJ Hamler,WR,DEN,6
-LeVante Bellamy,RB,DEN,8
+LeVante Bellamy,RB,DEN,17
 Marcus Baugh,TE,WAS,5
 Michael Thomas,WR,NOR,8
 Noah Fant,TE,DEN,6
@@ -218,7 +218,7 @@ Auden Tate,WR,CIN,6
 Ben Watson,TE,NWE,17
 Brandon Wright,K,JAX,17
 Dalvin Cook,RB,MIN,6
-Darrynton Evans,RB,TEN,8
+Darrynton Evans,RB,TEN,17
 Diontae Johnson,WR,PIT,6
 James Develin,RB,NWE,17
 Josh Malone,WR,NYJ,17
@@ -229,13 +229,13 @@ Sammy Watkins,WR,KAN,8
 Curtis Samuel,WR,CAR,6
 Chester Rogers,WR,TEN,17
 Zach Ertz,TE,PHI,10
-Austin Hooper,TE,CLE,8
+Austin Hooper,TE,CLE,9
 Emmanuel Sanders,WR,NOR,8
-Joe Mixon,RB,CIN,8
+Joe Mixon,RB,CIN,9
 John Brown,WR,BUF,7
-Miles Sanders,RB,PHI,8
+Miles Sanders,RB,PHI,9
 Aaron Jones,RB,GNB,8
-Deebo Samuel,WR,SFO,8
+Deebo Samuel,WR,SFO,9
 Odell Beckham Jr.,WR,CLE,17
 Blake Bortles,QB,DEN,17
 Josh McCown,QB,PHI,17
@@ -249,7 +249,7 @@ Isaiah Wright,WR,WAS,8
 Julian Edelman,WR,NWE,9
 Sam Sloman,K,LAR,17
 Andrew Beck,TE,DEN,17
-Andy Dalton,QB,DAL,8
+Andy Dalton,QB,DAL,10
 Mark Ingram,RB,BAL,8
 Marquez Callaway,WR,NOR,8
 N'Keal Harry,WR,NWE,8
@@ -267,3 +267,14 @@ Bo Scarbrough,RB,DET,17
 Chris Carson,RB,SEA,8
 Gardner Minshew II,QB,JAX,9
 Tim Patrick,WR,DEN,8
+Alfred Morris,RB,NYG,17
+Brandon Aiyuk,WR,SFO,9
+D'Onta Foreman,RB,TEN,17
+Hakeem Butler,WR,PHI,17
+Jamaal Williams,RB,GNB,9
+Jason Croom,TE,PHI,17
+Juwan Johnson,WR,NOR,17
+Kendrick Bourne,WR,SFO,11
+Matthew Stafford,QB,DET,9
+Myles Gaskin,RB,MIA,11
+Taiwan Jones,RB,BUF,17
