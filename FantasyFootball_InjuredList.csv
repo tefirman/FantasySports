@@ -13,7 +13,6 @@ Devin Smith,WR,DAL,17
 Duke Williams,WR,BUF,17
 Ed Dickson,TE,SEA,17
 Elijah McGuire,RB,KAN,17
-Gehrig Dieter,WR,KAN,17
 Hale Hentges,TE,WAS,17
 Ishmael Hyman,WR,CAR,17
 Jason Vander Laan,TE,NOR,17
@@ -74,7 +73,6 @@ Andy Jones,WR,DET,17
 Austin Carr,WR,NOR,17
 Ben Braunecker,TE,CHI,17
 Brett Maher,K,NYJ,17
-Cameron Batson,WR,TEN,17
 Chandler Catanzaro,K,CAR,17
 Charone Peake,WR,NYJ,17
 Chris Lacy,WR,DET,17
@@ -176,9 +174,8 @@ Leonard Fournette,RB,TAM,5
 Michael Pittman Jr.,WR,IND,7
 Mike Williams,WR,LAC,4
 Rico Gafford,WR,OAK,4
-Steven Sims,WR,WAS,9
 Cam Newton,QB,NWE,5
-Adam Humphries,WR,TEN,5
+Adam Humphries,WR,TEN,9
 Austin Ekeler,RB,LAC,9
 Nick Chubb,RB,CLE,10
 O.J. Howard,TE,TAM,17
@@ -206,7 +203,7 @@ LeVante Bellamy,RB,DEN,17
 Marcus Baugh,TE,WAS,5
 Michael Thomas,WR,NOR,8
 Noah Fant,TE,DEN,6
-Sam Darnold,QB,NYJ,6
+Sam Darnold,QB,NYJ,9
 Troy Fumagalli,TE,HOU,17
 Auden Tate,WR,CIN,6
 Ben Watson,TE,NWE,17
@@ -219,7 +216,7 @@ Josh Malone,WR,NYJ,17
 Marcus Kemp,WR,KAN,17
 Melvin Gordon,RB,DEN,6
 Mo Alie-Cox,TE,IND,6
-Sammy Watkins,WR,KAN,8
+Sammy Watkins,WR,KAN,9
 Curtis Samuel,WR,CAR,6
 Chester Rogers,WR,TEN,17
 Zach Ertz,TE,PHI,10
@@ -237,28 +234,25 @@ Kenyan Drake,RB,ARI,9
 Jeff Wilson,RB,SFO,10
 Tyler Higbee,TE,LAR,7
 Javorius Allen,RB,NYG,17
-Jeremy Cox,RB,DEN,17
 Robert Davis,WR,OAK,17
 Isaiah Wright,WR,WAS,8
 Julian Edelman,WR,NWE,9
 Sam Sloman,K,LAR,17
 Andrew Beck,TE,DEN,17
 Andy Dalton,QB,DAL,10
-Mark Ingram,RB,BAL,8
+Mark Ingram,RB,BAL,9
 Marquez Callaway,WR,NOR,8
-N'Keal Harry,WR,NWE,8
+N'Keal Harry,WR,NWE,9
 Tyler Eifert,TE,JAX,8
-Will Grier,QB,CAR,17
-Antonio Gandy-Golden,WR,WAS,8
+Antonio Gandy-Golden,WR,WAS,17
 Dan Chisena,WR,MIN,8
-Devonta Freeman,RB,NYG,8
+Devonta Freeman,RB,NYG,9
 Jason Moore,WR,LAC,17
 Michael Walker,WR,JAX,17
 Rod Smith,RB,NYG,17
-Sergio Castillo,K,NYJ,17
 Ventell Bryant,WR,DAL,17
 Bo Scarbrough,RB,DET,17
-Chris Carson,RB,SEA,8
+Chris Carson,RB,SEA,9
 Gardner Minshew II,QB,JAX,9
 Tim Patrick,WR,DEN,8
 Alfred Morris,RB,NYG,17
@@ -269,6 +263,11 @@ Jamaal Williams,RB,GNB,9
 Jason Croom,TE,PHI,17
 Juwan Johnson,WR,NOR,17
 Kendrick Bourne,WR,SFO,11
-Matthew Stafford,QB,DET,9
 Myles Gaskin,RB,MIA,11
 Taiwan Jones,RB,BUF,17
+Baker Mayfield,QB,CLE,9
+Golden Tate,WR,NYG,9
+Luke Willson,TE,SEA,17
+Mitchell Trubisky,QB,CHI,9
+T.Y. Hilton,WR,IND,9
+Trevon Wesco,TE,NYJ,17
