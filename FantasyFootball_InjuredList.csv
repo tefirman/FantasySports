@@ -129,7 +129,7 @@ A.J. Brown,WR,TEN,3
 Alshon Jeffery,WR,PHI,9
 Chris Godwin,WR,TAM,8
 Jamison Crowder,WR,NYJ,8
-Kenny Golladay,WR,DET,9
+Kenny Golladay,WR,DET,10
 Phillip Lindsay,RB,DEN,4
 Andre Patton,WR,ARI,17
 Antony Auclair,TE,TAM,17
@@ -158,7 +158,7 @@ Davante Adams,WR,GNB,3
 Henry Ruggs III,WR,OAK,4
 James White,RB,NWE,3
 Josiah Deguara,TE,GNB,17
-Justin Jackson,RB,LAC,3
+Justin Jackson,RB,LAC,10
 Tarik Cohen,RB,CHI,17
 Younghoe Koo,K,ATL,4
 Allen Lazard,WR,GNB,9
@@ -219,7 +219,7 @@ Chester Rogers,WR,TEN,17
 Zach Ertz,TE,PHI,10
 Austin Hooper,TE,CLE,9
 Emmanuel Sanders,WR,NOR,8
-Joe Mixon,RB,CIN,9
+Joe Mixon,RB,CIN,10
 John Brown,WR,BUF,7
 Miles Sanders,RB,PHI,9
 Aaron Jones,RB,GNB,8
@@ -243,7 +243,7 @@ N'Keal Harry,WR,NWE,9
 Tyler Eifert,TE,JAX,8
 Antonio Gandy-Golden,WR,WAS,17
 Dan Chisena,WR,MIN,8
-Devonta Freeman,RB,NYG,9
+Devonta Freeman,RB,NYG,13
 Jason Moore,WR,LAC,17
 Michael Walker,WR,JAX,17
 Rod Smith,RB,NYG,17
@@ -258,7 +258,6 @@ Hakeem Butler,WR,PHI,17
 Jamaal Williams,RB,GNB,9
 Jason Croom,TE,PHI,17
 Juwan Johnson,WR,NOR,17
-Kendrick Bourne,WR,SFO,11
 Myles Gaskin,RB,MIA,11
 Baker Mayfield,QB,CLE,9
 Golden Tate,WR,NYG,9
@@ -278,3 +277,5 @@ Preston Williams,WR,MIA,13
 Vance McDonald,TE,PIT,10
 Mecole Hardman,WR,KAN,11
 MyCole Pruitt,TE,TEN,10
+David Johnson,RB,HOU,10
+Laviska Shenault Jr.,WR,JAX,10
