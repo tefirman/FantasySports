@@ -1,8 +1,8 @@
 full_name,nba_team,until
 Klay Thompson,GSW,25
-Karl-Anthony Towns,MIN,5
+Karl-Anthony Towns,MIN,6
 Kristaps Porzingis,DAL,3
-Kevin Love,CLE,5
+Kevin Love,CLE,7
 Jonathan Isaac,ORL,25
 Jaren Jackson Jr.,MEM,6
 Spencer Dinwiddie,BRK,25
@@ -18,12 +18,12 @@ Derrick White,SAS,25
 John Konchar,MEM,3
 Markelle Fultz,ORL,25
 Josh Jackson,DET,3
-Jimmy Butler,MIA,5
+Jimmy Butler,MIA,6
 Jayson Tatum,BOS,5
 Russell Westbrook,WAS,5
 Bam Adebayo,MIA,4
 Lonzo Ball,NOP,4
-Josh Richardson,DAL,5
+Josh Richardson,DAL,6
 Thomas Bryant,WAS,25
 Jusuf Nurkic,POR,12
 DeMarcus Cousins,HOU,4
@@ -33,19 +33,21 @@ Maxi Kleber,DAL,5
 John Wall,HOU,5
 Danuel House Jr.,HOU,5
 Goran Dragic,MIA,4
-Hassan Whiteside,SAC,4
+Hassan Whiteside,SAC,6
 Patrick Beverley,LAC,4
 Lou Williams,LAC,5
 Drew Eubanks,SAS,25
 CJ McCollum,POR,9
-Al Horford,OKC,5
-Jonas Valanciunas,MEM,5
+Al Horford,OKC,6
+Jonas Valanciunas,MEM,6
 Caris LeVert,IND,25
-Rui Hachimura,WAS,5
-Davis Bertans,WAS,5
-Tyler Herro,MIA,5
+Rui Hachimura,WAS,6
+Davis Bertans,WAS,6
+Tyler Herro,MIA,6
 Norman Powell,TOR,5
 Daniel Theis,BOS,5
 Nikola Vucevic,ORL,5
 Evan Fournier,ORL,5
 Jrue Holiday,MIL,5
+Kemba Walker,BOS,6
+Derrick Rose,DET,6
