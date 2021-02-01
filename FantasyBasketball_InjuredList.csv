@@ -1,10 +1,10 @@
 full_name,nba_team,until
 Klay Thompson,GSW,25
-Karl-Anthony Towns,MIN,6
+Karl-Anthony Towns,MIN,7
 Kristaps Porzingis,DAL,6
 Kevin Love,CLE,7
 Jonathan Isaac,ORL,25
-Jaren Jackson Jr.,MEM,6
+Jaren Jackson Jr.,MEM,10
 Spencer Dinwiddie,BRK,25
 Marcus Morris Sr.,LAC,5
 Trevor Ariza,OKC,25
@@ -29,14 +29,14 @@ John Wall,HOU,5
 Danuel House Jr.,HOU,5
 Lou Williams,LAC,5
 CJ McCollum,POR,9
-Jonas Valanciunas,MEM,6
+Jonas Valanciunas,MEM,7
 Caris LeVert,IND,25
 Norman Powell,TOR,5
 Daniel Theis,BOS,5
 Nikola Vucevic,ORL,5
 Evan Fournier,ORL,5
 Jrue Holiday,MIL,5
-Nemanja Bjelica,SAC,6
+Nemanja Bjelica,SAC,7
 Wendell Carter Jr.,CHI,10
 Devin Booker,PHO,6
 Adam Mokoka,CHI,25
@@ -44,6 +44,6 @@ Alen Smailagic,GSW,25
 Zach Collins,POR,25
 Marcus Smart,BOS,8
 Patrick Beverley,LAC,7
-OG Anunoby,TOR,6
-Goran Dragic,MIA,6
+OG Anunoby,TOR,7
+Goran Dragic,MIA,7
 De'Andre Hunter,ATL,7
