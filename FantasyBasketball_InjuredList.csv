@@ -1,8 +1,8 @@
 full_name,nba_team,until
 Klay Thompson,GSW,25
-Karl-Anthony Towns,MIN,7
+Karl-Anthony Towns,MIN,8
 Kristaps Porzingis,DAL,6
-Kevin Love,CLE,7
+Kevin Love,CLE,8
 Jonathan Isaac,ORL,25
 Jaren Jackson Jr.,MEM,10
 Spencer Dinwiddie,BRK,25
@@ -13,7 +13,7 @@ Justise Winslow,MEM,25
 Chris Clemons,HOU,25
 Quinndary Weatherspoon,SAS,2
 T.J. Warren,IND,25
-Lauri Markkanen,CHI,3
+Lauri Markkanen,CHI,11
 John Konchar,MEM,3
 Markelle Fultz,ORL,25
 Josh Jackson,DET,3
@@ -33,23 +33,29 @@ Caris LeVert,IND,25
 Norman Powell,TOR,5
 Daniel Theis,BOS,5
 Nikola Vucevic,ORL,5
-Evan Fournier,ORL,5
-Jrue Holiday,MIL,5
+Evan Fournier,ORL,8
+Jrue Holiday,MIL,8
 Wendell Carter Jr.,CHI,10
 Devin Booker,PHO,6
 Alen Smailagic,GSW,25
 Zach Collins,POR,25
 Marcus Smart,BOS,8
-Patrick Beverley,LAC,7
-OG Anunoby,TOR,7
-De'Andre Hunter,ATL,7
+Patrick Beverley,LAC,8
+OG Anunoby,TOR,8
+De'Andre Hunter,ATL,16
 Aaron Gordon,ORL,11
-Larry Nance Jr.,CLE,7
+Larry Nance Jr.,CLE,13
 Gary Harris,DEN,7
 LaMarcus Aldridge,SAS,9
 James Wiseman,GSW,8
 PJ Washington,CHO,7
 Kyrie Irving,BRK,7
 Christian Wood,HOU,8
-Jae Crowder,PHO,7
+Jae Crowder,PHO,8
 Nerlens Noel,NYK,7
+Kevin Durant,BRK,8
+Mike Conley,UTA,8
+Otto Porter Jr.,CHI,10
+Derrick White,SAS,8
+Goran Dragic,MIA,8
+George Hill,OKC,11
