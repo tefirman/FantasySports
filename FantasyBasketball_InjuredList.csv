@@ -10,10 +10,10 @@ John Konchar,MEM,3
 Markelle Fultz,ORL,25
 Josh Jackson,DET,3
 Jayson Tatum,BOS,5
-Lonzo Ball,NOP,13
+Lonzo Ball,NOP,14
 Thomas Bryant,WAS,25
 DeMarcus Cousins,HOU,4
-Kendrick Nunn,MIA,13
+Kendrick Nunn,MIA,14
 Danuel House Jr.,HOU,11
 Norman Powell,TOR,5
 Nikola Vucevic,ORL,5
@@ -26,32 +26,32 @@ George Hill,PHI,14
 Brandon Clarke,MEM,8
 D'Angelo Russell,MIN,14
 De'Anthony Melton,MEM,9
-Anthony Davis,LAL,13
-Kevin Durant,BRK,13
+Anthony Davis,LAL,25
+Kevin Durant,BRK,14
 Blake Griffin,DET,10
 Cole Anthony,ORL,12
 Jabari Parker,SAC,11
 Tyler Herro,MIA,10
-Joel Embiid,PHI,13
+Joel Embiid,PHI,14
 Ben Simmons,PHI,11
 Patrick Beverley,LAC,13
 Eric Gordon,HOU,16
 Marvin Bagley III,SAC,16
-Monte Morris,DEN,13
-Kevin Love,CLE,13
+Monte Morris,DEN,14
+Kevin Love,CLE,16
 Immanuel Quickley,NYK,12
 Dorian Finney-Smith,DAL,12
 Davis Bertans,WAS,14
-Terrence Ross,ORL,13
+Terrence Ross,ORL,14
 Cody Zeller,CHO,12
 LeBron James,LAL,25
-Shai Gilgeous-Alexander,OKC,13
+Shai Gilgeous-Alexander,OKC,25
 Al Horford,OKC,12
-Serge Ibaka,LAC,13
+Serge Ibaka,LAC,14
 LaMelo Ball,CHO,25
 Keita Bates-Diop,SAS,13
 Marquese Chriss,SAS,25
-Stephen Curry,GSW,13
+Stephen Curry,GSW,14
 Kyrie Irving,BRK,13
 Daniel Theis,CHI,13
 Patrick McCaw,TOR,13
@@ -61,3 +61,5 @@ Bobby Portis,MIL,14
 Evan Fournier,BOS,13
 Dennis Smith Jr.,DET,13
 Mitchell Robinson,NYK,25
+Jarrett Allen,CLE,14
+Victor Oladipo,MIA,14
