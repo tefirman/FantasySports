@@ -38,7 +38,7 @@ Trey Burton,TE,IND,17
 Eddy Pineiro,K,IND,17
 Matthew Wright,K,DET,17
 Sam Sloman,K,PIT,17
-Wil Lutz,K,NOR,1
+Wil Lutz,K,NOR,10
 Terry Godwin,WR,JAX,17
 Alfred Morris,RB,NYG,17
 Austin Walter,RB,NYJ,17
@@ -103,7 +103,7 @@ Tevin Jones,WR,JAX,17
 Jeff Driskel,QB,HOU,17
 Joshua Dobbs,QB,PIT,17
 Tommy Stevens,QB,NYG,17
-Dexter Williams,RB,GNB,17
+Dexter Williams,RB,NYG,17
 Duke Johnson,RB,HOU,17
 Jonathan Williams,RB,WAS,17
 Reggie Bonnafon,RB,CAR,17
@@ -115,3 +115,6 @@ Kevin Rader,TE,PIT,17
 Rashod Berry,TE,DET,17
 Tyler Davis,TE,JAX,17
 Joey Slye,K,CAR,17
+David Moore,WR,OAK,17
+Jamison Crowder,WR,NYJ,1
+Keelan Doss,WR,ATL,17
