@@ -2,7 +2,7 @@ name,position,current_team,until
 Cam Akers,RB,LAR,17
 Michael Thomas,WR,NOR,6
 Will Fuller,WR,MIA,1
-Le'Veon Bell,RB,KAN,17
+Le'Veon Bell,RB,BAL,17
 Todd Gurley,RB,ATL,17
 Tarik Cohen,RB,CHI,6
 Alexander Hollins,WR,CLE,17
@@ -104,7 +104,7 @@ Jeff Driskel,QB,HOU,17
 Joshua Dobbs,QB,PIT,17
 Tommy Stevens,QB,NYG,17
 Dexter Williams,RB,NYG,17
-Duke Johnson,RB,HOU,17
+Duke Johnson,RB,JAX,17
 Jonathan Williams,RB,WAS,17
 Reggie Bonnafon,RB,CAR,17
 Rodney Smith,RB,CAR,17
@@ -113,9 +113,16 @@ Eric Tomlinson,TE,BAL,17
 Jordan Thomas,TE,IND,17
 Kevin Rader,TE,PIT,17
 Rashod Berry,TE,DET,17
-Tyler Davis,TE,JAX,17
-Joey Slye,K,CAR,17
+Tyler Davis,TE,IND,17
+Joey Slye,K,HOU,17
 David Moore,WR,OAK,17
 Jamison Crowder,WR,NYJ,1
 Keelan Doss,WR,ATL,17
 Irv Smith Jr.,TE,MIN,17
+Larry Fitzgerald,WR,ARI,17
+Craig Reynolds,RB,DET,17
+Sean McKeon,TE,DAL,17
+Cody Parkey,K,CLE,17
+Ka'imi Fairbairn,K,HOU,17
+David Johnson,RB,HOU,1
+Latavius Murray,RB,NOR,17
