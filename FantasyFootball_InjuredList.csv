@@ -1,7 +1,7 @@
 name,position,current_team,until
 Cam Akers,RB,LAR,17
 Michael Thomas,WR,NOR,6
-Will Fuller,WR,MIA,1
+Will Fuller,WR,MIA,2
 Le'Veon Bell,RB,BAL,17
 Todd Gurley,RB,ATL,17
 Tarik Cohen,RB,CHI,6
@@ -73,7 +73,6 @@ Brett Maher,K,NOR,17
 Keith Kirkwood,WR,CAR,17
 Lawrence Cager,WR,NYJ,17
 Cam Newton,QB,NWE,17
-Devonta Freeman,RB,BAL,17
 Jacob Hollister,TE,BUF,17
 John Brown,WR,OAK,17
 Tyron Johnson,WR,LAC,17
@@ -81,7 +80,6 @@ Brett Rypien,QB,DEN,17
 Antonio Williams,RB,BUF,17
 MyCole Pruitt,TE,SFO,17
 Richard Rodgers,TE,PHI,17
-Randy Bullock,K,TEN,17
 Travis Fulgham,WR,PHI,17
 Antony Auclair,TE,HOU,17
 Matt LaCosse,TE,NWE,17
@@ -116,7 +114,6 @@ Rashod Berry,TE,DET,17
 Tyler Davis,TE,IND,17
 Joey Slye,K,HOU,17
 David Moore,WR,OAK,17
-Jamison Crowder,WR,NYJ,2
 Keelan Doss,WR,ATL,17
 Irv Smith Jr.,TE,MIN,17
 Larry Fitzgerald,WR,ARI,17
@@ -134,7 +131,6 @@ Jerry Jeudy,WR,DEN,6
 Matt Cole,WR,NYG,17
 Michael Gallup,WR,DAL,5
 Tre'Quan Smith,WR,NOR,4
-Trenton Irwin,WR,CIN,17
 Trevor Davis,WR,ATL,17
 Ryan Fitzpatrick,QB,WAS,8
 Darrynton Evans,RB,TEN,5
@@ -143,3 +139,4 @@ Raheem Mostert,RB,SFO,17
 Rashaad Penny,RB,SEA,4
 Nick Folk,K,NWE,17
 Zane Gonzalez,K,DET,17
+Odell Beckham Jr.,WR,CLE,2
