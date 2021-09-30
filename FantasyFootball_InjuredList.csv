@@ -122,7 +122,7 @@ Ka'imi Fairbairn,K,HOU,17
 David Johnson,RB,HOU,3
 Latavius Murray,RB,NOR,17
 Gus Edwards,RB,BAL,17
-Curtis Samuel,WR,WAS,3
+Curtis Samuel,WR,WAS,4
 Devin Smith,WR,JAX,17
 Isaiah Zuber,WR,SFO,17
 Jerry Jeudy,WR,DEN,6
@@ -153,7 +153,7 @@ River Cracraft,WR,SFO,17
 Vyncint Smith,WR,NYJ,17
 D'Onta Foreman,RB,ATL,17
 Darwin Thompson,RB,TAM,17
-Jamycal Hasty,RB,SFO,3
+Jamycal Hasty,RB,SFO,6
 Qadree Ollison,RB,ATL,17
 Rico Dowdle,RB,DAL,17
 Ryquell Armstead,RB,NYG,17
@@ -165,13 +165,13 @@ Kahale Warring,TE,BUF,17
 Mason Schreck,TE,CIN,17
 Ross Travis,TE,ARI,17
 Michael Badgley,K,TEN,17
-Jarvis Landry,WR,CLE,3
+Jarvis Landry,WR,CLE,5
 Zach Ertz,TE,PHI,3
 Antonio Brown,WR,TAM,3
 Diontae Johnson,WR,PIT,3
 Jamison Crowder,WR,NYJ,3
 Russell Gage,WR,ATL,3
-Tee Higgins,WR,CIN,3
+Tee Higgins,WR,CIN,4
 Tyrell Williams,WR,DET,6
 Christian McCaffrey,RB,CAR,6
 Dalvin Cook,RB,MIN,3
@@ -180,3 +180,8 @@ Elijah Mitchell,RB,SFO,3
 Josh Jacobs,RB,OAK,3
 Colby Parkinson,TE,SEA,17
 Dominique Dafney,TE,GNB,17
+Antonio Brown,WR,TAM,4
+Marcus Mariota,QB,OAK,17
+Tua Tagovailoa,QB,MIA,6
+James White,RB,NWE,17
+Gerald Everett,TE,SEA,5
