@@ -1,7 +1,7 @@
 name,position,current_team,until
 Cam Akers,RB,LAR,17
 Michael Thomas,WR,NOR,6
-Will Fuller,WR,MIA,2
+Will Fuller,WR,MIA,7
 Le'Veon Bell,RB,BAL,17
 Todd Gurley,RB,ATL,17
 Tarik Cohen,RB,CHI,6
@@ -157,7 +157,7 @@ Jamison Crowder,WR,NYJ,3
 Russell Gage,WR,ATL,4
 Tee Higgins,WR,CIN,4
 Tyrell Williams,WR,DET,6
-Christian McCaffrey,RB,CAR,6
+Christian McCaffrey,RB,CAR,5
 Dalvin Cook,RB,MIN,3
 Darrell Henderson,RB,LAR,3
 Elijah Mitchell,RB,SFO,3
@@ -183,7 +183,6 @@ Equanimeous St. Brown,WR,GNB,17
 Geronimo Allison,WR,DET,17
 Ihmir Smith-Marsette,WR,MIN,17
 Joe Reed,WR,LAC,17
-Josh Gordon,WR,KAN,17
 Julio Jones,WR,TEN,4
 KJ Hamler,WR,DEN,17
 KeeSean Johnson,WR,PHI,17
@@ -212,7 +211,8 @@ Tanner Hudson,TE,SFO,17
 Dan Bailey,K,MIN,17
 Josh Lambo,K,JAX,4
 Sam Ficken,K,TEN,17
-Rob Gronkowski,TE,TAM,4
+Rob Gronkowski,TE,TAM,5
 Chase Claypool,WR,PIT,4
-Marquez Valdes-Scantling,WR,GNB,4
-Deshaun Watson,QB,HOU,4
+Marquez Valdes-Scantling,WR,GNB,7
+Deshaun Watson,QB,HOU,17
+David Montgomery,RB,CHI,9
