@@ -17,7 +17,7 @@ Donte Moncrief,WR,HOU,17
 Duke Williams,WR,BUF,17
 Golden Tate,WR,NYG,17
 John Ursua,WR,SEA,17
-Josh Malone,WR,NYJ,17
+Josh Malone,WR,DEN,17
 Kelvin Harmon,WR,WAS,17
 Marcell Ateman,WR,OAK,17
 Michael Walker,WR,PHI,17
@@ -68,7 +68,7 @@ Deon Yelder,TE,TAM,17
 Jace Sternberger,TE,GNB,17
 Marcus Baugh,TE,PIT,17
 Keith Kirkwood,WR,CAR,17
-Lawrence Cager,WR,NYJ,17
+Lawrence Cager,WR,CLE,17
 Cam Newton,QB,NWE,17
 Jacob Hollister,TE,BUF,17
 John Brown,WR,OAK,17
@@ -116,7 +116,7 @@ Isaiah Zuber,WR,SFO,17
 Jerry Jeudy,WR,DEN,6
 Matt Cole,WR,NYG,17
 Michael Gallup,WR,DAL,5
-Tre'Quan Smith,WR,NOR,4
+Tre'Quan Smith,WR,NOR,8
 Trevor Davis,WR,ATL,17
 Ryan Fitzpatrick,QB,WAS,8
 Darrynton Evans,RB,TEN,5
@@ -140,7 +140,7 @@ D'Onta Foreman,RB,ATL,17
 Darwin Thompson,RB,TAM,17
 Jamycal Hasty,RB,SFO,6
 Rico Dowdle,RB,DAL,17
-Ryquell Armstead,RB,NYG,17
+Ryquell Armstead,RB,NOR,17
 Theo Riddick,RB,OAK,17
 Xavier Jones,RB,LAR,17
 Brandon Dillon,TE,MIN,17
@@ -154,7 +154,7 @@ Zach Ertz,TE,PHI,3
 Antonio Brown,WR,TAM,3
 Diontae Johnson,WR,PIT,3
 Jamison Crowder,WR,NYJ,3
-Russell Gage,WR,ATL,4
+Russell Gage,WR,ATL,5
 Tee Higgins,WR,CIN,4
 Tyrell Williams,WR,DET,6
 Christian McCaffrey,RB,CAR,5
@@ -162,7 +162,6 @@ Dalvin Cook,RB,MIN,3
 Darrell Henderson,RB,LAR,3
 Elijah Mitchell,RB,SFO,3
 Josh Jacobs,RB,OAK,3
-Colby Parkinson,TE,SEA,17
 Dominique Dafney,TE,GNB,17
 Marcus Mariota,QB,OAK,17
 Tua Tagovailoa,QB,MIA,6
@@ -181,7 +180,6 @@ Deon Cain,WR,BAL,17
 Elijah Moore,WR,NYJ,4
 Equanimeous St. Brown,WR,GNB,17
 Geronimo Allison,WR,DET,17
-Ihmir Smith-Marsette,WR,MIN,17
 Joe Reed,WR,LAC,17
 Julio Jones,WR,TEN,4
 KJ Hamler,WR,DEN,17
@@ -216,3 +214,7 @@ Chase Claypool,WR,PIT,4
 Marquez Valdes-Scantling,WR,GNB,7
 Deshaun Watson,QB,HOU,17
 David Montgomery,RB,CHI,9
+Travis Fulgham,WR,PHI,17
+Calvin Ridley,WR,ATL,5
+Antonio Williams,RB,BUF,17
+Chris Carson,RB,SEA,5
