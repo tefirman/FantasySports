@@ -50,7 +50,7 @@ Jeff Badet,WR,ATL,17
 Taywan Taylor,WR,HOU,17
 Dalton Keene,TE,NWE,17
 Breshad Perriman,WR,DET,17
-T.Y. Hilton,WR,IND,6
+T.Y. Hilton,WR,IND,5
 J.K. Dobbins,RB,BAL,17
 Jeff Wilson,RB,SFO,10
 Tony Brooks-James,RB,PIT,17
@@ -71,7 +71,7 @@ John Brown,WR,DEN,17
 Tyron Johnson,WR,LAC,17
 Brett Rypien,QB,DEN,17
 MyCole Pruitt,TE,SFO,17
-Richard Rodgers,TE,PHI,17
+Richard Rodgers,TE,ARI,17
 Andre Patton,WR,PHI,17
 Chris Rowland,WR,ATL,17
 Gehrig Dieter,WR,KAN,17
@@ -148,7 +148,7 @@ Jamison Crowder,WR,NYJ,3
 Russell Gage,WR,ATL,5
 Tee Higgins,WR,CIN,4
 Tyrell Williams,WR,DET,6
-Christian McCaffrey,RB,CAR,5
+Christian McCaffrey,RB,CAR,8
 Dalvin Cook,RB,MIN,3
 Darrell Henderson,RB,LAR,3
 Elijah Mitchell,RB,SFO,3
@@ -198,7 +198,7 @@ Tanner Hudson,TE,SFO,17
 Dan Bailey,K,MIN,17
 Josh Lambo,K,JAX,4
 Sam Ficken,K,TEN,17
-Rob Gronkowski,TE,TAM,5
+Rob Gronkowski,TE,TAM,6
 Chase Claypool,WR,PIT,4
 Marquez Valdes-Scantling,WR,GNB,7
 Deshaun Watson,QB,HOU,17
@@ -206,12 +206,12 @@ David Montgomery,RB,CHI,9
 Travis Fulgham,WR,MIA,17
 Calvin Ridley,WR,ATL,5
 Antonio Williams,RB,BUF,17
-Chris Carson,RB,SEA,5
+Chris Carson,RB,SEA,9
 Nate Sudfeld,QB,SFO,17
 Russell Wilson,QB,SEA,10
 Qadree Ollison,RB,ATL,17
 Rex Burkhead,RB,HOU,5
-George Kittle,TE,SFO,5
+George Kittle,TE,SFO,8
 Robbie Gould,K,SFO,9
 Daurice Fountain,WR,KAN,17
 JuJu Smith-Schuster,WR,PIT,17
@@ -223,3 +223,10 @@ Jacques Patrick,RB,SFO,17
 Saquon Barkley,RB,NYG,7
 Maxx Williams,TE,ARI,17
 Parker Hesse,TE,ATL,17
+Curtis Samuel,WR,WAS,7
+DeVante Parker,WR,MIA,6
+Gardner Minshew II,QB,PHI,17
+Damien Williams,RB,CHI,7
+Nick Chubb,RB,CLE,6
+Dallas Goedert,TE,PHI,6
+Logan Thomas,TE,WAS,7
