@@ -1,6 +1,6 @@
 name,position,current_team,until
 Cam Akers,RB,LAR,17
-Michael Thomas,WR,NOR,6
+Michael Thomas,WR,NOR,8
 Will Fuller,WR,MIA,7
 Le'Veon Bell,RB,BAL,17
 Todd Gurley,RB,ATL,17
@@ -34,7 +34,7 @@ Trey Burton,TE,IND,17
 Eddy Pineiro,K,WAS,17
 Matthew Wright,K,JAX,17
 Sam Sloman,K,PIT,17
-Wil Lutz,K,NOR,10
+Wil Lutz,K,NOR,6
 Terry Godwin,WR,JAX,17
 Alfred Morris,RB,NYG,17
 Austin Walter,RB,NYJ,17
@@ -108,14 +108,14 @@ Devin Smith,WR,JAX,17
 Isaiah Zuber,WR,SFO,17
 Jerry Jeudy,WR,DEN,6
 Matt Cole,WR,CAR,17
-Michael Gallup,WR,DAL,6
+Michael Gallup,WR,DAL,7
 Tre'Quan Smith,WR,NOR,8
 Trevor Davis,WR,ATL,17
 Ryan Fitzpatrick,QB,WAS,8
 Darrynton Evans,RB,TEN,5
 Jordan Howard,RB,PHI,17
 Raheem Mostert,RB,SFO,17
-Rashaad Penny,RB,SEA,4
+Rashaad Penny,RB,SEA,7
 Zane Gonzalez,K,DET,17
 Odell Beckham Jr.,WR,CLE,2
 Antonio Gandy-Golden,WR,WAS,17
@@ -223,10 +223,14 @@ Jacques Patrick,RB,SFO,17
 Saquon Barkley,RB,NYG,7
 Maxx Williams,TE,ARI,17
 Parker Hesse,TE,ATL,17
-Curtis Samuel,WR,WAS,7
+Curtis Samuel,WR,WAS,6
 DeVante Parker,WR,MIA,6
-Gardner Minshew II,QB,PHI,17
 Damien Williams,RB,CHI,7
-Nick Chubb,RB,CLE,6
+Nick Chubb,RB,CLE,7
 Dallas Goedert,TE,PHI,6
 Logan Thomas,TE,WAS,7
+Kadarius Toney,WR,NYG,7
+Baker Mayfield,QB,CLE,7
+Kareem Hunt,RB,CLE,10
+Dawson Knox,TE,BUF,8
+Rodrigo Blankenship,K,IND,10
