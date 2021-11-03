@@ -1,10 +1,10 @@
 name,position,current_team,until
 Cam Akers,RB,LAR,17
 Michael Thomas,WR,NOR,17
-Will Fuller,WR,MIA,8
+Will Fuller,WR,MIA,9
 Le'Veon Bell,RB,BAL,17
 Todd Gurley,RB,ATL,17
-Tarik Cohen,RB,CHI,6
+Tarik Cohen,RB,CHI,13
 Alexander Hollins,WR,CLE,17
 Alshon Jeffery,WR,PHI,17
 Antonio Callaway,WR,KAN,17
@@ -22,7 +22,6 @@ Marcell Ateman,WR,OAK,17
 Rashard Davis,WR,TEN,17
 Blake Bortles,WR,GNB,17
 Adrian Killins,RB,DEN,17
-Adrian Peterson,RB,DET,17
 Bo Scarbrough,RB,OAK,17
 Lamar Miller,RB,WAS,17
 Charles Jones,TE,PIT,17
@@ -34,7 +33,7 @@ Trey Burton,TE,IND,17
 Eddy Pineiro,K,WAS,17
 Matthew Wright,K,JAX,17
 Sam Sloman,K,PIT,17
-Wil Lutz,K,NOR,6
+Wil Lutz,K,NOR,17
 Terry Godwin,WR,JAX,17
 Alfred Morris,RB,NYG,17
 Austin Walter,RB,NYJ,17
@@ -50,7 +49,7 @@ Jeff Badet,WR,ATL,17
 Taywan Taylor,WR,HOU,17
 Dalton Keene,TE,NWE,17
 Breshad Perriman,WR,DET,17
-T.Y. Hilton,WR,IND,5
+T.Y. Hilton,WR,IND,9
 J.K. Dobbins,RB,BAL,17
 Jeff Wilson,RB,SFO,10
 Tony Brooks-James,RB,PIT,17
@@ -111,8 +110,8 @@ Matt Cole,WR,CAR,17
 Michael Gallup,WR,DAL,7
 Tre'Quan Smith,WR,NOR,8
 Trevor Davis,WR,ATL,17
-Ryan Fitzpatrick,QB,WAS,8
-Darrynton Evans,RB,TEN,5
+Ryan Fitzpatrick,QB,WAS,10
+Darrynton Evans,RB,TEN,17
 Jordan Howard,RB,PHI,17
 Raheem Mostert,RB,SFO,17
 Rashaad Penny,RB,SEA,7
@@ -146,7 +145,7 @@ Diontae Johnson,WR,PIT,3
 Jamison Crowder,WR,NYJ,3
 Russell Gage,WR,ATL,5
 Tee Higgins,WR,CIN,4
-Tyrell Williams,WR,DET,6
+Tyrell Williams,WR,DET,12
 Christian McCaffrey,RB,CAR,8
 Dalvin Cook,RB,MIN,3
 Darrell Henderson,RB,LAR,3
@@ -178,7 +177,7 @@ Richie James,WR,SFO,17
 Riley Ridley,WR,CHI,17
 Robert Foster,WR,DAL,17
 Scott Miller,WR,TAM,7
-Sterling Shepard,WR,NYG,5
+Sterling Shepard,WR,NYG,10
 Tommylee Lewis,WR,NOR,17
 Tyrie Cleveland,WR,DEN,17
 Garrett Gilbert,QB,NWE,17
@@ -203,7 +202,7 @@ Marquez Valdes-Scantling,WR,GNB,8
 Deshaun Watson,QB,HOU,17
 David Montgomery,RB,CHI,9
 Travis Fulgham,WR,MIA,17
-Calvin Ridley,WR,ATL,5
+Calvin Ridley,WR,ATL,17
 Antonio Williams,RB,BUF,17
 Chris Carson,RB,SEA,9
 Nate Sudfeld,QB,SFO,17
@@ -217,7 +216,7 @@ JuJu Smith-Schuster,WR,PIT,17
 Kenny Golladay,WR,NYG,6
 Racey McMath,WR,TEN,10
 Chris Thompson,RB,SFO,17
-Clyde Edwards-Helaire,RB,KAN,8
+Clyde Edwards-Helaire,RB,KAN,9
 Jacques Patrick,RB,SFO,17
 Saquon Barkley,RB,NYG,7
 Maxx Williams,TE,ARI,17
@@ -236,3 +235,5 @@ Rodrigo Blankenship,K,IND,10
 Davante Adams,WR,GNB,8
 Derrick Henry,RB,TEN,17
 Aaron Rodgers,QB,GNB,9
+Henry Ruggs III,WR,OAK,17
+Miles Sanders,RB,PHI,10
