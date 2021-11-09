@@ -1,7 +1,7 @@
 name,position,current_team,until
 Cam Akers,RB,LAR,17
 Michael Thomas,WR,NOR,17
-Will Fuller,WR,MIA,9
+Will Fuller,WR,MIA,10
 Le'Veon Bell,RB,BAL,17
 Todd Gurley,RB,ATL,17
 Tarik Cohen,RB,CHI,13
@@ -206,7 +206,7 @@ Calvin Ridley,WR,ATL,17
 Antonio Williams,RB,BUF,17
 Chris Carson,RB,SEA,9
 Nate Sudfeld,QB,SFO,17
-Russell Wilson,QB,SEA,10
+Russell Wilson,QB,SEA,9
 Qadree Ollison,RB,ATL,17
 Rex Burkhead,RB,HOU,5
 George Kittle,TE,SFO,8
@@ -222,7 +222,7 @@ Saquon Barkley,RB,NYG,7
 Maxx Williams,TE,ARI,17
 Parker Hesse,TE,ATL,17
 Curtis Samuel,WR,WAS,6
-DeVante Parker,WR,MIA,6
+DeVante Parker,WR,MIA,12
 Damien Williams,RB,CHI,7
 Nick Chubb,RB,CLE,7
 Dallas Goedert,TE,PHI,6
@@ -237,3 +237,12 @@ Derrick Henry,RB,TEN,17
 Aaron Rodgers,QB,GNB,9
 Henry Ruggs III,WR,OAK,17
 Miles Sanders,RB,PHI,10
+Chase Edmonds,RB,ARI,12
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+Chris Carson,1,,
+Clyde Edwards-Helaire,1,,
