@@ -1,7 +1,7 @@
 name,position,current_team,until
 Cam Akers,RB,LAR,17
 Michael Thomas,WR,NOR,17
-Will Fuller,WR,MIA,10
+Will Fuller,WR,MIA,12
 Todd Gurley,RB,ATL,17
 Tarik Cohen,RB,CHI,12
 Alshon Jeffery,WR,PHI,17
@@ -96,7 +96,6 @@ Odell Beckham Jr.,WR,CLE,2
 Antonio Gandy-Golden,WR,WAS,17
 Cyril Grayson,WR,TAM,17
 Dante Pettis,WR,NYG,17
-Marcus Johnson,WR,TEN,17
 Nico Collins,WR,HOU,6
 River Cracraft,WR,SFO,17
 Vyncint Smith,WR,NYJ,17
@@ -200,14 +199,14 @@ Dallas Goedert,TE,PHI,6
 Logan Thomas,TE,WAS,7
 Kadarius Toney,WR,NYG,7
 Baker Mayfield,QB,CLE,7
-Kareem Hunt,RB,CLE,10
+Kareem Hunt,RB,CLE,11
 Dawson Knox,TE,BUF,8
 Rodrigo Blankenship,K,IND,10
 Davante Adams,WR,GNB,8
 Derrick Henry,RB,TEN,17
 Aaron Rodgers,QB,GNB,9
 Henry Ruggs III,WR,OAK,17
-Miles Sanders,RB,PHI,10
+Miles Sanders,RB,PHI,11
 Chase Edmonds,RB,ARI,12
 Robert Woods,WR,LAR,17
 Alvin Kamara,RB,NOR,10
@@ -220,3 +219,6 @@ Hunter Long,TE,MIA,17
 Damarea Crockett,RB,DEN,17
 Juwann Winfree,WR,GNB,17
 Parris Campbell,WR,IND,15
+Ben Roethlisberger,QB,PIT,11
+Aaron Jones,RB,GNB,13
+Le'Veon Bell,RB,BAL,17
