@@ -8,7 +8,7 @@ Alshon Jeffery,WR,PHI,17
 Antonio Callaway,WR,KAN,17
 Chad Hansen,WR,DET,17
 Cody Hollister,WR,TEN,17
-Danny Amendola,WR,HOU,4
+Danny Amendola,WR,HOU,17
 Donte Moncrief,WR,HOU,17
 Golden Tate,WR,NYG,17
 Blake Bortles,WR,GNB,17
@@ -68,7 +68,7 @@ Dexter Williams,RB,CLE,17
 Duke Johnson,RB,MIA,17
 Jonathan Williams,RB,WAS,17
 Reggie Bonnafon,RB,CAR,17
-Rodney Smith,RB,TEN,17
+Rodney Smith,RB,DET,17
 Jordan Thomas,TE,IND,17
 Rashod Berry,TE,DET,17
 Tyler Davis,TE,IND,17
@@ -115,8 +115,8 @@ Russell Gage,WR,ATL,5
 Tee Higgins,WR,CIN,4
 Christian McCaffrey,RB,CAR,17
 Dalvin Cook,RB,MIN,14
-Darrell Henderson,RB,LAR,3
-Elijah Mitchell,RB,SFO,3
+Darrell Henderson,RB,LAR,14
+Elijah Mitchell,RB,SFO,14
 Josh Jacobs,RB,OAK,3
 Dominique Dafney,TE,GNB,17
 Marcus Mariota,QB,OAK,17
@@ -131,7 +131,7 @@ DaeSean Hamilton,WR,DEN,17
 Damion Ratley,WR,DAL,17
 Darius Slayton,WR,NYG,5
 Darrius Shepherd,WR,KAN,17
-Elijah Moore,WR,NYJ,4
+Elijah Moore,WR,NYJ,17
 Equanimeous St. Brown,WR,GNB,17
 Geronimo Allison,WR,DET,17
 Joe Reed,WR,LAC,17
@@ -191,7 +191,7 @@ Damien Williams,RB,CHI,7
 Nick Chubb,RB,CLE,10
 Dallas Goedert,TE,PHI,6
 Logan Thomas,TE,WAS,17
-Kadarius Toney,WR,NYG,13
+Kadarius Toney,WR,NYG,14
 Baker Mayfield,QB,CLE,7
 Kareem Hunt,RB,CLE,12
 Dawson Knox,TE,BUF,8
@@ -205,7 +205,7 @@ Chase Edmonds,RB,ARI,13
 Robert Woods,WR,LAR,17
 Alvin Kamara,RB,NOR,13
 Damien Harris,RB,NWE,10
-Jamaal Williams,RB,DET,10
+Jamaal Williams,RB,DET,14
 John Kelly,RB,CLE,17
 Latavius Murray,RB,BAL,10
 Greg Zuerlein,K,DAL,10
@@ -252,9 +252,9 @@ Chris Blewitt,K,WAS,17
 Lirim Hajrullahu,K,DAL,17
 Tristan Vizcaino,K,LAC,17
 Allen Robinson,WR,CHI,13
-D'Andre Swift,RB,DET,13
+D'Andre Swift,RB,DET,14
 Melvin Gordon,RB,DEN,13
-Miles Boykin,WR,BAL,13
+Miles Boykin,WR,BAL,14
 Phillip Lindsay,RB,HOU,13
 Trey Sermon,RB,SFO,17
 Daniel Jones,QB,NYG,14
@@ -270,3 +270,8 @@ Kenyan Drake,RB,OAK,17
 Wendell Smallwood,RB,WAS,17
 Mike Williams,WR,LAC,14
 Mark Ingram,RB,NOR,14
+Myles Gaskin,RB,MIA,14
+Tevin Coleman,RB,NYJ,14
+T.J. Hockenson,TE,DET,14
+Randall Cobb,WR,GNB,17
+Adrian Peterson,RB,SEA,14
