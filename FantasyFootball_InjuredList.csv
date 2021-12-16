@@ -14,7 +14,7 @@ Golden Tate,WR,NYG,17
 Blake Bortles,WR,GNB,17
 Adrian Killins,RB,DEN,17
 Bo Scarbrough,RB,OAK,17
-Lamar Miller,RB,WAS,17
+Lamar Miller,RB,NOR,17
 Hunter Bryant,TE,DET,17
 Jason Croom,TE,PHI,17
 Trey Burton,TE,IND,17
@@ -65,7 +65,6 @@ Jeff Driskel,QB,HOU,17
 Joshua Dobbs,QB,PIT,17
 Tommy Stevens,QB,NYG,17
 Dexter Williams,RB,CLE,17
-Duke Johnson,RB,MIA,17
 Jonathan Williams,RB,WAS,17
 Reggie Bonnafon,RB,CAR,17
 Rodney Smith,RB,DET,17
@@ -90,7 +89,7 @@ Darrynton Evans,RB,TEN,17
 Raheem Mostert,RB,SFO,17
 Rashaad Penny,RB,SEA,7
 Zane Gonzalez,K,DET,17
-Odell Beckham Jr.,WR,CLE,2
+Odell Beckham Jr.,WR,CLE,15
 Antonio Gandy-Golden,WR,WAS,17
 Cyril Grayson,WR,TAM,17
 Dante Pettis,WR,NYG,17
@@ -115,7 +114,7 @@ Russell Gage,WR,ATL,5
 Tee Higgins,WR,CIN,4
 Christian McCaffrey,RB,CAR,17
 Dalvin Cook,RB,MIN,13
-Darrell Henderson,RB,LAR,14
+Darrell Henderson,RB,LAR,15
 Elijah Mitchell,RB,SFO,14
 Josh Jacobs,RB,OAK,3
 Dominique Dafney,TE,GNB,17
@@ -123,7 +122,7 @@ Marcus Mariota,QB,OAK,17
 Tua Tagovailoa,QB,MIA,6
 James White,RB,NWE,17
 Gerald Everett,TE,SEA,5
-A.J. Brown,WR,TEN,14
+A.J. Brown,WR,TEN,15
 Austin Mack,WR,NYG,17
 Chad Beebe,WR,MIN,17
 DJ Chark,WR,JAX,17
@@ -191,9 +190,9 @@ Damien Williams,RB,CHI,7
 Nick Chubb,RB,CLE,10
 Dallas Goedert,TE,PHI,6
 Logan Thomas,TE,WAS,17
-Kadarius Toney,WR,NYG,14
-Baker Mayfield,QB,CLE,7
-Kareem Hunt,RB,CLE,12
+Kadarius Toney,WR,NYG,15
+Baker Mayfield,QB,CLE,15
+Kareem Hunt,RB,CLE,15
 Dawson Knox,TE,BUF,8
 Rodrigo Blankenship,K,IND,17
 Davante Adams,WR,GNB,8
@@ -205,7 +204,7 @@ Chase Edmonds,RB,ARI,13
 Robert Woods,WR,LAR,17
 Alvin Kamara,RB,NOR,13
 Damien Harris,RB,NWE,10
-Jamaal Williams,RB,DET,14
+Jamaal Williams,RB,DET,15
 John Kelly,RB,CLE,17
 Latavius Murray,RB,BAL,10
 Greg Zuerlein,K,DAL,10
@@ -250,7 +249,7 @@ Austin Seibert,K,DET,17
 Chris Blewitt,K,WAS,17
 Lirim Hajrullahu,K,DAL,17
 Tristan Vizcaino,K,LAC,17
-Allen Robinson,WR,CHI,13
+Allen Robinson,WR,CHI,15
 D'Andre Swift,RB,DET,14
 Melvin Gordon,RB,DEN,13
 Miles Boykin,WR,BAL,14
@@ -267,9 +266,16 @@ Darwin Thompson,RB,TAM,17
 Ito Smith,RB,MIN,17
 Kenyan Drake,RB,OAK,17
 Wendell Smallwood,RB,WAS,17
-Mark Ingram,RB,NOR,14
-Myles Gaskin,RB,MIA,14
+Mark Ingram,RB,NOR,15
+Myles Gaskin,RB,MIA,15
 Tevin Coleman,RB,NYJ,14
-T.J. Hockenson,TE,DET,14
+T.J. Hockenson,TE,DET,17
 Randall Cobb,WR,GNB,17
 Adrian Peterson,RB,SEA,14
+DeAndre Hopkins,WR,ARI,17
+Emmanuel Sanders,WR,BUF,15
+Jarvis Landry,WR,CLE,15
+Jaylen Waddle,WR,MIA,15
+Tyler Lockett,WR,SEA,15
+Alex Collins,RB,SEA,15
+Alexander Mattison,RB,MIN,15
