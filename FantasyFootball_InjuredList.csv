@@ -1,5 +1,4 @@
 name,position,current_team,until
-Cam Akers,RB,LAR,17
 Michael Thomas,WR,NOR,17
 Will Fuller,WR,MIA,17
 Todd Gurley,RB,ATL,17
@@ -75,13 +74,12 @@ Joey Slye,K,WAS,14
 David Moore,WR,DEN,17
 Irv Smith Jr.,TE,MIN,17
 Larry Fitzgerald,WR,ARI,17
-Craig Reynolds,RB,DET,17
 Cody Parkey,K,NOR,17
-David Johnson,RB,HOU,3
+David Johnson,RB,HOU,17
 Gus Edwards,RB,BAL,17
 Devin Smith,WR,CAR,17
 Isaiah Zuber,WR,SFO,17
-Jerry Jeudy,WR,DEN,6
+Jerry Jeudy,WR,DEN,17
 Matt Cole,WR,CAR,17
 Tre'Quan Smith,WR,NOR,8
 Ryan Fitzpatrick,QB,WAS,17
@@ -109,12 +107,12 @@ Michael Badgley,K,TEN,17
 Zach Ertz,TE,PHI,3
 Antonio Brown,WR,TAM,15
 Diontae Johnson,WR,PIT,3
-Jamison Crowder,WR,NYJ,3
+Jamison Crowder,WR,NYJ,17
 Russell Gage,WR,ATL,5
 Tee Higgins,WR,CIN,4
 Christian McCaffrey,RB,CAR,17
 Dalvin Cook,RB,MIN,13
-Darrell Henderson,RB,LAR,15
+Darrell Henderson,RB,LAR,17
 Elijah Mitchell,RB,SFO,16
 Josh Jacobs,RB,OAK,3
 Dominique Dafney,TE,GNB,17
@@ -190,7 +188,7 @@ Damien Williams,RB,CHI,7
 Nick Chubb,RB,CLE,10
 Dallas Goedert,TE,PHI,6
 Logan Thomas,TE,WAS,17
-Kadarius Toney,WR,NYG,15
+Kadarius Toney,WR,NYG,17
 Baker Mayfield,QB,CLE,15
 Kareem Hunt,RB,CLE,16
 Dawson Knox,TE,BUF,8
@@ -199,7 +197,7 @@ Davante Adams,WR,GNB,8
 Derrick Henry,RB,TEN,17
 Aaron Rodgers,QB,GNB,9
 Henry Ruggs III,WR,OAK,17
-Miles Sanders,RB,PHI,11
+Miles Sanders,RB,PHI,17
 Chase Edmonds,RB,ARI,13
 Robert Woods,WR,LAR,17
 Alvin Kamara,RB,NOR,13
@@ -226,7 +224,7 @@ Hayden Hurst,TE,ATL,17
 Adam Trautman,TE,NOR,15
 Justin Fields,QB,CHI,12
 CeeDee Lamb,WR,DAL,12
-Darren Waller,TE,OAK,15
+Darren Waller,TE,OAK,17
 Anthony Miller,WR,PIT,17
 C.J. Board,WR,NYG,17
 Cameron Batson,WR,TEN,17
@@ -256,9 +254,9 @@ Miles Boykin,WR,BAL,14
 Phillip Lindsay,RB,HOU,13
 Trey Sermon,RB,SFO,17
 Daniel Jones,QB,NYG,17
-Adam Thielen,WR,MIN,14
+Adam Thielen,WR,MIN,17
 Corey Davis,WR,NYJ,17
-Deonte Harris,WR,NOR,16
+Deonte Harris,WR,NOR,17
 Jojo Natson,WR,CLE,17
 Keenan Allen,WR,LAC,14
 Ben DiNucci,QB,DAL,17
@@ -278,9 +276,16 @@ Jaylen Waddle,WR,MIA,15
 Tyler Lockett,WR,SEA,15
 Taylor Heinicke,QB,WAS,16
 Chris Godwin,WR,TAM,17
-Cole Beasley,WR,BUF,17
 Kendrick Bourne,WR,NWE,16
 Teddy Bridgewater,QB,DEN,17
 Leonard Fournette,RB,TAM,17
 Harrison Butker,K,KAN,16
 Brandin Cooks,WR,HOU,16
+Nelson Agholor,WR,NWE,17
+Tim Patrick,WR,DEN,17
+Carson Wentz,QB,IND,17
+Kirk Cousins,QB,MIN,17
+Antonio Gibson,RB,WAS,17
+James Robinson,RB,JAX,17
+Blake Jarwin,TE,DAL,17
+Eric Ebron,TE,PIT,17
