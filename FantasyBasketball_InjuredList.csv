@@ -1,14 +1,14 @@
 full_name,nba_team,until
 Kawhi Leonard,LAC,25
 Jamal Murray,DEN,25
-Ben Simmons,PHI,25
-Brook Lopez,MIL,12
+Ben Simmons,BRK,20
+Brook Lopez,MIL,20
 Jonathan Isaac,ORL,18
 Caris LeVert,IND,2
-John Wall,HOU,8
-T.J. Warren,IND,10
-Victor Oladipo,MIA,10
-Kendrick Nunn,LAL,10
+John Wall,HOU,25
+T.J. Warren,IND,20
+Victor Oladipo,MIA,20
+Kendrick Nunn,LAL,20
 Thomas Bryant,WAS,10
 Zion Williamson,NOP,18
 Donte DiVincenzo,MIL,8
@@ -17,7 +17,7 @@ Cade Cunningham,DET,11
 Darius Garland,CLE,12
 Joel Embiid,PHI,5
 Nikola Vucevic,CHI,5
-Bradley Beal,WAS,4
+Bradley Beal,WAS,25
 Khris Middleton,MIL,4
 Deandre Ayton,PHX,12
 Michael Porter Jr.,DEN,25
@@ -28,7 +28,7 @@ Kevin Love,CLE,6
 Collin Sexton,CLE,18
 Marcus Morris Sr.,LAC,4
 Jakob Poeltl,SAS,5
-Lauri Markkanen,CLE,5
+Lauri Markkanen,CLE,18
 Maxi Kleber,DAL,5
 PJ Washington,CHO,11
 Devonte' Graham,NOP,5
@@ -36,7 +36,7 @@ Derrick Rose,NYK,20
 Ja Morant,MEM,10
 Robert Williams,BOS,7
 Bogdan Bogdanovic,ATL,15
-Joe Harris,BRK,15
+Joe Harris,BRK,20
 Cole Anthony,ORL,12
 Patrick Beverley,MIN,9
 Trevor Ariza,LAL,25
@@ -57,29 +57,29 @@ Brandon Clarke,MEM,8
 Josh Hart,NOP,8
 T.J. McConnell,IND,25
 Kevin Porter Jr.,DEN,25
-Alex Caruso,CHI,12
+Alex Caruso,CHI,20
 Karl-Anthony Towns,MIN,11
 Dejounte Murray,SAS,12
 Jayson Tatum,BOS,12
-Paul George,LAC,15
-John Collins,ATL,12
+Paul George,LAC,20
+John Collins,ATL,18
 Lonzo Ball,CHI,22
-Anthony Davis,LAL,14
+Anthony Davis,LAL,19
 Julius Randle,NYK,12
 Anthony Edwards,MIN,11
 Luka Doncic,DAL,11
-Malcolm Brogdon,IND,12
+Malcolm Brogdon,IND,18
 Kyle Lowry,TOR,15
 Jarrett Allen,CLE,11
 D'Angelo Russell,MIN,12
 Mo Bamba,ORL,11
 Jerami Grant,DET,16
-Draymond Green,GSW,16
-Ricky Rubio,CLE,25
+Draymond Green,GSW,20
+Ricky Rubio,IND,25
 Montrezl Harrell,WAS,12
-Tim Hardaway Jr.,DAL,11
+Tim Hardaway Jr.,DAL,20
 Jusuf Nurkic,POR,12
-Dillon Brooks,MEM,17
+Dillon Brooks,MEM,20
 Dennis Schroder,BOS,11
 De'Anthony Melton,MEM,12
 Reggie Jackson,LAC,11
@@ -97,16 +97,31 @@ Scottie Barnes,TOR,11
 Ivica Zubac,LAC,12
 Cedi Osman,CLE,12
 Danny Green,PHI,15
-Nerlens Noel,NYK,15
-Dewayne Dedmon,MIA,12
+Nerlens Noel,NYK,18
+Dewayne Dedmon,MIA,18
 Kevin Durant,BRK,20
 Donovan Mitchell,UTA,15
 Tyrese Haliburton,SAC,15
-Myles Turner,IND,17
-Zach LaVine,CHI,15
+Myles Turner,IND,18
+Zach LaVine,CHI,18
 Desmond Bane,MEM,15
 Gary Trent Jr.,TOR,14
 Sekou Doumbouya,LAL,15
 Matisse Thybulle,PHI,15
-Larry Nance Jr.,POR,15
+Larry Nance Jr.,POR,25
 Cam Reddish,NYK,14
+James Harden,PHI,18
+Kyrie Irving,BRK,18
+Kristaps Porzingis,WAS,18
+Shai Gilgeous-Alexander,OKC,18
+Gordon Hayward,CHO,20
+Norman Powell,LAC,20
+Tyler Herro,MIA,18
+Eric Bledsoe,POR,18
+Carmelo Anthony,LAL,18
+Markelle Fultz,ORL,20
+Joe Ingles,POR,20
+Rudy Gay,UTA,18
+RJ Barrett,NYK,18
+Jeremy Lamb,SAC,18
+Marquese Chriss,DAL,18
