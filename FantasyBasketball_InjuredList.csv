@@ -4,7 +4,7 @@ Jamal Murray,DEN,25
 Ben Simmons,BRK,20
 Brook Lopez,MIL,20
 Jonathan Isaac,ORL,18
-Caris LeVert,IND,2
+Caris LeVert,IND,18
 John Wall,HOU,25
 T.J. Warren,IND,20
 Victor Oladipo,MIA,20
@@ -14,7 +14,7 @@ Zion Williamson,NOP,18
 Donte DiVincenzo,MIL,8
 Klay Thompson,GSW,13
 Cade Cunningham,DET,11
-Darius Garland,CLE,12
+Darius Garland,CLE,18
 Joel Embiid,PHI,5
 Nikola Vucevic,CHI,5
 Bradley Beal,WAS,25
@@ -77,7 +77,7 @@ Draymond Green,GSW,20
 Ricky Rubio,IND,25
 Montrezl Harrell,WAS,12
 Tim Hardaway Jr.,DAL,20
-Jusuf Nurkic,POR,12
+Jusuf Nurkic,POR,25
 Dillon Brooks,MEM,20
 Dennis Schroder,BOS,11
 De'Anthony Melton,MEM,12
@@ -97,12 +97,12 @@ Ivica Zubac,LAC,12
 Cedi Osman,CLE,12
 Danny Green,PHI,15
 Nerlens Noel,NYK,18
-Dewayne Dedmon,MIA,18
+Dewayne Dedmon,MIA,17
 Kevin Durant,BRK,20
 Donovan Mitchell,UTA,15
 Tyrese Haliburton,SAC,15
 Myles Turner,IND,18
-Zach LaVine,CHI,18
+Zach LaVine,CHI,17
 Desmond Bane,MEM,15
 Gary Trent Jr.,TOR,14
 Sekou Doumbouya,LAL,15
@@ -112,10 +112,10 @@ Cam Reddish,NYK,14
 James Harden,PHI,18
 Kyrie Irving,BRK,18
 Kristaps Porzingis,WAS,18
-Shai Gilgeous-Alexander,OKC,18
+Shai Gilgeous-Alexander,OKC,17
 Gordon Hayward,CHO,20
 Norman Powell,LAC,20
-Tyler Herro,MIA,18
+Tyler Herro,MIA,17
 Eric Bledsoe,POR,18
 Carmelo Anthony,LAL,18
 Markelle Fultz,ORL,20
@@ -126,3 +126,11 @@ Jeremy Lamb,SAC,18
 Marquese Chriss,DAL,18
 Eric Gordon,HOU,18
 Chris Paul,PHX,25
+Kemba Walker,NYK,25
+Luguentz Dort,OKC,18
+Caleb Martin,MIA,18
+Terence Davis,SAC,25
+Nassir Little,POR,25
+Andre Iguodala,GSW,18
+Cameron Payne,PHX,18
+Ty Jerome,OKC,18
