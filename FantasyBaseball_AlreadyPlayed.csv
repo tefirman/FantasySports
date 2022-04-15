@@ -1,0 +1,2345 @@
+date,editorial_team_abbr,fantasy_team,full_name,selected_position
+2022-04-07,Atl,Ice Trea,Travis d'Arnaud,C
+2022-04-07,Was,Ice Trea,Josh Bell,1B
+2022-04-07,LAD,Ice Trea,Trea Turner,2B
+2022-04-07,SD,Ice Trea,Manny Machado,3B
+2022-04-07,SD,Ice Trea,Jake Cronenworth,SS
+2022-04-07,TB,Ice Trea,Randy Arozarena,OF
+2022-04-07,Pit,Ice Trea,Bryan Reynolds,OF
+2022-04-07,Mil,Ice Trea,Christian Yelich,OF
+2022-04-07,Det,Ice Trea,Austin Meadows,Util
+2022-04-07,CWS,Ice Trea,Tim Anderson,Util
+2022-04-07,StL,Ice Trea,Dylan Carlson,BN
+2022-04-07,Mia,Ice Trea,Pablo López,SP
+2022-04-07,Min,Ice Trea,Joe Ryan,SP
+2022-04-07,Atl,Ice Trea,Collin McHugh,RP
+2022-04-07,Oak,Ice Trea,Lou Trivino,RP
+2022-04-07,Mia,Ice Trea,Cole Sulser,P
+2022-04-07,NYY,Ice Trea,Chad Green,P
+2022-04-07,Col,Ice Trea,Germán Márquez,P
+2022-04-07,Bos,Ice Trea,Matt Barnes,P
+2022-04-07,Oak,Ice Trea,Frankie Montas,BN
+2022-04-07,Mia,Ice Trea,Sandy Alcantara,BN
+2022-04-07,Cle,Ice Trea,Triston McKenzie,BN
+2022-04-07,SF,Ice Trea,Logan Webb,BN
+2022-04-07,KC,Beer Tank,Salvador Perez,C
+2022-04-07,Tor,Beer Tank,Vladimir Guerrero Jr.,1B
+2022-04-07,StL,Beer Tank,Tommy Edman,2B
+2022-04-07,StL,Beer Tank,Nolan Arenado,3B
+2022-04-07,Mil,Beer Tank,Willy Adames,SS
+2022-04-07,LAD,Beer Tank,Cody Bellinger,OF
+2022-04-07,Sea,Beer Tank,Mitch Haniger,OF
+2022-04-07,SD,Beer Tank,Trent Grisham,OF
+2022-04-07,NYY,Beer Tank,DJ LeMahieu,Util
+2022-04-07,LAD,Beer Tank,Justin Turner,Util
+2022-04-07,Tor,Beer Tank,Alejandro Kirk,BN
+2022-04-07,Cin,Beer Tank,Tommy Pham,BN
+2022-04-07,Cle,Beer Tank,Amed Rosario,BN
+2022-04-07,Bos,Beer Tank,Christian Vázquez,BN
+2022-04-07,Mil,Beer Tank,Freddy Peralta,SP
+2022-04-07,Was,Beer Tank,Josiah Gray,SP
+2022-04-07,NYY,Beer Tank,Aroldis Chapman,RP
+2022-04-07,Tor,Beer Tank,Jordan Romano,RP
+2022-04-07,Phi,Beer Tank,Aaron Nola,P
+2022-04-07,Tex,Beer Tank,Joe Barlow,P
+2022-04-07,Atl,Beer Tank,Will Smith,P
+2022-04-07,StL,Beer Tank,Adam Wainwright,P
+2022-04-07,Tex,Beer Tank,Jon Gray,BN
+2022-04-07,SD,Beer Tank,Fernando Tatis Jr.,IL
+2022-04-07,Hou,Beer Tank,Lance McCullers Jr.,IL
+2022-04-07,Bos,Beer Tank,Chris Sale,IL
+2022-04-07,Cin,Alan's Quality Team,Tyler Stephenson,C
+2022-04-07,Phi,Alan's Quality Team,Rhys Hoskins,1B
+2022-04-07,Cin,Alan's Quality Team,Jonathan India,2B
+2022-04-07,Pit,Alan's Quality Team,Ke'Bryan Hayes,3B
+2022-04-07,Atl,Alan's Quality Team,Dansby Swanson,SS
+2022-04-07,Phi,Alan's Quality Team,Nick Castellanos,OF
+2022-04-07,Mia,Alan's Quality Team,Jorge Soler,OF
+2022-04-07,Mia,Alan's Quality Team,Avisaíl García,OF
+2022-04-07,NYY,Alan's Quality Team,Giancarlo Stanton,Util
+2022-04-07,Col,Alan's Quality Team,Brendan Rodgers,Util
+2022-04-07,Bos,Alan's Quality Team,Rafael Devers,BN
+2022-04-07,Bal,Alan's Quality Team,Cedric Mullins,BN
+2022-04-07,Bos,Alan's Quality Team,J.D. Martinez,BN
+2022-04-07,Cle,Alan's Quality Team,José Ramírez,BN
+2022-04-07,Tor,Alan's Quality Team,Lourdes Gurriel Jr.,BN
+2022-04-07,NYM,Alan's Quality Team,Max Scherzer,SP
+2022-04-07,SD,Alan's Quality Team,Joe Musgrove,SP
+2022-04-07,Bos,Alan's Quality Team,Tanner Houck,RP
+2022-04-07,LAD,Alan's Quality Team,Blake Treinen,RP
+2022-04-07,Cin,Alan's Quality Team,Tyler Mahle,P
+2022-04-07,Det,Alan's Quality Team,Eduardo Rodriguez,P
+2022-04-07,Hou,Alan's Quality Team,José Urquidy,P
+2022-04-07,SF,Alan's Quality Team,Anthony DeSclafani,P
+2022-04-07,CWS,Bob Frederick's Expert Team,Yasmani Grandal,C
+2022-04-07,LAD,Bob Frederick's Expert Team,Freddie Freeman,1B
+2022-04-07,TB,Bob Frederick's Expert Team,Brandon Lowe,2B
+2022-04-07,Bos,Bob Frederick's Expert Team,Bobby Dalbec,3B
+2022-04-07,Bos,Bob Frederick's Expert Team,Trevor Story,SS
+2022-04-07,Hou,Bob Frederick's Expert Team,Yordan Alvarez,OF
+2022-04-07,Tor,Bob Frederick's Expert Team,George Springer,OF
+2022-04-07,Bal,Bob Frederick's Expert Team,Ryan Mountcastle,OF
+2022-04-07,LAD,Bob Frederick's Expert Team,Max Muncy,Util
+2022-04-07,CWS,Bob Frederick's Expert Team,Andrew Vaughn,Util
+2022-04-07,StL,Bob Frederick's Expert Team,Tyler O'Neill,BN
+2022-04-07,Bal,Bob Frederick's Expert Team,Adley Rutschman,BN
+2022-04-07,NYM,Bob Frederick's Expert Team,Tylor Megill,SP
+2022-04-07,Phi,Bob Frederick's Expert Team,Zach Eflin,SP
+2022-04-07,Pit,Bob Frederick's Expert Team,David Bednar,RP
+2022-04-07,NYM,Bob Frederick's Expert Team,Edwin Díaz,RP
+2022-04-07,Mil,Bob Frederick's Expert Team,Devin Williams,P
+2022-04-07,Ari,Bob Frederick's Expert Team,Merrill Kelly,P
+2022-04-07,Phi,Bob Frederick's Expert Team,Brad Hand,P
+2022-04-07,SD,Bob Frederick's Expert Team,MacKenzie Gore,P
+2022-04-07,Ari,Bob Frederick's Expert Team,Zac Gallen,BN
+2022-04-07,Sea,Bob Frederick's Expert Team,Matt Brash,BN
+2022-04-07,LAD,Bob Frederick's Expert Team,Trevor Bauer,BN
+2022-04-07,CWS,Bob Frederick's Expert Team,Lucas Giolito,IL
+2022-04-07,Phi,Balz Deep,J.T. Realmuto,C
+2022-04-07,CWS,Balz Deep,José Abreu,1B
+2022-04-07,Atl,Balz Deep,Ozzie Albies,2B
+2022-04-07,LAA,Balz Deep,Anthony Rendon,3B
+2022-04-07,Tor,Balz Deep,Bo Bichette,SS
+2022-04-07,ChC,Balz Deep,Seiya Suzuki,OF
+2022-04-07,Mil,Balz Deep,Hunter Renfroe,OF
+2022-04-07,LAA,Balz Deep,Jared Walsh,OF
+2022-04-07,NYY,Balz Deep,Anthony Rizzo,Util
+2022-04-07,Hou,Balz Deep,Jeremy Peña,Util
+2022-04-07,NYY,Balz Deep,Joey Gallo,BN
+2022-04-07,Col,Balz Deep,Randal Grichuk,BN
+2022-04-07,Sea,Balz Deep,Robbie Ray,SP
+2022-04-07,CWS,Balz Deep,Dylan Cease,SP
+2022-04-07,StL,Balz Deep,Giovanny Gallegos,RP
+2022-04-07,Ari,Balz Deep,Mark Melancon,RP
+2022-04-07,Was,Balz Deep,Kyle Finnegan,P
+2022-04-07,SD,Balz Deep,Robert Suarez,P
+2022-04-07,KC,Balz Deep,Zack Greinke,P
+2022-04-07,Mil,Balz Deep,Brandon Woodruff,P
+2022-04-07,SF,Balz Deep,Alex Cobb,BN
+2022-04-07,Tor,Balz Deep,Hyun Jin Ryu,BN
+2022-04-07,StL,Balz Deep,Steven Matz,BN
+2022-04-07,SD,Balz Deep,Mike Clevinger,IL
+2022-04-07,ChC,Kyle Austin's Awesome Team,Willson Contreras,C
+2022-04-07,Atl,Kyle Austin's Awesome Team,Matt Olson,1B
+2022-04-07,Hou,Kyle Austin's Awesome Team,Jose Altuve,2B
+2022-04-07,Col,Kyle Austin's Awesome Team,Kris Bryant,3B
+2022-04-07,NYM,Kyle Austin's Awesome Team,Francisco Lindor,SS
+2022-04-07,Phi,Kyle Austin's Awesome Team,Kyle Schwarber,OF
+2022-04-07,ChC,Kyle Austin's Awesome Team,Ian Happ,OF
+2022-04-07,Atl,Kyle Austin's Awesome Team,Marcell Ozuna,OF
+2022-04-07,SD,Kyle Austin's Awesome Team,Luke Voit,Util
+2022-04-07,Sea,Kyle Austin's Awesome Team,Jarred Kelenic,Util
+2022-04-07,Atl,Kyle Austin's Awesome Team,Eddie Rosario,BN
+2022-04-07,ChC,Kyle Austin's Awesome Team,Nick Madrigal,BN
+2022-04-07,LAD,Kyle Austin's Awesome Team,Gavin Lux,BN
+2022-04-07,Ari,Kyle Austin's Awesome Team,Ketel Marte,BN
+2022-04-07,NYY,Kyle Austin's Awesome Team,Gerrit Cole,SP
+2022-04-07,Tor,Kyle Austin's Awesome Team,Kevin Gausman,SP
+2022-04-07,SF,Kyle Austin's Awesome Team,Jake McGee,RP
+2022-04-07,KC,Kyle Austin's Awesome Team,Scott Barlow,RP
+2022-04-07,Hou,Kyle Austin's Awesome Team,Justin Verlander,P
+2022-04-07,ChC,Kyle Austin's Awesome Team,Marcus Stroman,P
+2022-04-07,Cle,Kyle Austin's Awesome Team,Cal Quantrill,P
+2022-04-07,Atl,Kyle Austin's Awesome Team,Kyle Wright,P
+2022-04-07,LAA,Kyle Austin's Awesome Team,Patrick Sandoval,BN
+2022-04-07,Tex,This Year’s The Year,Mitch Garver,C
+2022-04-07,Col,This Year’s The Year,C.J. Cron,1B
+2022-04-07,Det,This Year’s The Year,Javier Báez,2B
+2022-04-07,LAD,This Year’s The Year,Chris Taylor,3B
+2022-04-07,Min,This Year’s The Year,Jorge Polanco,SS
+2022-04-07,NYY,This Year’s The Year,Aaron Judge,OF
+2022-04-07,NYM,This Year’s The Year,Starling Marte,OF
+2022-04-07,Hou,This Year’s The Year,Kyle Tucker,OF
+2022-04-07,Was,This Year’s The Year,Nelson Cruz,Util
+2022-04-07,Cle,This Year’s The Year,Franmil Reyes,Util
+2022-04-07,Hou,This Year’s The Year,Alex Bregman,BN
+2022-04-07,Sea,This Year’s The Year,Chris Flexen,SP
+2022-04-07,SF,This Year’s The Year,Alex Wood,SP
+2022-04-07,Sea,This Year’s The Year,Drew Steckenrider,RP
+2022-04-07,LAA,This Year’s The Year,Raisel Iglesias,RP
+2022-04-07,CWS,This Year’s The Year,Liam Hendriks,P
+2022-04-07,Col,This Year’s The Year,Alex Colomé,P
+2022-04-07,SF,This Year’s The Year,Camilo Doval,P
+2022-04-07,Sea,This Year’s The Year,Paul Sewald,P
+2022-04-07,TB,This Year’s The Year,Corey Kluber,BN
+2022-04-07,Cle,This Year’s The Year,Zach Plesac,BN
+2022-04-07,ChC,This Year’s The Year,Kyle Hendricks,BN
+2022-04-07,Sea,This Year’s The Year,Logan Gilbert,BN
+2022-04-07,CWS,This Year’s The Year,AJ Pollock,IL
+2022-04-07,SD,This Year’s The Year,Blake Snell,IL
+2022-04-07,Ari,Scott M's Neat Team,Daulton Varsho,C
+2022-04-07,Atl,Scott M's Neat Team,Austin Riley,1B
+2022-04-07,Phi,Scott M's Neat Team,Jean Segura,2B
+2022-04-07,Sea,Scott M's Neat Team,Ty France,3B
+2022-04-07,Mia,Scott M's Neat Team,Jazz Chisholm Jr.,SS
+2022-04-07,KC,Scott M's Neat Team,Andrew Benintendi,OF
+2022-04-07,KC,Scott M's Neat Team,Whit Merrifield,OF
+2022-04-07,Tex,Scott M's Neat Team,Adolis García,OF
+2022-04-07,Sea,Scott M's Neat Team,Julio Rodríguez,Util
+2022-04-07,Cle,Scott M's Neat Team,Steven Kwan,Util
+2022-04-07,CWS,Scott M's Neat Team,Josh Harrison,BN
+2022-04-07,SF,Scott M's Neat Team,Brandon Crawford,BN
+2022-04-07,LAD,Scott M's Neat Team,Walker Buehler,SP
+2022-04-07,NYM,Scott M's Neat Team,Chris Bassitt,SP
+2022-04-07,Mil,Scott M's Neat Team,Josh Hader,RP
+2022-04-07,LAD,Scott M's Neat Team,Craig Kimbrel,RP
+2022-04-07,Atl,Scott M's Neat Team,Spencer Strider,P
+2022-04-07,Phi,Scott M's Neat Team,Ranger Suárez,P
+2022-04-07,Tor,Scott M's Neat Team,Alek Manoah,P
+2022-04-07,Cin,Scott M's Neat Team,Hunter Greene,P
+2022-04-07,Cin,Scott M's Neat Team,Nick Lodolo,BN
+2022-04-07,Cle,Scott M's Neat Team,Emmanuel Clase,BN
+2022-04-07,Hou,Scott M's Neat Team,Luis Garcia,BN
+2022-04-07,Atl,Scott M's Neat Team,Ronald Acuña Jr.,IL
+2022-04-07,Was,Hoyne Park Fighting Cocks,Keibert Ruiz,C
+2022-04-07,StL,Hoyne Park Fighting Cocks,Paul Goldschmidt,1B
+2022-04-07,LAD,Hoyne Park Fighting Cocks,Mookie Betts,2B
+2022-04-07,Det,Hoyne Park Fighting Cocks,Spencer Torkelson,3B
+2022-04-07,Tex,Hoyne Park Fighting Cocks,Marcus Semien,SS
+2022-04-07,Atl,Hoyne Park Fighting Cocks,Adam Duvall,OF
+2022-04-07,Phi,Hoyne Park Fighting Cocks,Bryce Harper,OF
+2022-04-07,Hou,Hoyne Park Fighting Cocks,Michael Brantley,OF
+2022-04-07,Bos,Hoyne Park Fighting Cocks,Xander Bogaerts,Util
+2022-04-07,Min,Hoyne Park Fighting Cocks,Carlos Correa,Util
+2022-04-07,Bos,Hoyne Park Fighting Cocks,Alex Verdugo,BN
+2022-04-07,NYM,Hoyne Park Fighting Cocks,Jeff McNeil,BN
+2022-04-07,Mia,Hoyne Park Fighting Cocks,Trevor Rogers,SP
+2022-04-07,Min,Hoyne Park Fighting Cocks,Sonny Gray,SP
+2022-04-07,Mia,Hoyne Park Fighting Cocks,Anthony Bender,RP
+2022-04-07,Hou,Hoyne Park Fighting Cocks,Ryan Pressly,RP
+2022-04-07,CWS,Hoyne Park Fighting Cocks,Kendall Graveman,P
+2022-04-07,SD,Hoyne Park Fighting Cocks,Taylor Rogers,P
+2022-04-07,NYY,Hoyne Park Fighting Cocks,Jonathan Loáisiga,P
+2022-04-07,ChC,Hoyne Park Fighting Cocks,David Robertson,P
+2022-04-07,LAD,Hoyne Park Fighting Cocks,Clayton Kershaw,BN
+2022-04-07,SD,Hoyne Park Fighting Cocks,Sean Manaea,BN
+2022-04-07,TB,Hoyne Park Fighting Cocks,J.P. Feyereisen,BN
+2022-04-07,CWS,Hoyne Park Fighting Cocks,Lance Lynn,IL
+2022-04-07,Min,Eaton Her Posey,Gary Sánchez,C
+2022-04-07,Cin,Eaton Her Posey,Joey Votto,1B
+2022-04-07,Col,Eaton Her Posey,Ryan McMahon,2B
+2022-04-07,Det,Eaton Her Posey,Jeimer Candelario,3B
+2022-04-07,Tex,Eaton Her Posey,Corey Seager,SS
+2022-04-07,Was,Eaton Her Posey,Juan Soto,OF
+2022-04-07,LAA,Eaton Her Posey,Mike Trout,OF
+2022-04-07,CWS,Eaton Her Posey,Eloy Jiménez,OF
+2022-04-07,Sea,Eaton Her Posey,Jesse Winker,Util
+2022-04-07,Tex,Eaton Her Posey,Nathaniel Lowe,Util
+2022-04-07,LAA,Eaton Her Posey,Tyler Wade,BN
+2022-04-07,Atl,Eaton Her Posey,Ian Anderson,SP
+2022-04-07,TB,Eaton Her Posey,Drew Rasmussen,SP
+2022-04-07,Det,Eaton Her Posey,Gregory Soto,RP
+2022-04-07,Sea,Eaton Her Posey,Diego Castillo,RP
+2022-04-07,Tor,Eaton Her Posey,José Berríos,P
+2022-04-07,SF,Eaton Her Posey,Carlos Rodón,P
+2022-04-07,NYM,Eaton Her Posey,Carlos Carrasco,P
+2022-04-07,Phi,Eaton Her Posey,Zack Wheeler,P
+2022-04-07,Det,Eaton Her Posey,Casey Mize,BN
+2022-04-07,Phi,Eaton Her Posey,Kyle Gibson,BN
+2022-04-07,Bos,Eaton Her Posey,Nathan Eovaldi,BN
+2022-04-07,Hou,Eaton Her Posey,Framber Valdez,BN
+2022-04-07,Tor,Eaton Her Posey,Teoscar Hernández,IL
+2022-04-07,CWS,Eaton Her Posey,Yoán Moncada,IL
+2022-04-07,TB,Eaton Her Posey,Shane Baz,IL
+2022-04-07,NYY,BaseBalzers,Kyle Higashioka,C
+2022-04-07,NYM,BaseBalzers,Pete Alonso,1B
+2022-04-07,Cle,BaseBalzers,Owen Miller,2B
+2022-04-07,NYY,BaseBalzers,Josh Donaldson,3B
+2022-04-07,SD,BaseBalzers,C.J. Abrams,SS
+2022-04-07,CWS,BaseBalzers,Luis Robert,OF
+2022-04-07,Col,BaseBalzers,Connor Joe,OF
+2022-04-07,Min,BaseBalzers,Byron Buxton,OF
+2022-04-07,LAA,BaseBalzers,Shohei Ohtani (Batter),Util
+2022-04-07,KC,BaseBalzers,Bobby Witt Jr.,Util
+2022-04-07,TB,BaseBalzers,Josh Lowe,BN
+2022-04-07,NYY,BaseBalzers,Gleyber Torres,BN
+2022-04-07,SD,BaseBalzers,Yu Darvish,SP
+2022-04-07,Atl,BaseBalzers,Charlie Morton,SP
+2022-04-07,Atl,BaseBalzers,Kenley Jansen,RP
+2022-04-07,TB,BaseBalzers,Andrew Kittredge,RP
+2022-04-07,Col,BaseBalzers,Daniel Bard,P
+2022-04-07,Min,BaseBalzers,Jhoan Duran,P
+2022-04-07,NYY,BaseBalzers,Luis Severino,P
+2022-04-07,Phi,BaseBalzers,Corey Knebel,P
+2022-04-07,CWS,BaseBalzers,Michael Kopech,BN
+2022-04-07,Mia,BaseBalzers,Jesús Luzardo,BN
+2022-04-07,LAD,BaseBalzers,Julio Urías,BN
+2022-04-07,Mil,BaseBalzers,Luis Urías,IL
+2022-04-07,Was,BaseBalzers,Stephen Strasburg,IL
+2022-04-07,LAD,AbeFroman,Will Smith,C
+2022-04-07,Bal,AbeFroman,Trey Mancini,1B
+2022-04-07,Det,AbeFroman,Jonathan Schoop,2B
+2022-04-07,Tor,AbeFroman,Matt Chapman,3B
+2022-04-07,KC,AbeFroman,Adalberto Mondesi,SS
+2022-04-07,Col,AbeFroman,Charlie Blackmon,OF
+2022-04-07,ChC,AbeFroman,Patrick Wisdom,OF
+2022-04-07,Cle,AbeFroman,Myles Straw,OF
+2022-04-07,TB,AbeFroman,Wander Franco,Util
+2022-04-07,Mia,AbeFroman,Jesús Aguilar,Util
+2022-04-07,Bal,AbeFroman,John Means,SP
+2022-04-07,LAA,AbeFroman,Noah Syndergaard,SP
+2022-04-07,SF,AbeFroman,Tyler Rogers,RP
+2022-04-07,Ari,AbeFroman,Ian Kennedy,RP
+2022-04-07,Bos,AbeFroman,Jake Diekman,P
+2022-04-07,Was,AbeFroman,Tanner Rainey,P
+2022-04-07,Mil,AbeFroman,Corbin Burnes,P
+2022-04-07,LAA,AbeFroman,Shohei Ohtani (Pitcher),P
+2022-04-07,TB,AbeFroman,Shane McClanahan,BN
+2022-04-07,Atl,AbeFroman,Max Fried,BN
+2022-04-07,Cle,AbeFroman,Shane Bieber,BN
+2022-04-07,Mia,AbeFroman,Dylan Floro,BN
+2022-04-07,Cin,AbeFroman,Lucas Sims,BN
+2022-04-07,NYM,AbeFroman,Jacob deGrom,IL
+2022-04-07,Cin,AbeFroman,Luis Castillo,IL
+2022-04-07,StL,AbeFroman,Jack Flaherty,IL
+2022-04-08,Atl,Ice Trea,Travis d'Arnaud,C
+2022-04-08,Was,Ice Trea,Josh Bell,1B
+2022-04-08,LAD,Ice Trea,Trea Turner,2B
+2022-04-08,SD,Ice Trea,Manny Machado,3B
+2022-04-08,SD,Ice Trea,Jake Cronenworth,SS
+2022-04-08,TB,Ice Trea,Randy Arozarena,OF
+2022-04-08,Pit,Ice Trea,Bryan Reynolds,OF
+2022-04-08,Mil,Ice Trea,Christian Yelich,OF
+2022-04-08,Det,Ice Trea,Austin Meadows,Util
+2022-04-08,CWS,Ice Trea,Tim Anderson,Util
+2022-04-08,StL,Ice Trea,Dylan Carlson,BN
+2022-04-08,Mia,Ice Trea,Pablo López,SP
+2022-04-08,Min,Ice Trea,Joe Ryan,SP
+2022-04-08,Atl,Ice Trea,Collin McHugh,RP
+2022-04-08,Oak,Ice Trea,Lou Trivino,RP
+2022-04-08,Mia,Ice Trea,Cole Sulser,P
+2022-04-08,NYY,Ice Trea,Chad Green,P
+2022-04-08,Col,Ice Trea,Germán Márquez,P
+2022-04-08,Bos,Ice Trea,Matt Barnes,P
+2022-04-08,Oak,Ice Trea,Frankie Montas,BN
+2022-04-08,Mia,Ice Trea,Sandy Alcantara,BN
+2022-04-08,Cle,Ice Trea,Triston McKenzie,BN
+2022-04-08,SF,Ice Trea,Logan Webb,BN
+2022-04-08,KC,Beer Tank,Salvador Perez,C
+2022-04-08,Tor,Beer Tank,Vladimir Guerrero Jr.,1B
+2022-04-08,StL,Beer Tank,Tommy Edman,2B
+2022-04-08,StL,Beer Tank,Nolan Arenado,3B
+2022-04-08,Mil,Beer Tank,Willy Adames,SS
+2022-04-08,LAD,Beer Tank,Cody Bellinger,OF
+2022-04-08,Sea,Beer Tank,Mitch Haniger,OF
+2022-04-08,SD,Beer Tank,Trent Grisham,OF
+2022-04-08,NYY,Beer Tank,DJ LeMahieu,Util
+2022-04-08,LAD,Beer Tank,Justin Turner,Util
+2022-04-08,Tor,Beer Tank,Alejandro Kirk,BN
+2022-04-08,Cin,Beer Tank,Tommy Pham,BN
+2022-04-08,Cle,Beer Tank,Amed Rosario,BN
+2022-04-08,Bos,Beer Tank,Christian Vázquez,BN
+2022-04-08,Mil,Beer Tank,Freddy Peralta,SP
+2022-04-08,Was,Beer Tank,Josiah Gray,SP
+2022-04-08,NYY,Beer Tank,Aroldis Chapman,RP
+2022-04-08,Tor,Beer Tank,Jordan Romano,RP
+2022-04-08,Phi,Beer Tank,Aaron Nola,P
+2022-04-08,Tex,Beer Tank,Joe Barlow,P
+2022-04-08,Atl,Beer Tank,Will Smith,P
+2022-04-08,StL,Beer Tank,Adam Wainwright,P
+2022-04-08,Tex,Beer Tank,Jon Gray,BN
+2022-04-08,SD,Beer Tank,Fernando Tatis Jr.,IL
+2022-04-08,Hou,Beer Tank,Lance McCullers Jr.,IL
+2022-04-08,Bos,Beer Tank,Chris Sale,IL
+2022-04-08,Cin,Alan's Quality Team,Tyler Stephenson,C
+2022-04-08,Phi,Alan's Quality Team,Rhys Hoskins,1B
+2022-04-08,Cin,Alan's Quality Team,Jonathan India,2B
+2022-04-08,Pit,Alan's Quality Team,Ke'Bryan Hayes,3B
+2022-04-08,Atl,Alan's Quality Team,Dansby Swanson,SS
+2022-04-08,Phi,Alan's Quality Team,Nick Castellanos,OF
+2022-04-08,Mia,Alan's Quality Team,Jorge Soler,OF
+2022-04-08,Mia,Alan's Quality Team,Avisaíl García,OF
+2022-04-08,NYY,Alan's Quality Team,Giancarlo Stanton,Util
+2022-04-08,Col,Alan's Quality Team,Brendan Rodgers,Util
+2022-04-08,Bos,Alan's Quality Team,Rafael Devers,BN
+2022-04-08,Bal,Alan's Quality Team,Cedric Mullins,BN
+2022-04-08,Bos,Alan's Quality Team,J.D. Martinez,BN
+2022-04-08,Cle,Alan's Quality Team,José Ramírez,BN
+2022-04-08,Tor,Alan's Quality Team,Lourdes Gurriel Jr.,BN
+2022-04-08,NYM,Alan's Quality Team,Max Scherzer,SP
+2022-04-08,SD,Alan's Quality Team,Joe Musgrove,SP
+2022-04-08,Bos,Alan's Quality Team,Tanner Houck,RP
+2022-04-08,LAD,Alan's Quality Team,Blake Treinen,RP
+2022-04-08,Cin,Alan's Quality Team,Tyler Mahle,P
+2022-04-08,Det,Alan's Quality Team,Eduardo Rodriguez,P
+2022-04-08,Hou,Alan's Quality Team,José Urquidy,P
+2022-04-08,SF,Alan's Quality Team,Anthony DeSclafani,P
+2022-04-08,CWS,Bob Frederick's Expert Team,Yasmani Grandal,C
+2022-04-08,LAD,Bob Frederick's Expert Team,Freddie Freeman,1B
+2022-04-08,TB,Bob Frederick's Expert Team,Brandon Lowe,2B
+2022-04-08,Bos,Bob Frederick's Expert Team,Bobby Dalbec,3B
+2022-04-08,Bos,Bob Frederick's Expert Team,Trevor Story,SS
+2022-04-08,Hou,Bob Frederick's Expert Team,Yordan Alvarez,OF
+2022-04-08,Tor,Bob Frederick's Expert Team,George Springer,OF
+2022-04-08,Bal,Bob Frederick's Expert Team,Ryan Mountcastle,OF
+2022-04-08,LAD,Bob Frederick's Expert Team,Max Muncy,Util
+2022-04-08,CWS,Bob Frederick's Expert Team,Andrew Vaughn,Util
+2022-04-08,StL,Bob Frederick's Expert Team,Tyler O'Neill,BN
+2022-04-08,Bal,Bob Frederick's Expert Team,Adley Rutschman,BN
+2022-04-08,NYM,Bob Frederick's Expert Team,Tylor Megill,SP
+2022-04-08,Phi,Bob Frederick's Expert Team,Zach Eflin,SP
+2022-04-08,Pit,Bob Frederick's Expert Team,David Bednar,RP
+2022-04-08,NYM,Bob Frederick's Expert Team,Edwin Díaz,RP
+2022-04-08,Mil,Bob Frederick's Expert Team,Devin Williams,P
+2022-04-08,Ari,Bob Frederick's Expert Team,Merrill Kelly,P
+2022-04-08,Phi,Bob Frederick's Expert Team,Brad Hand,P
+2022-04-08,SD,Bob Frederick's Expert Team,MacKenzie Gore,P
+2022-04-08,Ari,Bob Frederick's Expert Team,Zac Gallen,BN
+2022-04-08,Sea,Bob Frederick's Expert Team,Matt Brash,BN
+2022-04-08,LAD,Bob Frederick's Expert Team,Trevor Bauer,BN
+2022-04-08,CWS,Bob Frederick's Expert Team,Lucas Giolito,IL
+2022-04-08,Phi,Balz Deep,J.T. Realmuto,C
+2022-04-08,CWS,Balz Deep,José Abreu,1B
+2022-04-08,Atl,Balz Deep,Ozzie Albies,2B
+2022-04-08,LAA,Balz Deep,Anthony Rendon,3B
+2022-04-08,Tor,Balz Deep,Bo Bichette,SS
+2022-04-08,ChC,Balz Deep,Seiya Suzuki,OF
+2022-04-08,Mil,Balz Deep,Hunter Renfroe,OF
+2022-04-08,LAA,Balz Deep,Jared Walsh,OF
+2022-04-08,NYY,Balz Deep,Anthony Rizzo,Util
+2022-04-08,Hou,Balz Deep,Jeremy Peña,Util
+2022-04-08,NYY,Balz Deep,Joey Gallo,BN
+2022-04-08,Col,Balz Deep,Randal Grichuk,BN
+2022-04-08,Sea,Balz Deep,Robbie Ray,SP
+2022-04-08,CWS,Balz Deep,Dylan Cease,SP
+2022-04-08,StL,Balz Deep,Giovanny Gallegos,RP
+2022-04-08,Ari,Balz Deep,Mark Melancon,RP
+2022-04-08,Was,Balz Deep,Kyle Finnegan,P
+2022-04-08,SD,Balz Deep,Robert Suarez,P
+2022-04-08,KC,Balz Deep,Zack Greinke,P
+2022-04-08,Mil,Balz Deep,Brandon Woodruff,P
+2022-04-08,SF,Balz Deep,Alex Cobb,BN
+2022-04-08,Tor,Balz Deep,Hyun Jin Ryu,BN
+2022-04-08,StL,Balz Deep,Steven Matz,BN
+2022-04-08,SD,Balz Deep,Mike Clevinger,IL
+2022-04-08,ChC,Kyle Austin's Awesome Team,Willson Contreras,C
+2022-04-08,Atl,Kyle Austin's Awesome Team,Matt Olson,1B
+2022-04-08,Hou,Kyle Austin's Awesome Team,Jose Altuve,2B
+2022-04-08,Col,Kyle Austin's Awesome Team,Kris Bryant,3B
+2022-04-08,NYM,Kyle Austin's Awesome Team,Francisco Lindor,SS
+2022-04-08,Phi,Kyle Austin's Awesome Team,Kyle Schwarber,OF
+2022-04-08,ChC,Kyle Austin's Awesome Team,Ian Happ,OF
+2022-04-08,Atl,Kyle Austin's Awesome Team,Marcell Ozuna,OF
+2022-04-08,SD,Kyle Austin's Awesome Team,Luke Voit,Util
+2022-04-08,Sea,Kyle Austin's Awesome Team,Jarred Kelenic,Util
+2022-04-08,Atl,Kyle Austin's Awesome Team,Eddie Rosario,BN
+2022-04-08,ChC,Kyle Austin's Awesome Team,Nick Madrigal,BN
+2022-04-08,LAD,Kyle Austin's Awesome Team,Gavin Lux,BN
+2022-04-08,Ari,Kyle Austin's Awesome Team,Ketel Marte,BN
+2022-04-08,NYY,Kyle Austin's Awesome Team,Gerrit Cole,SP
+2022-04-08,Tor,Kyle Austin's Awesome Team,Kevin Gausman,SP
+2022-04-08,SF,Kyle Austin's Awesome Team,Jake McGee,RP
+2022-04-08,KC,Kyle Austin's Awesome Team,Scott Barlow,RP
+2022-04-08,Hou,Kyle Austin's Awesome Team,Justin Verlander,P
+2022-04-08,ChC,Kyle Austin's Awesome Team,Marcus Stroman,P
+2022-04-08,Cle,Kyle Austin's Awesome Team,Cal Quantrill,P
+2022-04-08,Atl,Kyle Austin's Awesome Team,Kyle Wright,P
+2022-04-08,LAA,Kyle Austin's Awesome Team,Patrick Sandoval,BN
+2022-04-08,Tex,This Year’s The Year,Mitch Garver,C
+2022-04-08,Col,This Year’s The Year,C.J. Cron,1B
+2022-04-08,Det,This Year’s The Year,Javier Báez,2B
+2022-04-08,LAD,This Year’s The Year,Chris Taylor,3B
+2022-04-08,Min,This Year’s The Year,Jorge Polanco,SS
+2022-04-08,NYY,This Year’s The Year,Aaron Judge,OF
+2022-04-08,NYM,This Year’s The Year,Starling Marte,OF
+2022-04-08,Hou,This Year’s The Year,Kyle Tucker,OF
+2022-04-08,Was,This Year’s The Year,Nelson Cruz,Util
+2022-04-08,Cle,This Year’s The Year,Franmil Reyes,Util
+2022-04-08,Hou,This Year’s The Year,Alex Bregman,BN
+2022-04-08,Sea,This Year’s The Year,Chris Flexen,SP
+2022-04-08,SF,This Year’s The Year,Alex Wood,SP
+2022-04-08,Sea,This Year’s The Year,Drew Steckenrider,RP
+2022-04-08,LAA,This Year’s The Year,Raisel Iglesias,RP
+2022-04-08,CWS,This Year’s The Year,Liam Hendriks,P
+2022-04-08,Col,This Year’s The Year,Alex Colomé,P
+2022-04-08,SF,This Year’s The Year,Camilo Doval,P
+2022-04-08,Sea,This Year’s The Year,Paul Sewald,P
+2022-04-08,TB,This Year’s The Year,Corey Kluber,BN
+2022-04-08,Cle,This Year’s The Year,Zach Plesac,BN
+2022-04-08,ChC,This Year’s The Year,Kyle Hendricks,BN
+2022-04-08,Sea,This Year’s The Year,Logan Gilbert,BN
+2022-04-08,CWS,This Year’s The Year,AJ Pollock,IL
+2022-04-08,SD,This Year’s The Year,Blake Snell,IL
+2022-04-08,Ari,Scott M's Neat Team,Daulton Varsho,C
+2022-04-08,Atl,Scott M's Neat Team,Austin Riley,1B
+2022-04-08,Phi,Scott M's Neat Team,Jean Segura,2B
+2022-04-08,Sea,Scott M's Neat Team,Ty France,3B
+2022-04-08,Mia,Scott M's Neat Team,Jazz Chisholm Jr.,SS
+2022-04-08,KC,Scott M's Neat Team,Andrew Benintendi,OF
+2022-04-08,KC,Scott M's Neat Team,Whit Merrifield,OF
+2022-04-08,Tex,Scott M's Neat Team,Adolis García,OF
+2022-04-08,Sea,Scott M's Neat Team,Julio Rodríguez,Util
+2022-04-08,Cle,Scott M's Neat Team,Steven Kwan,Util
+2022-04-08,CWS,Scott M's Neat Team,Josh Harrison,BN
+2022-04-08,SF,Scott M's Neat Team,Brandon Crawford,BN
+2022-04-08,LAD,Scott M's Neat Team,Walker Buehler,SP
+2022-04-08,NYM,Scott M's Neat Team,Chris Bassitt,SP
+2022-04-08,Mil,Scott M's Neat Team,Josh Hader,RP
+2022-04-08,LAD,Scott M's Neat Team,Craig Kimbrel,RP
+2022-04-08,Atl,Scott M's Neat Team,Spencer Strider,P
+2022-04-08,Phi,Scott M's Neat Team,Ranger Suárez,P
+2022-04-08,Tor,Scott M's Neat Team,Alek Manoah,P
+2022-04-08,Cin,Scott M's Neat Team,Hunter Greene,P
+2022-04-08,Cin,Scott M's Neat Team,Nick Lodolo,BN
+2022-04-08,Cle,Scott M's Neat Team,Emmanuel Clase,BN
+2022-04-08,Hou,Scott M's Neat Team,Luis Garcia,BN
+2022-04-08,Atl,Scott M's Neat Team,Ronald Acuña Jr.,IL
+2022-04-08,Was,Hoyne Park Fighting Cocks,Keibert Ruiz,C
+2022-04-08,StL,Hoyne Park Fighting Cocks,Paul Goldschmidt,1B
+2022-04-08,LAD,Hoyne Park Fighting Cocks,Mookie Betts,2B
+2022-04-08,Det,Hoyne Park Fighting Cocks,Spencer Torkelson,3B
+2022-04-08,Tex,Hoyne Park Fighting Cocks,Marcus Semien,SS
+2022-04-08,Atl,Hoyne Park Fighting Cocks,Adam Duvall,OF
+2022-04-08,Phi,Hoyne Park Fighting Cocks,Bryce Harper,OF
+2022-04-08,Hou,Hoyne Park Fighting Cocks,Michael Brantley,OF
+2022-04-08,Bos,Hoyne Park Fighting Cocks,Xander Bogaerts,Util
+2022-04-08,Min,Hoyne Park Fighting Cocks,Carlos Correa,Util
+2022-04-08,Bos,Hoyne Park Fighting Cocks,Alex Verdugo,BN
+2022-04-08,NYM,Hoyne Park Fighting Cocks,Jeff McNeil,BN
+2022-04-08,Mia,Hoyne Park Fighting Cocks,Trevor Rogers,SP
+2022-04-08,Min,Hoyne Park Fighting Cocks,Sonny Gray,SP
+2022-04-08,Mia,Hoyne Park Fighting Cocks,Anthony Bender,RP
+2022-04-08,Hou,Hoyne Park Fighting Cocks,Ryan Pressly,RP
+2022-04-08,CWS,Hoyne Park Fighting Cocks,Kendall Graveman,P
+2022-04-08,SD,Hoyne Park Fighting Cocks,Taylor Rogers,P
+2022-04-08,NYY,Hoyne Park Fighting Cocks,Jonathan Loáisiga,P
+2022-04-08,ChC,Hoyne Park Fighting Cocks,David Robertson,P
+2022-04-08,LAD,Hoyne Park Fighting Cocks,Clayton Kershaw,BN
+2022-04-08,SD,Hoyne Park Fighting Cocks,Sean Manaea,BN
+2022-04-08,TB,Hoyne Park Fighting Cocks,J.P. Feyereisen,BN
+2022-04-08,CWS,Hoyne Park Fighting Cocks,Lance Lynn,IL
+2022-04-08,Min,Eaton Her Posey,Gary Sánchez,C
+2022-04-08,Cin,Eaton Her Posey,Joey Votto,1B
+2022-04-08,Col,Eaton Her Posey,Ryan McMahon,2B
+2022-04-08,Det,Eaton Her Posey,Jeimer Candelario,3B
+2022-04-08,Tex,Eaton Her Posey,Corey Seager,SS
+2022-04-08,Was,Eaton Her Posey,Juan Soto,OF
+2022-04-08,LAA,Eaton Her Posey,Mike Trout,OF
+2022-04-08,CWS,Eaton Her Posey,Eloy Jiménez,OF
+2022-04-08,Sea,Eaton Her Posey,Jesse Winker,Util
+2022-04-08,Tex,Eaton Her Posey,Nathaniel Lowe,Util
+2022-04-08,LAA,Eaton Her Posey,Tyler Wade,BN
+2022-04-08,Atl,Eaton Her Posey,Ian Anderson,SP
+2022-04-08,TB,Eaton Her Posey,Drew Rasmussen,SP
+2022-04-08,Det,Eaton Her Posey,Gregory Soto,RP
+2022-04-08,Sea,Eaton Her Posey,Diego Castillo,RP
+2022-04-08,Tor,Eaton Her Posey,José Berríos,P
+2022-04-08,SF,Eaton Her Posey,Carlos Rodón,P
+2022-04-08,NYM,Eaton Her Posey,Carlos Carrasco,P
+2022-04-08,Phi,Eaton Her Posey,Zack Wheeler,P
+2022-04-08,Det,Eaton Her Posey,Casey Mize,BN
+2022-04-08,Phi,Eaton Her Posey,Kyle Gibson,BN
+2022-04-08,Bos,Eaton Her Posey,Nathan Eovaldi,BN
+2022-04-08,Hou,Eaton Her Posey,Framber Valdez,BN
+2022-04-08,Tor,Eaton Her Posey,Teoscar Hernández,IL
+2022-04-08,CWS,Eaton Her Posey,Yoán Moncada,IL
+2022-04-08,TB,Eaton Her Posey,Shane Baz,IL
+2022-04-08,NYY,BaseBalzers,Kyle Higashioka,C
+2022-04-08,NYM,BaseBalzers,Pete Alonso,1B
+2022-04-08,Cle,BaseBalzers,Owen Miller,2B
+2022-04-08,NYY,BaseBalzers,Josh Donaldson,3B
+2022-04-08,SD,BaseBalzers,C.J. Abrams,SS
+2022-04-08,CWS,BaseBalzers,Luis Robert,OF
+2022-04-08,Col,BaseBalzers,Connor Joe,OF
+2022-04-08,Min,BaseBalzers,Byron Buxton,OF
+2022-04-08,LAA,BaseBalzers,Shohei Ohtani (Batter),Util
+2022-04-08,KC,BaseBalzers,Bobby Witt Jr.,Util
+2022-04-08,TB,BaseBalzers,Josh Lowe,BN
+2022-04-08,NYY,BaseBalzers,Gleyber Torres,BN
+2022-04-08,SD,BaseBalzers,Yu Darvish,SP
+2022-04-08,Atl,BaseBalzers,Charlie Morton,SP
+2022-04-08,Atl,BaseBalzers,Kenley Jansen,RP
+2022-04-08,TB,BaseBalzers,Andrew Kittredge,RP
+2022-04-08,Col,BaseBalzers,Daniel Bard,P
+2022-04-08,Min,BaseBalzers,Jhoan Duran,P
+2022-04-08,NYY,BaseBalzers,Luis Severino,P
+2022-04-08,Phi,BaseBalzers,Corey Knebel,P
+2022-04-08,CWS,BaseBalzers,Michael Kopech,BN
+2022-04-08,Mia,BaseBalzers,Jesús Luzardo,BN
+2022-04-08,LAD,BaseBalzers,Julio Urías,BN
+2022-04-08,Mil,BaseBalzers,Luis Urías,IL
+2022-04-08,Was,BaseBalzers,Stephen Strasburg,IL
+2022-04-08,LAD,AbeFroman,Will Smith,C
+2022-04-08,Bal,AbeFroman,Trey Mancini,1B
+2022-04-08,Det,AbeFroman,Jonathan Schoop,2B
+2022-04-08,Tor,AbeFroman,Matt Chapman,3B
+2022-04-08,KC,AbeFroman,Adalberto Mondesi,SS
+2022-04-08,Col,AbeFroman,Charlie Blackmon,OF
+2022-04-08,ChC,AbeFroman,Patrick Wisdom,OF
+2022-04-08,Cle,AbeFroman,Myles Straw,OF
+2022-04-08,TB,AbeFroman,Wander Franco,Util
+2022-04-08,Mia,AbeFroman,Jesús Aguilar,Util
+2022-04-08,Bal,AbeFroman,John Means,SP
+2022-04-08,LAA,AbeFroman,Noah Syndergaard,SP
+2022-04-08,SF,AbeFroman,Tyler Rogers,RP
+2022-04-08,Ari,AbeFroman,Ian Kennedy,RP
+2022-04-08,Bos,AbeFroman,Jake Diekman,P
+2022-04-08,Was,AbeFroman,Tanner Rainey,P
+2022-04-08,Mil,AbeFroman,Corbin Burnes,P
+2022-04-08,LAA,AbeFroman,Shohei Ohtani (Pitcher),P
+2022-04-08,TB,AbeFroman,Shane McClanahan,BN
+2022-04-08,Atl,AbeFroman,Max Fried,BN
+2022-04-08,Cle,AbeFroman,Shane Bieber,BN
+2022-04-08,Mia,AbeFroman,Dylan Floro,BN
+2022-04-08,Cin,AbeFroman,Lucas Sims,BN
+2022-04-08,NYM,AbeFroman,Jacob deGrom,IL
+2022-04-08,Cin,AbeFroman,Luis Castillo,IL
+2022-04-08,StL,AbeFroman,Jack Flaherty,IL
+2022-04-09,Atl,Ice Trea,Travis d'Arnaud,C
+2022-04-09,Was,Ice Trea,Josh Bell,1B
+2022-04-09,LAD,Ice Trea,Trea Turner,2B
+2022-04-09,SD,Ice Trea,Manny Machado,3B
+2022-04-09,SD,Ice Trea,Jake Cronenworth,SS
+2022-04-09,TB,Ice Trea,Randy Arozarena,OF
+2022-04-09,Pit,Ice Trea,Bryan Reynolds,OF
+2022-04-09,Mil,Ice Trea,Christian Yelich,OF
+2022-04-09,Det,Ice Trea,Austin Meadows,Util
+2022-04-09,CWS,Ice Trea,Tim Anderson,Util
+2022-04-09,StL,Ice Trea,Dylan Carlson,BN
+2022-04-09,Mia,Ice Trea,Pablo López,SP
+2022-04-09,Min,Ice Trea,Joe Ryan,SP
+2022-04-09,Atl,Ice Trea,Collin McHugh,RP
+2022-04-09,Oak,Ice Trea,Lou Trivino,RP
+2022-04-09,Mia,Ice Trea,Cole Sulser,P
+2022-04-09,NYY,Ice Trea,Chad Green,P
+2022-04-09,Col,Ice Trea,Germán Márquez,P
+2022-04-09,Bos,Ice Trea,Matt Barnes,P
+2022-04-09,Oak,Ice Trea,Frankie Montas,BN
+2022-04-09,Mia,Ice Trea,Sandy Alcantara,BN
+2022-04-09,Cle,Ice Trea,Triston McKenzie,BN
+2022-04-09,SF,Ice Trea,Logan Webb,BN
+2022-04-09,KC,Beer Tank,Salvador Perez,C
+2022-04-09,Tor,Beer Tank,Vladimir Guerrero Jr.,1B
+2022-04-09,StL,Beer Tank,Tommy Edman,2B
+2022-04-09,StL,Beer Tank,Nolan Arenado,3B
+2022-04-09,Mil,Beer Tank,Willy Adames,SS
+2022-04-09,LAD,Beer Tank,Cody Bellinger,OF
+2022-04-09,Sea,Beer Tank,Mitch Haniger,OF
+2022-04-09,SD,Beer Tank,Trent Grisham,OF
+2022-04-09,NYY,Beer Tank,DJ LeMahieu,Util
+2022-04-09,LAD,Beer Tank,Justin Turner,Util
+2022-04-09,Tor,Beer Tank,Alejandro Kirk,BN
+2022-04-09,Cin,Beer Tank,Tommy Pham,BN
+2022-04-09,Cle,Beer Tank,Amed Rosario,BN
+2022-04-09,Bos,Beer Tank,Christian Vázquez,BN
+2022-04-09,Mil,Beer Tank,Freddy Peralta,SP
+2022-04-09,Was,Beer Tank,Josiah Gray,SP
+2022-04-09,NYY,Beer Tank,Aroldis Chapman,RP
+2022-04-09,Tor,Beer Tank,Jordan Romano,RP
+2022-04-09,Phi,Beer Tank,Aaron Nola,P
+2022-04-09,Tex,Beer Tank,Joe Barlow,P
+2022-04-09,Atl,Beer Tank,Will Smith,P
+2022-04-09,StL,Beer Tank,Adam Wainwright,P
+2022-04-09,Tex,Beer Tank,Jon Gray,BN
+2022-04-09,SD,Beer Tank,Fernando Tatis Jr.,IL
+2022-04-09,Hou,Beer Tank,Lance McCullers Jr.,IL
+2022-04-09,Bos,Beer Tank,Chris Sale,IL
+2022-04-09,Cin,Alan's Quality Team,Tyler Stephenson,C
+2022-04-09,Phi,Alan's Quality Team,Rhys Hoskins,1B
+2022-04-09,Cin,Alan's Quality Team,Jonathan India,2B
+2022-04-09,Pit,Alan's Quality Team,Ke'Bryan Hayes,3B
+2022-04-09,Atl,Alan's Quality Team,Dansby Swanson,SS
+2022-04-09,Phi,Alan's Quality Team,Nick Castellanos,OF
+2022-04-09,Mia,Alan's Quality Team,Jorge Soler,OF
+2022-04-09,Mia,Alan's Quality Team,Avisaíl García,OF
+2022-04-09,NYY,Alan's Quality Team,Giancarlo Stanton,Util
+2022-04-09,Col,Alan's Quality Team,Brendan Rodgers,Util
+2022-04-09,Bos,Alan's Quality Team,Rafael Devers,BN
+2022-04-09,Bal,Alan's Quality Team,Cedric Mullins,BN
+2022-04-09,Bos,Alan's Quality Team,J.D. Martinez,BN
+2022-04-09,Cle,Alan's Quality Team,José Ramírez,BN
+2022-04-09,Tor,Alan's Quality Team,Lourdes Gurriel Jr.,BN
+2022-04-09,NYM,Alan's Quality Team,Max Scherzer,SP
+2022-04-09,SD,Alan's Quality Team,Joe Musgrove,SP
+2022-04-09,Bos,Alan's Quality Team,Tanner Houck,RP
+2022-04-09,LAD,Alan's Quality Team,Blake Treinen,RP
+2022-04-09,Cin,Alan's Quality Team,Tyler Mahle,P
+2022-04-09,Det,Alan's Quality Team,Eduardo Rodriguez,P
+2022-04-09,Hou,Alan's Quality Team,José Urquidy,P
+2022-04-09,SF,Alan's Quality Team,Anthony DeSclafani,P
+2022-04-09,CWS,Bob Frederick's Expert Team,Yasmani Grandal,C
+2022-04-09,LAD,Bob Frederick's Expert Team,Freddie Freeman,1B
+2022-04-09,TB,Bob Frederick's Expert Team,Brandon Lowe,2B
+2022-04-09,Bos,Bob Frederick's Expert Team,Bobby Dalbec,3B
+2022-04-09,Bos,Bob Frederick's Expert Team,Trevor Story,SS
+2022-04-09,Hou,Bob Frederick's Expert Team,Yordan Alvarez,OF
+2022-04-09,Tor,Bob Frederick's Expert Team,George Springer,OF
+2022-04-09,Bal,Bob Frederick's Expert Team,Ryan Mountcastle,OF
+2022-04-09,LAD,Bob Frederick's Expert Team,Max Muncy,Util
+2022-04-09,CWS,Bob Frederick's Expert Team,Andrew Vaughn,Util
+2022-04-09,StL,Bob Frederick's Expert Team,Tyler O'Neill,BN
+2022-04-09,Bal,Bob Frederick's Expert Team,Adley Rutschman,BN
+2022-04-09,NYM,Bob Frederick's Expert Team,Tylor Megill,SP
+2022-04-09,Phi,Bob Frederick's Expert Team,Zach Eflin,SP
+2022-04-09,Pit,Bob Frederick's Expert Team,David Bednar,RP
+2022-04-09,NYM,Bob Frederick's Expert Team,Edwin Díaz,RP
+2022-04-09,Mil,Bob Frederick's Expert Team,Devin Williams,P
+2022-04-09,Ari,Bob Frederick's Expert Team,Merrill Kelly,P
+2022-04-09,Phi,Bob Frederick's Expert Team,Brad Hand,P
+2022-04-09,SD,Bob Frederick's Expert Team,MacKenzie Gore,P
+2022-04-09,Ari,Bob Frederick's Expert Team,Zac Gallen,BN
+2022-04-09,Sea,Bob Frederick's Expert Team,Matt Brash,BN
+2022-04-09,LAD,Bob Frederick's Expert Team,Trevor Bauer,BN
+2022-04-09,CWS,Bob Frederick's Expert Team,Lucas Giolito,IL
+2022-04-09,Phi,Balz Deep,J.T. Realmuto,C
+2022-04-09,CWS,Balz Deep,José Abreu,1B
+2022-04-09,Atl,Balz Deep,Ozzie Albies,2B
+2022-04-09,LAA,Balz Deep,Anthony Rendon,3B
+2022-04-09,Tor,Balz Deep,Bo Bichette,SS
+2022-04-09,ChC,Balz Deep,Seiya Suzuki,OF
+2022-04-09,Mil,Balz Deep,Hunter Renfroe,OF
+2022-04-09,LAA,Balz Deep,Jared Walsh,OF
+2022-04-09,NYY,Balz Deep,Anthony Rizzo,Util
+2022-04-09,Hou,Balz Deep,Jeremy Peña,Util
+2022-04-09,NYY,Balz Deep,Joey Gallo,BN
+2022-04-09,Col,Balz Deep,Randal Grichuk,BN
+2022-04-09,Sea,Balz Deep,Robbie Ray,SP
+2022-04-09,CWS,Balz Deep,Dylan Cease,SP
+2022-04-09,StL,Balz Deep,Giovanny Gallegos,RP
+2022-04-09,Ari,Balz Deep,Mark Melancon,RP
+2022-04-09,Was,Balz Deep,Kyle Finnegan,P
+2022-04-09,SD,Balz Deep,Robert Suarez,P
+2022-04-09,KC,Balz Deep,Zack Greinke,P
+2022-04-09,Mil,Balz Deep,Brandon Woodruff,P
+2022-04-09,SF,Balz Deep,Alex Cobb,BN
+2022-04-09,Tor,Balz Deep,Hyun Jin Ryu,BN
+2022-04-09,StL,Balz Deep,Steven Matz,BN
+2022-04-09,SD,Balz Deep,Mike Clevinger,IL
+2022-04-09,ChC,Kyle Austin's Awesome Team,Willson Contreras,C
+2022-04-09,Atl,Kyle Austin's Awesome Team,Matt Olson,1B
+2022-04-09,Hou,Kyle Austin's Awesome Team,Jose Altuve,2B
+2022-04-09,Col,Kyle Austin's Awesome Team,Kris Bryant,3B
+2022-04-09,NYM,Kyle Austin's Awesome Team,Francisco Lindor,SS
+2022-04-09,Phi,Kyle Austin's Awesome Team,Kyle Schwarber,OF
+2022-04-09,ChC,Kyle Austin's Awesome Team,Ian Happ,OF
+2022-04-09,Atl,Kyle Austin's Awesome Team,Marcell Ozuna,OF
+2022-04-09,SD,Kyle Austin's Awesome Team,Luke Voit,Util
+2022-04-09,Sea,Kyle Austin's Awesome Team,Jarred Kelenic,Util
+2022-04-09,Atl,Kyle Austin's Awesome Team,Eddie Rosario,BN
+2022-04-09,ChC,Kyle Austin's Awesome Team,Nick Madrigal,BN
+2022-04-09,LAD,Kyle Austin's Awesome Team,Gavin Lux,BN
+2022-04-09,Ari,Kyle Austin's Awesome Team,Ketel Marte,BN
+2022-04-09,NYY,Kyle Austin's Awesome Team,Gerrit Cole,SP
+2022-04-09,Tor,Kyle Austin's Awesome Team,Kevin Gausman,SP
+2022-04-09,SF,Kyle Austin's Awesome Team,Jake McGee,RP
+2022-04-09,KC,Kyle Austin's Awesome Team,Scott Barlow,RP
+2022-04-09,Hou,Kyle Austin's Awesome Team,Justin Verlander,P
+2022-04-09,ChC,Kyle Austin's Awesome Team,Marcus Stroman,P
+2022-04-09,Cle,Kyle Austin's Awesome Team,Cal Quantrill,P
+2022-04-09,Atl,Kyle Austin's Awesome Team,Kyle Wright,P
+2022-04-09,LAA,Kyle Austin's Awesome Team,Patrick Sandoval,BN
+2022-04-09,Tex,This Year’s The Year,Mitch Garver,C
+2022-04-09,Col,This Year’s The Year,C.J. Cron,1B
+2022-04-09,Det,This Year’s The Year,Javier Báez,2B
+2022-04-09,LAD,This Year’s The Year,Chris Taylor,3B
+2022-04-09,Min,This Year’s The Year,Jorge Polanco,SS
+2022-04-09,NYY,This Year’s The Year,Aaron Judge,OF
+2022-04-09,NYM,This Year’s The Year,Starling Marte,OF
+2022-04-09,Hou,This Year’s The Year,Kyle Tucker,OF
+2022-04-09,Was,This Year’s The Year,Nelson Cruz,Util
+2022-04-09,Cle,This Year’s The Year,Franmil Reyes,Util
+2022-04-09,Hou,This Year’s The Year,Alex Bregman,BN
+2022-04-09,Sea,This Year’s The Year,Chris Flexen,SP
+2022-04-09,SF,This Year’s The Year,Alex Wood,SP
+2022-04-09,Sea,This Year’s The Year,Drew Steckenrider,RP
+2022-04-09,LAA,This Year’s The Year,Raisel Iglesias,RP
+2022-04-09,CWS,This Year’s The Year,Liam Hendriks,P
+2022-04-09,Col,This Year’s The Year,Alex Colomé,P
+2022-04-09,SF,This Year’s The Year,Camilo Doval,P
+2022-04-09,Sea,This Year’s The Year,Paul Sewald,P
+2022-04-09,TB,This Year’s The Year,Corey Kluber,BN
+2022-04-09,Cle,This Year’s The Year,Zach Plesac,BN
+2022-04-09,ChC,This Year’s The Year,Kyle Hendricks,BN
+2022-04-09,Sea,This Year’s The Year,Logan Gilbert,BN
+2022-04-09,CWS,This Year’s The Year,AJ Pollock,IL
+2022-04-09,SD,This Year’s The Year,Blake Snell,IL
+2022-04-09,Ari,Scott M's Neat Team,Daulton Varsho,C
+2022-04-09,Atl,Scott M's Neat Team,Austin Riley,1B
+2022-04-09,Phi,Scott M's Neat Team,Jean Segura,2B
+2022-04-09,Sea,Scott M's Neat Team,Ty France,3B
+2022-04-09,Mia,Scott M's Neat Team,Jazz Chisholm Jr.,SS
+2022-04-09,KC,Scott M's Neat Team,Andrew Benintendi,OF
+2022-04-09,KC,Scott M's Neat Team,Whit Merrifield,OF
+2022-04-09,Tex,Scott M's Neat Team,Adolis García,OF
+2022-04-09,Sea,Scott M's Neat Team,Julio Rodríguez,Util
+2022-04-09,Cle,Scott M's Neat Team,Steven Kwan,Util
+2022-04-09,CWS,Scott M's Neat Team,Josh Harrison,BN
+2022-04-09,SF,Scott M's Neat Team,Brandon Crawford,BN
+2022-04-09,LAD,Scott M's Neat Team,Walker Buehler,SP
+2022-04-09,NYM,Scott M's Neat Team,Chris Bassitt,SP
+2022-04-09,Mil,Scott M's Neat Team,Josh Hader,RP
+2022-04-09,LAD,Scott M's Neat Team,Craig Kimbrel,RP
+2022-04-09,Atl,Scott M's Neat Team,Spencer Strider,P
+2022-04-09,Phi,Scott M's Neat Team,Ranger Suárez,P
+2022-04-09,Tor,Scott M's Neat Team,Alek Manoah,P
+2022-04-09,Cin,Scott M's Neat Team,Hunter Greene,P
+2022-04-09,Cin,Scott M's Neat Team,Nick Lodolo,BN
+2022-04-09,Cle,Scott M's Neat Team,Emmanuel Clase,BN
+2022-04-09,Hou,Scott M's Neat Team,Luis Garcia,BN
+2022-04-09,Atl,Scott M's Neat Team,Ronald Acuña Jr.,IL
+2022-04-09,Was,Hoyne Park Fighting Cocks,Keibert Ruiz,C
+2022-04-09,StL,Hoyne Park Fighting Cocks,Paul Goldschmidt,1B
+2022-04-09,LAD,Hoyne Park Fighting Cocks,Mookie Betts,2B
+2022-04-09,Det,Hoyne Park Fighting Cocks,Spencer Torkelson,3B
+2022-04-09,Tex,Hoyne Park Fighting Cocks,Marcus Semien,SS
+2022-04-09,Atl,Hoyne Park Fighting Cocks,Adam Duvall,OF
+2022-04-09,Phi,Hoyne Park Fighting Cocks,Bryce Harper,OF
+2022-04-09,Hou,Hoyne Park Fighting Cocks,Michael Brantley,OF
+2022-04-09,Bos,Hoyne Park Fighting Cocks,Xander Bogaerts,Util
+2022-04-09,Min,Hoyne Park Fighting Cocks,Carlos Correa,Util
+2022-04-09,Bos,Hoyne Park Fighting Cocks,Alex Verdugo,BN
+2022-04-09,NYM,Hoyne Park Fighting Cocks,Jeff McNeil,BN
+2022-04-09,Mia,Hoyne Park Fighting Cocks,Trevor Rogers,SP
+2022-04-09,Min,Hoyne Park Fighting Cocks,Sonny Gray,SP
+2022-04-09,Mia,Hoyne Park Fighting Cocks,Anthony Bender,RP
+2022-04-09,Hou,Hoyne Park Fighting Cocks,Ryan Pressly,RP
+2022-04-09,CWS,Hoyne Park Fighting Cocks,Kendall Graveman,P
+2022-04-09,SD,Hoyne Park Fighting Cocks,Taylor Rogers,P
+2022-04-09,NYY,Hoyne Park Fighting Cocks,Jonathan Loáisiga,P
+2022-04-09,ChC,Hoyne Park Fighting Cocks,David Robertson,P
+2022-04-09,LAD,Hoyne Park Fighting Cocks,Clayton Kershaw,BN
+2022-04-09,SD,Hoyne Park Fighting Cocks,Sean Manaea,BN
+2022-04-09,TB,Hoyne Park Fighting Cocks,J.P. Feyereisen,BN
+2022-04-09,CWS,Hoyne Park Fighting Cocks,Lance Lynn,IL
+2022-04-09,Min,Eaton Her Posey,Gary Sánchez,C
+2022-04-09,Cin,Eaton Her Posey,Joey Votto,1B
+2022-04-09,Col,Eaton Her Posey,Ryan McMahon,2B
+2022-04-09,Det,Eaton Her Posey,Jeimer Candelario,3B
+2022-04-09,Tex,Eaton Her Posey,Corey Seager,SS
+2022-04-09,Was,Eaton Her Posey,Juan Soto,OF
+2022-04-09,LAA,Eaton Her Posey,Mike Trout,OF
+2022-04-09,CWS,Eaton Her Posey,Eloy Jiménez,OF
+2022-04-09,Sea,Eaton Her Posey,Jesse Winker,Util
+2022-04-09,Tex,Eaton Her Posey,Nathaniel Lowe,Util
+2022-04-09,LAA,Eaton Her Posey,Tyler Wade,BN
+2022-04-09,Atl,Eaton Her Posey,Ian Anderson,SP
+2022-04-09,TB,Eaton Her Posey,Drew Rasmussen,SP
+2022-04-09,Det,Eaton Her Posey,Gregory Soto,RP
+2022-04-09,Sea,Eaton Her Posey,Diego Castillo,RP
+2022-04-09,Tor,Eaton Her Posey,José Berríos,P
+2022-04-09,SF,Eaton Her Posey,Carlos Rodón,P
+2022-04-09,NYM,Eaton Her Posey,Carlos Carrasco,P
+2022-04-09,Phi,Eaton Her Posey,Zack Wheeler,P
+2022-04-09,Det,Eaton Her Posey,Casey Mize,BN
+2022-04-09,Phi,Eaton Her Posey,Kyle Gibson,BN
+2022-04-09,Bos,Eaton Her Posey,Nathan Eovaldi,BN
+2022-04-09,Hou,Eaton Her Posey,Framber Valdez,BN
+2022-04-09,Tor,Eaton Her Posey,Teoscar Hernández,IL
+2022-04-09,CWS,Eaton Her Posey,Yoán Moncada,IL
+2022-04-09,TB,Eaton Her Posey,Shane Baz,IL
+2022-04-09,NYY,BaseBalzers,Kyle Higashioka,C
+2022-04-09,NYM,BaseBalzers,Pete Alonso,1B
+2022-04-09,Cle,BaseBalzers,Owen Miller,2B
+2022-04-09,NYY,BaseBalzers,Josh Donaldson,3B
+2022-04-09,SD,BaseBalzers,C.J. Abrams,SS
+2022-04-09,CWS,BaseBalzers,Luis Robert,OF
+2022-04-09,Col,BaseBalzers,Connor Joe,OF
+2022-04-09,Min,BaseBalzers,Byron Buxton,OF
+2022-04-09,LAA,BaseBalzers,Shohei Ohtani (Batter),Util
+2022-04-09,KC,BaseBalzers,Bobby Witt Jr.,Util
+2022-04-09,TB,BaseBalzers,Josh Lowe,BN
+2022-04-09,NYY,BaseBalzers,Gleyber Torres,BN
+2022-04-09,SD,BaseBalzers,Yu Darvish,SP
+2022-04-09,Atl,BaseBalzers,Charlie Morton,SP
+2022-04-09,Atl,BaseBalzers,Kenley Jansen,RP
+2022-04-09,TB,BaseBalzers,Andrew Kittredge,RP
+2022-04-09,Col,BaseBalzers,Daniel Bard,P
+2022-04-09,Min,BaseBalzers,Jhoan Duran,P
+2022-04-09,NYY,BaseBalzers,Luis Severino,P
+2022-04-09,Phi,BaseBalzers,Corey Knebel,P
+2022-04-09,CWS,BaseBalzers,Michael Kopech,BN
+2022-04-09,Mia,BaseBalzers,Jesús Luzardo,BN
+2022-04-09,LAD,BaseBalzers,Julio Urías,BN
+2022-04-09,Mil,BaseBalzers,Luis Urías,IL
+2022-04-09,Was,BaseBalzers,Stephen Strasburg,IL
+2022-04-09,LAD,AbeFroman,Will Smith,C
+2022-04-09,Bal,AbeFroman,Trey Mancini,1B
+2022-04-09,Det,AbeFroman,Jonathan Schoop,2B
+2022-04-09,Tor,AbeFroman,Matt Chapman,3B
+2022-04-09,KC,AbeFroman,Adalberto Mondesi,SS
+2022-04-09,Col,AbeFroman,Charlie Blackmon,OF
+2022-04-09,ChC,AbeFroman,Patrick Wisdom,OF
+2022-04-09,Cle,AbeFroman,Myles Straw,OF
+2022-04-09,TB,AbeFroman,Wander Franco,Util
+2022-04-09,Mia,AbeFroman,Jesús Aguilar,Util
+2022-04-09,Bal,AbeFroman,John Means,SP
+2022-04-09,LAA,AbeFroman,Noah Syndergaard,SP
+2022-04-09,SF,AbeFroman,Tyler Rogers,RP
+2022-04-09,Ari,AbeFroman,Ian Kennedy,RP
+2022-04-09,Bos,AbeFroman,Jake Diekman,P
+2022-04-09,Was,AbeFroman,Tanner Rainey,P
+2022-04-09,Mil,AbeFroman,Corbin Burnes,P
+2022-04-09,LAA,AbeFroman,Shohei Ohtani (Pitcher),P
+2022-04-09,TB,AbeFroman,Shane McClanahan,BN
+2022-04-09,Atl,AbeFroman,Max Fried,BN
+2022-04-09,Cle,AbeFroman,Shane Bieber,BN
+2022-04-09,Mia,AbeFroman,Dylan Floro,BN
+2022-04-09,Cin,AbeFroman,Lucas Sims,BN
+2022-04-09,NYM,AbeFroman,Jacob deGrom,IL
+2022-04-09,Cin,AbeFroman,Luis Castillo,IL
+2022-04-09,StL,AbeFroman,Jack Flaherty,IL
+2022-04-10,Atl,Ice Trea,Travis d'Arnaud,C
+2022-04-10,Was,Ice Trea,Josh Bell,1B
+2022-04-10,LAD,Ice Trea,Trea Turner,2B
+2022-04-10,SD,Ice Trea,Manny Machado,3B
+2022-04-10,SD,Ice Trea,Jake Cronenworth,SS
+2022-04-10,TB,Ice Trea,Randy Arozarena,OF
+2022-04-10,Pit,Ice Trea,Bryan Reynolds,OF
+2022-04-10,Mil,Ice Trea,Christian Yelich,OF
+2022-04-10,Det,Ice Trea,Austin Meadows,Util
+2022-04-10,CWS,Ice Trea,Tim Anderson,Util
+2022-04-10,StL,Ice Trea,Dylan Carlson,BN
+2022-04-10,Mia,Ice Trea,Pablo López,SP
+2022-04-10,Min,Ice Trea,Joe Ryan,SP
+2022-04-10,Atl,Ice Trea,Collin McHugh,RP
+2022-04-10,Oak,Ice Trea,Lou Trivino,RP
+2022-04-10,Mia,Ice Trea,Cole Sulser,P
+2022-04-10,NYY,Ice Trea,Chad Green,P
+2022-04-10,Col,Ice Trea,Germán Márquez,P
+2022-04-10,Bos,Ice Trea,Matt Barnes,P
+2022-04-10,Oak,Ice Trea,Frankie Montas,BN
+2022-04-10,Mia,Ice Trea,Sandy Alcantara,BN
+2022-04-10,Cle,Ice Trea,Triston McKenzie,BN
+2022-04-10,SF,Ice Trea,Logan Webb,BN
+2022-04-10,KC,Beer Tank,Salvador Perez,C
+2022-04-10,Tor,Beer Tank,Vladimir Guerrero Jr.,1B
+2022-04-10,StL,Beer Tank,Tommy Edman,2B
+2022-04-10,StL,Beer Tank,Nolan Arenado,3B
+2022-04-10,Mil,Beer Tank,Willy Adames,SS
+2022-04-10,LAD,Beer Tank,Cody Bellinger,OF
+2022-04-10,Sea,Beer Tank,Mitch Haniger,OF
+2022-04-10,SD,Beer Tank,Trent Grisham,OF
+2022-04-10,NYY,Beer Tank,DJ LeMahieu,Util
+2022-04-10,LAD,Beer Tank,Justin Turner,Util
+2022-04-10,Tor,Beer Tank,Alejandro Kirk,BN
+2022-04-10,Cin,Beer Tank,Tommy Pham,BN
+2022-04-10,Cle,Beer Tank,Amed Rosario,BN
+2022-04-10,Bos,Beer Tank,Christian Vázquez,BN
+2022-04-10,Mil,Beer Tank,Freddy Peralta,SP
+2022-04-10,Was,Beer Tank,Josiah Gray,SP
+2022-04-10,NYY,Beer Tank,Aroldis Chapman,RP
+2022-04-10,Tor,Beer Tank,Jordan Romano,RP
+2022-04-10,Phi,Beer Tank,Aaron Nola,P
+2022-04-10,Tex,Beer Tank,Joe Barlow,P
+2022-04-10,Atl,Beer Tank,Will Smith,P
+2022-04-10,StL,Beer Tank,Adam Wainwright,P
+2022-04-10,Tex,Beer Tank,Jon Gray,BN
+2022-04-10,SD,Beer Tank,Fernando Tatis Jr.,IL
+2022-04-10,Hou,Beer Tank,Lance McCullers Jr.,IL
+2022-04-10,Bos,Beer Tank,Chris Sale,IL
+2022-04-10,Cin,Alan's Quality Team,Tyler Stephenson,C
+2022-04-10,Phi,Alan's Quality Team,Rhys Hoskins,1B
+2022-04-10,Cin,Alan's Quality Team,Jonathan India,2B
+2022-04-10,Pit,Alan's Quality Team,Ke'Bryan Hayes,3B
+2022-04-10,Atl,Alan's Quality Team,Dansby Swanson,SS
+2022-04-10,Phi,Alan's Quality Team,Nick Castellanos,OF
+2022-04-10,Mia,Alan's Quality Team,Jorge Soler,OF
+2022-04-10,Mia,Alan's Quality Team,Avisaíl García,OF
+2022-04-10,NYY,Alan's Quality Team,Giancarlo Stanton,Util
+2022-04-10,Col,Alan's Quality Team,Brendan Rodgers,Util
+2022-04-10,Bos,Alan's Quality Team,Rafael Devers,BN
+2022-04-10,Bal,Alan's Quality Team,Cedric Mullins,BN
+2022-04-10,Bos,Alan's Quality Team,J.D. Martinez,BN
+2022-04-10,Cle,Alan's Quality Team,José Ramírez,BN
+2022-04-10,Tor,Alan's Quality Team,Lourdes Gurriel Jr.,BN
+2022-04-10,NYM,Alan's Quality Team,Max Scherzer,SP
+2022-04-10,SD,Alan's Quality Team,Joe Musgrove,SP
+2022-04-10,Bos,Alan's Quality Team,Tanner Houck,RP
+2022-04-10,LAD,Alan's Quality Team,Blake Treinen,RP
+2022-04-10,Cin,Alan's Quality Team,Tyler Mahle,P
+2022-04-10,Det,Alan's Quality Team,Eduardo Rodriguez,P
+2022-04-10,Hou,Alan's Quality Team,José Urquidy,P
+2022-04-10,SF,Alan's Quality Team,Anthony DeSclafani,P
+2022-04-10,CWS,Bob Frederick's Expert Team,Yasmani Grandal,C
+2022-04-10,LAD,Bob Frederick's Expert Team,Freddie Freeman,1B
+2022-04-10,TB,Bob Frederick's Expert Team,Brandon Lowe,2B
+2022-04-10,Bos,Bob Frederick's Expert Team,Bobby Dalbec,3B
+2022-04-10,Bos,Bob Frederick's Expert Team,Trevor Story,SS
+2022-04-10,Hou,Bob Frederick's Expert Team,Yordan Alvarez,OF
+2022-04-10,Tor,Bob Frederick's Expert Team,George Springer,OF
+2022-04-10,Bal,Bob Frederick's Expert Team,Ryan Mountcastle,OF
+2022-04-10,LAD,Bob Frederick's Expert Team,Max Muncy,Util
+2022-04-10,CWS,Bob Frederick's Expert Team,Andrew Vaughn,Util
+2022-04-10,StL,Bob Frederick's Expert Team,Tyler O'Neill,BN
+2022-04-10,Bal,Bob Frederick's Expert Team,Adley Rutschman,BN
+2022-04-10,NYM,Bob Frederick's Expert Team,Tylor Megill,SP
+2022-04-10,Phi,Bob Frederick's Expert Team,Zach Eflin,SP
+2022-04-10,Pit,Bob Frederick's Expert Team,David Bednar,RP
+2022-04-10,NYM,Bob Frederick's Expert Team,Edwin Díaz,RP
+2022-04-10,Mil,Bob Frederick's Expert Team,Devin Williams,P
+2022-04-10,Ari,Bob Frederick's Expert Team,Merrill Kelly,P
+2022-04-10,Phi,Bob Frederick's Expert Team,Brad Hand,P
+2022-04-10,SD,Bob Frederick's Expert Team,MacKenzie Gore,P
+2022-04-10,Ari,Bob Frederick's Expert Team,Zac Gallen,BN
+2022-04-10,Sea,Bob Frederick's Expert Team,Matt Brash,BN
+2022-04-10,LAD,Bob Frederick's Expert Team,Trevor Bauer,BN
+2022-04-10,CWS,Bob Frederick's Expert Team,Lucas Giolito,IL
+2022-04-10,Phi,Balz Deep,J.T. Realmuto,C
+2022-04-10,CWS,Balz Deep,José Abreu,1B
+2022-04-10,Atl,Balz Deep,Ozzie Albies,2B
+2022-04-10,LAA,Balz Deep,Anthony Rendon,3B
+2022-04-10,Tor,Balz Deep,Bo Bichette,SS
+2022-04-10,ChC,Balz Deep,Seiya Suzuki,OF
+2022-04-10,Mil,Balz Deep,Hunter Renfroe,OF
+2022-04-10,LAA,Balz Deep,Jared Walsh,OF
+2022-04-10,NYY,Balz Deep,Anthony Rizzo,Util
+2022-04-10,Hou,Balz Deep,Jeremy Peña,Util
+2022-04-10,NYY,Balz Deep,Joey Gallo,BN
+2022-04-10,Col,Balz Deep,Randal Grichuk,BN
+2022-04-10,Sea,Balz Deep,Robbie Ray,SP
+2022-04-10,CWS,Balz Deep,Dylan Cease,SP
+2022-04-10,StL,Balz Deep,Giovanny Gallegos,RP
+2022-04-10,Ari,Balz Deep,Mark Melancon,RP
+2022-04-10,Was,Balz Deep,Kyle Finnegan,P
+2022-04-10,SD,Balz Deep,Robert Suarez,P
+2022-04-10,KC,Balz Deep,Zack Greinke,P
+2022-04-10,Mil,Balz Deep,Brandon Woodruff,P
+2022-04-10,SF,Balz Deep,Alex Cobb,BN
+2022-04-10,Tor,Balz Deep,Hyun Jin Ryu,BN
+2022-04-10,StL,Balz Deep,Steven Matz,BN
+2022-04-10,SD,Balz Deep,Mike Clevinger,IL
+2022-04-10,ChC,Kyle Austin's Awesome Team,Willson Contreras,C
+2022-04-10,Atl,Kyle Austin's Awesome Team,Matt Olson,1B
+2022-04-10,Hou,Kyle Austin's Awesome Team,Jose Altuve,2B
+2022-04-10,Col,Kyle Austin's Awesome Team,Kris Bryant,3B
+2022-04-10,NYM,Kyle Austin's Awesome Team,Francisco Lindor,SS
+2022-04-10,Phi,Kyle Austin's Awesome Team,Kyle Schwarber,OF
+2022-04-10,ChC,Kyle Austin's Awesome Team,Ian Happ,OF
+2022-04-10,Atl,Kyle Austin's Awesome Team,Marcell Ozuna,OF
+2022-04-10,SD,Kyle Austin's Awesome Team,Luke Voit,Util
+2022-04-10,Sea,Kyle Austin's Awesome Team,Jarred Kelenic,Util
+2022-04-10,Atl,Kyle Austin's Awesome Team,Eddie Rosario,BN
+2022-04-10,ChC,Kyle Austin's Awesome Team,Nick Madrigal,BN
+2022-04-10,LAD,Kyle Austin's Awesome Team,Gavin Lux,BN
+2022-04-10,Ari,Kyle Austin's Awesome Team,Ketel Marte,BN
+2022-04-10,NYY,Kyle Austin's Awesome Team,Gerrit Cole,SP
+2022-04-10,Tor,Kyle Austin's Awesome Team,Kevin Gausman,SP
+2022-04-10,SF,Kyle Austin's Awesome Team,Jake McGee,RP
+2022-04-10,KC,Kyle Austin's Awesome Team,Scott Barlow,RP
+2022-04-10,Hou,Kyle Austin's Awesome Team,Justin Verlander,P
+2022-04-10,ChC,Kyle Austin's Awesome Team,Marcus Stroman,P
+2022-04-10,Cle,Kyle Austin's Awesome Team,Cal Quantrill,P
+2022-04-10,Atl,Kyle Austin's Awesome Team,Kyle Wright,P
+2022-04-10,LAA,Kyle Austin's Awesome Team,Patrick Sandoval,BN
+2022-04-10,Tex,This Year’s The Year,Mitch Garver,C
+2022-04-10,Col,This Year’s The Year,C.J. Cron,1B
+2022-04-10,Det,This Year’s The Year,Javier Báez,2B
+2022-04-10,LAD,This Year’s The Year,Chris Taylor,3B
+2022-04-10,Min,This Year’s The Year,Jorge Polanco,SS
+2022-04-10,NYY,This Year’s The Year,Aaron Judge,OF
+2022-04-10,NYM,This Year’s The Year,Starling Marte,OF
+2022-04-10,Hou,This Year’s The Year,Kyle Tucker,OF
+2022-04-10,Was,This Year’s The Year,Nelson Cruz,Util
+2022-04-10,Cle,This Year’s The Year,Franmil Reyes,Util
+2022-04-10,Hou,This Year’s The Year,Alex Bregman,BN
+2022-04-10,Sea,This Year’s The Year,Chris Flexen,SP
+2022-04-10,SF,This Year’s The Year,Alex Wood,SP
+2022-04-10,Sea,This Year’s The Year,Drew Steckenrider,RP
+2022-04-10,LAA,This Year’s The Year,Raisel Iglesias,RP
+2022-04-10,CWS,This Year’s The Year,Liam Hendriks,P
+2022-04-10,Col,This Year’s The Year,Alex Colomé,P
+2022-04-10,SF,This Year’s The Year,Camilo Doval,P
+2022-04-10,Sea,This Year’s The Year,Paul Sewald,P
+2022-04-10,TB,This Year’s The Year,Corey Kluber,BN
+2022-04-10,Cle,This Year’s The Year,Zach Plesac,BN
+2022-04-10,ChC,This Year’s The Year,Kyle Hendricks,BN
+2022-04-10,Sea,This Year’s The Year,Logan Gilbert,BN
+2022-04-10,CWS,This Year’s The Year,AJ Pollock,IL
+2022-04-10,SD,This Year’s The Year,Blake Snell,IL
+2022-04-10,Ari,Scott M's Neat Team,Daulton Varsho,C
+2022-04-10,Atl,Scott M's Neat Team,Austin Riley,1B
+2022-04-10,Phi,Scott M's Neat Team,Jean Segura,2B
+2022-04-10,Sea,Scott M's Neat Team,Ty France,3B
+2022-04-10,Mia,Scott M's Neat Team,Jazz Chisholm Jr.,SS
+2022-04-10,KC,Scott M's Neat Team,Andrew Benintendi,OF
+2022-04-10,KC,Scott M's Neat Team,Whit Merrifield,OF
+2022-04-10,Tex,Scott M's Neat Team,Adolis García,OF
+2022-04-10,Sea,Scott M's Neat Team,Julio Rodríguez,Util
+2022-04-10,Cle,Scott M's Neat Team,Steven Kwan,Util
+2022-04-10,CWS,Scott M's Neat Team,Josh Harrison,BN
+2022-04-10,SF,Scott M's Neat Team,Brandon Crawford,BN
+2022-04-10,LAD,Scott M's Neat Team,Walker Buehler,SP
+2022-04-10,NYM,Scott M's Neat Team,Chris Bassitt,SP
+2022-04-10,Mil,Scott M's Neat Team,Josh Hader,RP
+2022-04-10,LAD,Scott M's Neat Team,Craig Kimbrel,RP
+2022-04-10,Atl,Scott M's Neat Team,Spencer Strider,P
+2022-04-10,Phi,Scott M's Neat Team,Ranger Suárez,P
+2022-04-10,Tor,Scott M's Neat Team,Alek Manoah,P
+2022-04-10,Cin,Scott M's Neat Team,Hunter Greene,P
+2022-04-10,Cin,Scott M's Neat Team,Nick Lodolo,BN
+2022-04-10,Cle,Scott M's Neat Team,Emmanuel Clase,BN
+2022-04-10,Hou,Scott M's Neat Team,Luis Garcia,BN
+2022-04-10,Atl,Scott M's Neat Team,Ronald Acuña Jr.,IL
+2022-04-10,Was,Hoyne Park Fighting Cocks,Keibert Ruiz,C
+2022-04-10,StL,Hoyne Park Fighting Cocks,Paul Goldschmidt,1B
+2022-04-10,LAD,Hoyne Park Fighting Cocks,Mookie Betts,2B
+2022-04-10,Det,Hoyne Park Fighting Cocks,Spencer Torkelson,3B
+2022-04-10,Tex,Hoyne Park Fighting Cocks,Marcus Semien,SS
+2022-04-10,Atl,Hoyne Park Fighting Cocks,Adam Duvall,OF
+2022-04-10,Phi,Hoyne Park Fighting Cocks,Bryce Harper,OF
+2022-04-10,Hou,Hoyne Park Fighting Cocks,Michael Brantley,OF
+2022-04-10,Bos,Hoyne Park Fighting Cocks,Xander Bogaerts,Util
+2022-04-10,Min,Hoyne Park Fighting Cocks,Carlos Correa,Util
+2022-04-10,Bos,Hoyne Park Fighting Cocks,Alex Verdugo,BN
+2022-04-10,NYM,Hoyne Park Fighting Cocks,Jeff McNeil,BN
+2022-04-10,Mia,Hoyne Park Fighting Cocks,Trevor Rogers,SP
+2022-04-10,Min,Hoyne Park Fighting Cocks,Sonny Gray,SP
+2022-04-10,Mia,Hoyne Park Fighting Cocks,Anthony Bender,RP
+2022-04-10,Hou,Hoyne Park Fighting Cocks,Ryan Pressly,RP
+2022-04-10,CWS,Hoyne Park Fighting Cocks,Kendall Graveman,P
+2022-04-10,SD,Hoyne Park Fighting Cocks,Taylor Rogers,P
+2022-04-10,NYY,Hoyne Park Fighting Cocks,Jonathan Loáisiga,P
+2022-04-10,ChC,Hoyne Park Fighting Cocks,David Robertson,P
+2022-04-10,LAD,Hoyne Park Fighting Cocks,Clayton Kershaw,BN
+2022-04-10,SD,Hoyne Park Fighting Cocks,Sean Manaea,BN
+2022-04-10,TB,Hoyne Park Fighting Cocks,J.P. Feyereisen,BN
+2022-04-10,CWS,Hoyne Park Fighting Cocks,Lance Lynn,IL
+2022-04-10,Min,Eaton Her Posey,Gary Sánchez,C
+2022-04-10,Cin,Eaton Her Posey,Joey Votto,1B
+2022-04-10,Col,Eaton Her Posey,Ryan McMahon,2B
+2022-04-10,Det,Eaton Her Posey,Jeimer Candelario,3B
+2022-04-10,Tex,Eaton Her Posey,Corey Seager,SS
+2022-04-10,Was,Eaton Her Posey,Juan Soto,OF
+2022-04-10,LAA,Eaton Her Posey,Mike Trout,OF
+2022-04-10,CWS,Eaton Her Posey,Eloy Jiménez,OF
+2022-04-10,Sea,Eaton Her Posey,Jesse Winker,Util
+2022-04-10,Tex,Eaton Her Posey,Nathaniel Lowe,Util
+2022-04-10,LAA,Eaton Her Posey,Tyler Wade,BN
+2022-04-10,Atl,Eaton Her Posey,Ian Anderson,SP
+2022-04-10,TB,Eaton Her Posey,Drew Rasmussen,SP
+2022-04-10,Det,Eaton Her Posey,Gregory Soto,RP
+2022-04-10,Sea,Eaton Her Posey,Diego Castillo,RP
+2022-04-10,Tor,Eaton Her Posey,José Berríos,P
+2022-04-10,SF,Eaton Her Posey,Carlos Rodón,P
+2022-04-10,NYM,Eaton Her Posey,Carlos Carrasco,P
+2022-04-10,Phi,Eaton Her Posey,Zack Wheeler,P
+2022-04-10,Det,Eaton Her Posey,Casey Mize,BN
+2022-04-10,Phi,Eaton Her Posey,Kyle Gibson,BN
+2022-04-10,Bos,Eaton Her Posey,Nathan Eovaldi,BN
+2022-04-10,Hou,Eaton Her Posey,Framber Valdez,BN
+2022-04-10,Tor,Eaton Her Posey,Teoscar Hernández,IL
+2022-04-10,CWS,Eaton Her Posey,Yoán Moncada,IL
+2022-04-10,TB,Eaton Her Posey,Shane Baz,IL
+2022-04-10,NYY,BaseBalzers,Kyle Higashioka,C
+2022-04-10,NYM,BaseBalzers,Pete Alonso,1B
+2022-04-10,Cle,BaseBalzers,Owen Miller,2B
+2022-04-10,NYY,BaseBalzers,Josh Donaldson,3B
+2022-04-10,SD,BaseBalzers,C.J. Abrams,SS
+2022-04-10,CWS,BaseBalzers,Luis Robert,OF
+2022-04-10,Col,BaseBalzers,Connor Joe,OF
+2022-04-10,Min,BaseBalzers,Byron Buxton,OF
+2022-04-10,LAA,BaseBalzers,Shohei Ohtani (Batter),Util
+2022-04-10,KC,BaseBalzers,Bobby Witt Jr.,Util
+2022-04-10,TB,BaseBalzers,Josh Lowe,BN
+2022-04-10,NYY,BaseBalzers,Gleyber Torres,BN
+2022-04-10,SD,BaseBalzers,Yu Darvish,SP
+2022-04-10,Atl,BaseBalzers,Charlie Morton,SP
+2022-04-10,Atl,BaseBalzers,Kenley Jansen,RP
+2022-04-10,TB,BaseBalzers,Andrew Kittredge,RP
+2022-04-10,Col,BaseBalzers,Daniel Bard,P
+2022-04-10,Min,BaseBalzers,Jhoan Duran,P
+2022-04-10,NYY,BaseBalzers,Luis Severino,P
+2022-04-10,Phi,BaseBalzers,Corey Knebel,P
+2022-04-10,CWS,BaseBalzers,Michael Kopech,BN
+2022-04-10,Mia,BaseBalzers,Jesús Luzardo,BN
+2022-04-10,LAD,BaseBalzers,Julio Urías,BN
+2022-04-10,Mil,BaseBalzers,Luis Urías,IL
+2022-04-10,Was,BaseBalzers,Stephen Strasburg,IL
+2022-04-10,LAD,AbeFroman,Will Smith,C
+2022-04-10,Bal,AbeFroman,Trey Mancini,1B
+2022-04-10,Det,AbeFroman,Jonathan Schoop,2B
+2022-04-10,Tor,AbeFroman,Matt Chapman,3B
+2022-04-10,KC,AbeFroman,Adalberto Mondesi,SS
+2022-04-10,Col,AbeFroman,Charlie Blackmon,OF
+2022-04-10,ChC,AbeFroman,Patrick Wisdom,OF
+2022-04-10,Cle,AbeFroman,Myles Straw,OF
+2022-04-10,TB,AbeFroman,Wander Franco,Util
+2022-04-10,Mia,AbeFroman,Jesús Aguilar,Util
+2022-04-10,Bal,AbeFroman,John Means,SP
+2022-04-10,LAA,AbeFroman,Noah Syndergaard,SP
+2022-04-10,SF,AbeFroman,Tyler Rogers,RP
+2022-04-10,Ari,AbeFroman,Ian Kennedy,RP
+2022-04-10,Bos,AbeFroman,Jake Diekman,P
+2022-04-10,Was,AbeFroman,Tanner Rainey,P
+2022-04-10,Mil,AbeFroman,Corbin Burnes,P
+2022-04-10,LAA,AbeFroman,Shohei Ohtani (Pitcher),P
+2022-04-10,TB,AbeFroman,Shane McClanahan,BN
+2022-04-10,Atl,AbeFroman,Max Fried,BN
+2022-04-10,Cle,AbeFroman,Shane Bieber,BN
+2022-04-10,Mia,AbeFroman,Dylan Floro,BN
+2022-04-10,Cin,AbeFroman,Lucas Sims,BN
+2022-04-10,NYM,AbeFroman,Jacob deGrom,IL
+2022-04-10,Cin,AbeFroman,Luis Castillo,IL
+2022-04-10,StL,AbeFroman,Jack Flaherty,IL
+2022-04-11,Atl,Ice Trea,Travis d'Arnaud,C
+2022-04-11,Was,Ice Trea,Josh Bell,1B
+2022-04-11,LAD,Ice Trea,Trea Turner,2B
+2022-04-11,SD,Ice Trea,Manny Machado,3B
+2022-04-11,SD,Ice Trea,Jake Cronenworth,SS
+2022-04-11,TB,Ice Trea,Randy Arozarena,OF
+2022-04-11,Pit,Ice Trea,Bryan Reynolds,OF
+2022-04-11,Mil,Ice Trea,Christian Yelich,OF
+2022-04-11,Det,Ice Trea,Austin Meadows,Util
+2022-04-11,CWS,Ice Trea,Tim Anderson,Util
+2022-04-11,StL,Ice Trea,Dylan Carlson,BN
+2022-04-11,Mia,Ice Trea,Pablo López,SP
+2022-04-11,Min,Ice Trea,Joe Ryan,SP
+2022-04-11,Atl,Ice Trea,Collin McHugh,RP
+2022-04-11,Oak,Ice Trea,Lou Trivino,RP
+2022-04-11,Mia,Ice Trea,Cole Sulser,P
+2022-04-11,NYY,Ice Trea,Chad Green,P
+2022-04-11,Col,Ice Trea,Germán Márquez,P
+2022-04-11,Bos,Ice Trea,Matt Barnes,P
+2022-04-11,Oak,Ice Trea,Frankie Montas,BN
+2022-04-11,Mia,Ice Trea,Sandy Alcantara,BN
+2022-04-11,Cle,Ice Trea,Triston McKenzie,BN
+2022-04-11,SF,Ice Trea,Logan Webb,BN
+2022-04-11,KC,Beer Tank,Salvador Perez,C
+2022-04-11,Tor,Beer Tank,Vladimir Guerrero Jr.,1B
+2022-04-11,StL,Beer Tank,Tommy Edman,2B
+2022-04-11,StL,Beer Tank,Nolan Arenado,3B
+2022-04-11,Mil,Beer Tank,Willy Adames,SS
+2022-04-11,LAD,Beer Tank,Cody Bellinger,OF
+2022-04-11,Sea,Beer Tank,Mitch Haniger,OF
+2022-04-11,SD,Beer Tank,Trent Grisham,OF
+2022-04-11,NYY,Beer Tank,DJ LeMahieu,Util
+2022-04-11,LAD,Beer Tank,Justin Turner,Util
+2022-04-11,Tor,Beer Tank,Alejandro Kirk,BN
+2022-04-11,Cin,Beer Tank,Tommy Pham,BN
+2022-04-11,Cle,Beer Tank,Amed Rosario,BN
+2022-04-11,Bos,Beer Tank,Christian Vázquez,BN
+2022-04-11,Mil,Beer Tank,Freddy Peralta,SP
+2022-04-11,Was,Beer Tank,Josiah Gray,SP
+2022-04-11,NYY,Beer Tank,Aroldis Chapman,RP
+2022-04-11,Tor,Beer Tank,Jordan Romano,RP
+2022-04-11,Phi,Beer Tank,Aaron Nola,P
+2022-04-11,Tex,Beer Tank,Joe Barlow,P
+2022-04-11,Atl,Beer Tank,Will Smith,P
+2022-04-11,StL,Beer Tank,Adam Wainwright,P
+2022-04-11,Tex,Beer Tank,Jon Gray,BN
+2022-04-11,SD,Beer Tank,Fernando Tatis Jr.,IL
+2022-04-11,Hou,Beer Tank,Lance McCullers Jr.,IL
+2022-04-11,Bos,Beer Tank,Chris Sale,IL
+2022-04-11,Cin,Alan's Quality Team,Tyler Stephenson,C
+2022-04-11,Phi,Alan's Quality Team,Rhys Hoskins,1B
+2022-04-11,Cin,Alan's Quality Team,Jonathan India,2B
+2022-04-11,Pit,Alan's Quality Team,Ke'Bryan Hayes,3B
+2022-04-11,Atl,Alan's Quality Team,Dansby Swanson,SS
+2022-04-11,Phi,Alan's Quality Team,Nick Castellanos,OF
+2022-04-11,Mia,Alan's Quality Team,Jorge Soler,OF
+2022-04-11,Mia,Alan's Quality Team,Avisaíl García,OF
+2022-04-11,NYY,Alan's Quality Team,Giancarlo Stanton,Util
+2022-04-11,Col,Alan's Quality Team,Brendan Rodgers,Util
+2022-04-11,Bos,Alan's Quality Team,Rafael Devers,BN
+2022-04-11,Bal,Alan's Quality Team,Cedric Mullins,BN
+2022-04-11,Bos,Alan's Quality Team,J.D. Martinez,BN
+2022-04-11,Cle,Alan's Quality Team,José Ramírez,BN
+2022-04-11,Tor,Alan's Quality Team,Lourdes Gurriel Jr.,BN
+2022-04-11,NYM,Alan's Quality Team,Max Scherzer,SP
+2022-04-11,SD,Alan's Quality Team,Joe Musgrove,SP
+2022-04-11,Bos,Alan's Quality Team,Tanner Houck,RP
+2022-04-11,LAD,Alan's Quality Team,Blake Treinen,RP
+2022-04-11,Cin,Alan's Quality Team,Tyler Mahle,P
+2022-04-11,Det,Alan's Quality Team,Eduardo Rodriguez,P
+2022-04-11,Hou,Alan's Quality Team,José Urquidy,P
+2022-04-11,SF,Alan's Quality Team,Anthony DeSclafani,P
+2022-04-11,CWS,Bob Frederick's Expert Team,Yasmani Grandal,C
+2022-04-11,LAD,Bob Frederick's Expert Team,Freddie Freeman,1B
+2022-04-11,TB,Bob Frederick's Expert Team,Brandon Lowe,2B
+2022-04-11,Bos,Bob Frederick's Expert Team,Bobby Dalbec,3B
+2022-04-11,Bos,Bob Frederick's Expert Team,Trevor Story,SS
+2022-04-11,Hou,Bob Frederick's Expert Team,Yordan Alvarez,OF
+2022-04-11,Tor,Bob Frederick's Expert Team,George Springer,OF
+2022-04-11,Bal,Bob Frederick's Expert Team,Ryan Mountcastle,OF
+2022-04-11,LAD,Bob Frederick's Expert Team,Max Muncy,Util
+2022-04-11,CWS,Bob Frederick's Expert Team,Andrew Vaughn,Util
+2022-04-11,StL,Bob Frederick's Expert Team,Tyler O'Neill,BN
+2022-04-11,Bal,Bob Frederick's Expert Team,Adley Rutschman,BN
+2022-04-11,NYM,Bob Frederick's Expert Team,Tylor Megill,SP
+2022-04-11,Phi,Bob Frederick's Expert Team,Zach Eflin,SP
+2022-04-11,Pit,Bob Frederick's Expert Team,David Bednar,RP
+2022-04-11,NYM,Bob Frederick's Expert Team,Edwin Díaz,RP
+2022-04-11,Mil,Bob Frederick's Expert Team,Devin Williams,P
+2022-04-11,Ari,Bob Frederick's Expert Team,Merrill Kelly,P
+2022-04-11,Phi,Bob Frederick's Expert Team,Brad Hand,P
+2022-04-11,SD,Bob Frederick's Expert Team,MacKenzie Gore,P
+2022-04-11,Ari,Bob Frederick's Expert Team,Zac Gallen,BN
+2022-04-11,Sea,Bob Frederick's Expert Team,Matt Brash,BN
+2022-04-11,LAD,Bob Frederick's Expert Team,Trevor Bauer,BN
+2022-04-11,CWS,Bob Frederick's Expert Team,Lucas Giolito,IL
+2022-04-11,Phi,Balz Deep,J.T. Realmuto,C
+2022-04-11,CWS,Balz Deep,José Abreu,1B
+2022-04-11,Atl,Balz Deep,Ozzie Albies,2B
+2022-04-11,LAA,Balz Deep,Anthony Rendon,3B
+2022-04-11,Tor,Balz Deep,Bo Bichette,SS
+2022-04-11,ChC,Balz Deep,Seiya Suzuki,OF
+2022-04-11,Mil,Balz Deep,Hunter Renfroe,OF
+2022-04-11,LAA,Balz Deep,Jared Walsh,OF
+2022-04-11,NYY,Balz Deep,Anthony Rizzo,Util
+2022-04-11,Hou,Balz Deep,Jeremy Peña,Util
+2022-04-11,NYY,Balz Deep,Joey Gallo,BN
+2022-04-11,Col,Balz Deep,Randal Grichuk,BN
+2022-04-11,Sea,Balz Deep,Robbie Ray,SP
+2022-04-11,CWS,Balz Deep,Dylan Cease,SP
+2022-04-11,StL,Balz Deep,Giovanny Gallegos,RP
+2022-04-11,Ari,Balz Deep,Mark Melancon,RP
+2022-04-11,Was,Balz Deep,Kyle Finnegan,P
+2022-04-11,SD,Balz Deep,Robert Suarez,P
+2022-04-11,KC,Balz Deep,Zack Greinke,P
+2022-04-11,Mil,Balz Deep,Brandon Woodruff,P
+2022-04-11,SF,Balz Deep,Alex Cobb,BN
+2022-04-11,Tor,Balz Deep,Hyun Jin Ryu,BN
+2022-04-11,StL,Balz Deep,Steven Matz,BN
+2022-04-11,SD,Balz Deep,Mike Clevinger,IL
+2022-04-11,ChC,Kyle Austin's Awesome Team,Willson Contreras,C
+2022-04-11,Atl,Kyle Austin's Awesome Team,Matt Olson,1B
+2022-04-11,Hou,Kyle Austin's Awesome Team,Jose Altuve,2B
+2022-04-11,Col,Kyle Austin's Awesome Team,Kris Bryant,3B
+2022-04-11,NYM,Kyle Austin's Awesome Team,Francisco Lindor,SS
+2022-04-11,Phi,Kyle Austin's Awesome Team,Kyle Schwarber,OF
+2022-04-11,ChC,Kyle Austin's Awesome Team,Ian Happ,OF
+2022-04-11,Atl,Kyle Austin's Awesome Team,Marcell Ozuna,OF
+2022-04-11,SD,Kyle Austin's Awesome Team,Luke Voit,Util
+2022-04-11,Sea,Kyle Austin's Awesome Team,Jarred Kelenic,Util
+2022-04-11,Atl,Kyle Austin's Awesome Team,Eddie Rosario,BN
+2022-04-11,ChC,Kyle Austin's Awesome Team,Nick Madrigal,BN
+2022-04-11,LAD,Kyle Austin's Awesome Team,Gavin Lux,BN
+2022-04-11,Ari,Kyle Austin's Awesome Team,Ketel Marte,BN
+2022-04-11,NYY,Kyle Austin's Awesome Team,Gerrit Cole,SP
+2022-04-11,Tor,Kyle Austin's Awesome Team,Kevin Gausman,SP
+2022-04-11,SF,Kyle Austin's Awesome Team,Jake McGee,RP
+2022-04-11,KC,Kyle Austin's Awesome Team,Scott Barlow,RP
+2022-04-11,Hou,Kyle Austin's Awesome Team,Justin Verlander,P
+2022-04-11,ChC,Kyle Austin's Awesome Team,Marcus Stroman,P
+2022-04-11,Cle,Kyle Austin's Awesome Team,Cal Quantrill,P
+2022-04-11,Atl,Kyle Austin's Awesome Team,Kyle Wright,P
+2022-04-11,LAA,Kyle Austin's Awesome Team,Patrick Sandoval,BN
+2022-04-11,Tex,This Year’s The Year,Mitch Garver,C
+2022-04-11,Col,This Year’s The Year,C.J. Cron,1B
+2022-04-11,Det,This Year’s The Year,Javier Báez,2B
+2022-04-11,LAD,This Year’s The Year,Chris Taylor,3B
+2022-04-11,Min,This Year’s The Year,Jorge Polanco,SS
+2022-04-11,NYY,This Year’s The Year,Aaron Judge,OF
+2022-04-11,NYM,This Year’s The Year,Starling Marte,OF
+2022-04-11,Hou,This Year’s The Year,Kyle Tucker,OF
+2022-04-11,Was,This Year’s The Year,Nelson Cruz,Util
+2022-04-11,Cle,This Year’s The Year,Franmil Reyes,Util
+2022-04-11,Hou,This Year’s The Year,Alex Bregman,BN
+2022-04-11,Sea,This Year’s The Year,Chris Flexen,SP
+2022-04-11,SF,This Year’s The Year,Alex Wood,SP
+2022-04-11,Sea,This Year’s The Year,Drew Steckenrider,RP
+2022-04-11,LAA,This Year’s The Year,Raisel Iglesias,RP
+2022-04-11,CWS,This Year’s The Year,Liam Hendriks,P
+2022-04-11,Col,This Year’s The Year,Alex Colomé,P
+2022-04-11,SF,This Year’s The Year,Camilo Doval,P
+2022-04-11,Sea,This Year’s The Year,Paul Sewald,P
+2022-04-11,TB,This Year’s The Year,Corey Kluber,BN
+2022-04-11,Cle,This Year’s The Year,Zach Plesac,BN
+2022-04-11,ChC,This Year’s The Year,Kyle Hendricks,BN
+2022-04-11,Sea,This Year’s The Year,Logan Gilbert,BN
+2022-04-11,CWS,This Year’s The Year,AJ Pollock,IL
+2022-04-11,SD,This Year’s The Year,Blake Snell,IL
+2022-04-11,Ari,Scott M's Neat Team,Daulton Varsho,C
+2022-04-11,Atl,Scott M's Neat Team,Austin Riley,1B
+2022-04-11,Phi,Scott M's Neat Team,Jean Segura,2B
+2022-04-11,Sea,Scott M's Neat Team,Ty France,3B
+2022-04-11,Mia,Scott M's Neat Team,Jazz Chisholm Jr.,SS
+2022-04-11,KC,Scott M's Neat Team,Andrew Benintendi,OF
+2022-04-11,KC,Scott M's Neat Team,Whit Merrifield,OF
+2022-04-11,Tex,Scott M's Neat Team,Adolis García,OF
+2022-04-11,Sea,Scott M's Neat Team,Julio Rodríguez,Util
+2022-04-11,Cle,Scott M's Neat Team,Steven Kwan,Util
+2022-04-11,CWS,Scott M's Neat Team,Josh Harrison,BN
+2022-04-11,SF,Scott M's Neat Team,Brandon Crawford,BN
+2022-04-11,LAD,Scott M's Neat Team,Walker Buehler,SP
+2022-04-11,NYM,Scott M's Neat Team,Chris Bassitt,SP
+2022-04-11,Mil,Scott M's Neat Team,Josh Hader,RP
+2022-04-11,LAD,Scott M's Neat Team,Craig Kimbrel,RP
+2022-04-11,Atl,Scott M's Neat Team,Spencer Strider,P
+2022-04-11,Phi,Scott M's Neat Team,Ranger Suárez,P
+2022-04-11,Tor,Scott M's Neat Team,Alek Manoah,P
+2022-04-11,Cin,Scott M's Neat Team,Hunter Greene,P
+2022-04-11,Cin,Scott M's Neat Team,Nick Lodolo,BN
+2022-04-11,Cle,Scott M's Neat Team,Emmanuel Clase,BN
+2022-04-11,Hou,Scott M's Neat Team,Luis Garcia,BN
+2022-04-11,Atl,Scott M's Neat Team,Ronald Acuña Jr.,IL
+2022-04-11,Was,Hoyne Park Fighting Cocks,Keibert Ruiz,C
+2022-04-11,StL,Hoyne Park Fighting Cocks,Paul Goldschmidt,1B
+2022-04-11,LAD,Hoyne Park Fighting Cocks,Mookie Betts,2B
+2022-04-11,Det,Hoyne Park Fighting Cocks,Spencer Torkelson,3B
+2022-04-11,Tex,Hoyne Park Fighting Cocks,Marcus Semien,SS
+2022-04-11,Atl,Hoyne Park Fighting Cocks,Adam Duvall,OF
+2022-04-11,Phi,Hoyne Park Fighting Cocks,Bryce Harper,OF
+2022-04-11,Hou,Hoyne Park Fighting Cocks,Michael Brantley,OF
+2022-04-11,Bos,Hoyne Park Fighting Cocks,Xander Bogaerts,Util
+2022-04-11,Min,Hoyne Park Fighting Cocks,Carlos Correa,Util
+2022-04-11,Bos,Hoyne Park Fighting Cocks,Alex Verdugo,BN
+2022-04-11,NYM,Hoyne Park Fighting Cocks,Jeff McNeil,BN
+2022-04-11,Mia,Hoyne Park Fighting Cocks,Trevor Rogers,SP
+2022-04-11,Min,Hoyne Park Fighting Cocks,Sonny Gray,SP
+2022-04-11,Mia,Hoyne Park Fighting Cocks,Anthony Bender,RP
+2022-04-11,Hou,Hoyne Park Fighting Cocks,Ryan Pressly,RP
+2022-04-11,CWS,Hoyne Park Fighting Cocks,Kendall Graveman,P
+2022-04-11,SD,Hoyne Park Fighting Cocks,Taylor Rogers,P
+2022-04-11,NYY,Hoyne Park Fighting Cocks,Jonathan Loáisiga,P
+2022-04-11,ChC,Hoyne Park Fighting Cocks,David Robertson,P
+2022-04-11,LAD,Hoyne Park Fighting Cocks,Clayton Kershaw,BN
+2022-04-11,SD,Hoyne Park Fighting Cocks,Sean Manaea,BN
+2022-04-11,TB,Hoyne Park Fighting Cocks,J.P. Feyereisen,BN
+2022-04-11,CWS,Hoyne Park Fighting Cocks,Lance Lynn,IL
+2022-04-11,Min,Eaton Her Posey,Gary Sánchez,C
+2022-04-11,Cin,Eaton Her Posey,Joey Votto,1B
+2022-04-11,Col,Eaton Her Posey,Ryan McMahon,2B
+2022-04-11,Det,Eaton Her Posey,Jeimer Candelario,3B
+2022-04-11,Tex,Eaton Her Posey,Corey Seager,SS
+2022-04-11,Was,Eaton Her Posey,Juan Soto,OF
+2022-04-11,LAA,Eaton Her Posey,Mike Trout,OF
+2022-04-11,CWS,Eaton Her Posey,Eloy Jiménez,OF
+2022-04-11,Sea,Eaton Her Posey,Jesse Winker,Util
+2022-04-11,Tex,Eaton Her Posey,Nathaniel Lowe,Util
+2022-04-11,LAA,Eaton Her Posey,Tyler Wade,BN
+2022-04-11,Atl,Eaton Her Posey,Ian Anderson,SP
+2022-04-11,TB,Eaton Her Posey,Drew Rasmussen,SP
+2022-04-11,Det,Eaton Her Posey,Gregory Soto,RP
+2022-04-11,Sea,Eaton Her Posey,Diego Castillo,RP
+2022-04-11,Tor,Eaton Her Posey,José Berríos,P
+2022-04-11,SF,Eaton Her Posey,Carlos Rodón,P
+2022-04-11,NYM,Eaton Her Posey,Carlos Carrasco,P
+2022-04-11,Phi,Eaton Her Posey,Zack Wheeler,P
+2022-04-11,Det,Eaton Her Posey,Casey Mize,BN
+2022-04-11,Phi,Eaton Her Posey,Kyle Gibson,BN
+2022-04-11,Bos,Eaton Her Posey,Nathan Eovaldi,BN
+2022-04-11,Hou,Eaton Her Posey,Framber Valdez,BN
+2022-04-11,Tor,Eaton Her Posey,Teoscar Hernández,IL
+2022-04-11,CWS,Eaton Her Posey,Yoán Moncada,IL
+2022-04-11,TB,Eaton Her Posey,Shane Baz,IL
+2022-04-11,NYY,BaseBalzers,Kyle Higashioka,C
+2022-04-11,NYM,BaseBalzers,Pete Alonso,1B
+2022-04-11,Cle,BaseBalzers,Owen Miller,2B
+2022-04-11,NYY,BaseBalzers,Josh Donaldson,3B
+2022-04-11,SD,BaseBalzers,C.J. Abrams,SS
+2022-04-11,CWS,BaseBalzers,Luis Robert,OF
+2022-04-11,Col,BaseBalzers,Connor Joe,OF
+2022-04-11,Min,BaseBalzers,Byron Buxton,OF
+2022-04-11,LAA,BaseBalzers,Shohei Ohtani (Batter),Util
+2022-04-11,KC,BaseBalzers,Bobby Witt Jr.,Util
+2022-04-11,TB,BaseBalzers,Josh Lowe,BN
+2022-04-11,NYY,BaseBalzers,Gleyber Torres,BN
+2022-04-11,SD,BaseBalzers,Yu Darvish,SP
+2022-04-11,Atl,BaseBalzers,Charlie Morton,SP
+2022-04-11,Atl,BaseBalzers,Kenley Jansen,RP
+2022-04-11,TB,BaseBalzers,Andrew Kittredge,RP
+2022-04-11,Col,BaseBalzers,Daniel Bard,P
+2022-04-11,Min,BaseBalzers,Jhoan Duran,P
+2022-04-11,NYY,BaseBalzers,Luis Severino,P
+2022-04-11,Phi,BaseBalzers,Corey Knebel,P
+2022-04-11,CWS,BaseBalzers,Michael Kopech,BN
+2022-04-11,Mia,BaseBalzers,Jesús Luzardo,BN
+2022-04-11,LAD,BaseBalzers,Julio Urías,BN
+2022-04-11,Mil,BaseBalzers,Luis Urías,IL
+2022-04-11,Was,BaseBalzers,Stephen Strasburg,IL
+2022-04-11,LAD,AbeFroman,Will Smith,C
+2022-04-11,Bal,AbeFroman,Trey Mancini,1B
+2022-04-11,Det,AbeFroman,Jonathan Schoop,2B
+2022-04-11,Tor,AbeFroman,Matt Chapman,3B
+2022-04-11,KC,AbeFroman,Adalberto Mondesi,SS
+2022-04-11,Col,AbeFroman,Charlie Blackmon,OF
+2022-04-11,ChC,AbeFroman,Patrick Wisdom,OF
+2022-04-11,Cle,AbeFroman,Myles Straw,OF
+2022-04-11,TB,AbeFroman,Wander Franco,Util
+2022-04-11,Mia,AbeFroman,Jesús Aguilar,Util
+2022-04-11,Bal,AbeFroman,John Means,SP
+2022-04-11,LAA,AbeFroman,Noah Syndergaard,SP
+2022-04-11,SF,AbeFroman,Tyler Rogers,RP
+2022-04-11,Ari,AbeFroman,Ian Kennedy,RP
+2022-04-11,Bos,AbeFroman,Jake Diekman,P
+2022-04-11,Was,AbeFroman,Tanner Rainey,P
+2022-04-11,Mil,AbeFroman,Corbin Burnes,P
+2022-04-11,LAA,AbeFroman,Shohei Ohtani (Pitcher),P
+2022-04-11,TB,AbeFroman,Shane McClanahan,BN
+2022-04-11,Atl,AbeFroman,Max Fried,BN
+2022-04-11,Cle,AbeFroman,Shane Bieber,BN
+2022-04-11,Mia,AbeFroman,Dylan Floro,BN
+2022-04-11,Cin,AbeFroman,Lucas Sims,BN
+2022-04-11,NYM,AbeFroman,Jacob deGrom,IL
+2022-04-11,Cin,AbeFroman,Luis Castillo,IL
+2022-04-11,StL,AbeFroman,Jack Flaherty,IL
+2022-04-12,Atl,Ice Trea,Travis d'Arnaud,C
+2022-04-12,Was,Ice Trea,Josh Bell,1B
+2022-04-12,LAD,Ice Trea,Trea Turner,2B
+2022-04-12,SD,Ice Trea,Manny Machado,3B
+2022-04-12,SD,Ice Trea,Jake Cronenworth,SS
+2022-04-12,TB,Ice Trea,Randy Arozarena,OF
+2022-04-12,Pit,Ice Trea,Bryan Reynolds,OF
+2022-04-12,Mil,Ice Trea,Christian Yelich,OF
+2022-04-12,Det,Ice Trea,Austin Meadows,Util
+2022-04-12,CWS,Ice Trea,Tim Anderson,Util
+2022-04-12,StL,Ice Trea,Dylan Carlson,BN
+2022-04-12,Mia,Ice Trea,Pablo López,SP
+2022-04-12,Min,Ice Trea,Joe Ryan,SP
+2022-04-12,Atl,Ice Trea,Collin McHugh,RP
+2022-04-12,Oak,Ice Trea,Lou Trivino,RP
+2022-04-12,Mia,Ice Trea,Cole Sulser,P
+2022-04-12,NYY,Ice Trea,Chad Green,P
+2022-04-12,Col,Ice Trea,Germán Márquez,P
+2022-04-12,Bos,Ice Trea,Matt Barnes,P
+2022-04-12,Oak,Ice Trea,Frankie Montas,BN
+2022-04-12,Mia,Ice Trea,Sandy Alcantara,BN
+2022-04-12,Cle,Ice Trea,Triston McKenzie,BN
+2022-04-12,SF,Ice Trea,Logan Webb,BN
+2022-04-12,KC,Beer Tank,Salvador Perez,C
+2022-04-12,Tor,Beer Tank,Vladimir Guerrero Jr.,1B
+2022-04-12,StL,Beer Tank,Tommy Edman,2B
+2022-04-12,StL,Beer Tank,Nolan Arenado,3B
+2022-04-12,Mil,Beer Tank,Willy Adames,SS
+2022-04-12,LAD,Beer Tank,Cody Bellinger,OF
+2022-04-12,Sea,Beer Tank,Mitch Haniger,OF
+2022-04-12,SD,Beer Tank,Trent Grisham,OF
+2022-04-12,NYY,Beer Tank,DJ LeMahieu,Util
+2022-04-12,LAD,Beer Tank,Justin Turner,Util
+2022-04-12,Tor,Beer Tank,Alejandro Kirk,BN
+2022-04-12,Cin,Beer Tank,Tommy Pham,BN
+2022-04-12,Cle,Beer Tank,Amed Rosario,BN
+2022-04-12,Bos,Beer Tank,Christian Vázquez,BN
+2022-04-12,Mil,Beer Tank,Freddy Peralta,SP
+2022-04-12,Was,Beer Tank,Josiah Gray,SP
+2022-04-12,NYY,Beer Tank,Aroldis Chapman,RP
+2022-04-12,Tor,Beer Tank,Jordan Romano,RP
+2022-04-12,Phi,Beer Tank,Aaron Nola,P
+2022-04-12,Tex,Beer Tank,Joe Barlow,P
+2022-04-12,Atl,Beer Tank,Will Smith,P
+2022-04-12,StL,Beer Tank,Adam Wainwright,P
+2022-04-12,Tex,Beer Tank,Jon Gray,BN
+2022-04-12,SD,Beer Tank,Fernando Tatis Jr.,IL
+2022-04-12,Hou,Beer Tank,Lance McCullers Jr.,IL
+2022-04-12,Bos,Beer Tank,Chris Sale,IL
+2022-04-12,Cin,Alan's Quality Team,Tyler Stephenson,C
+2022-04-12,Phi,Alan's Quality Team,Rhys Hoskins,1B
+2022-04-12,Cin,Alan's Quality Team,Jonathan India,2B
+2022-04-12,Pit,Alan's Quality Team,Ke'Bryan Hayes,3B
+2022-04-12,Atl,Alan's Quality Team,Dansby Swanson,SS
+2022-04-12,Phi,Alan's Quality Team,Nick Castellanos,OF
+2022-04-12,Mia,Alan's Quality Team,Jorge Soler,OF
+2022-04-12,Mia,Alan's Quality Team,Avisaíl García,OF
+2022-04-12,NYY,Alan's Quality Team,Giancarlo Stanton,Util
+2022-04-12,Col,Alan's Quality Team,Brendan Rodgers,Util
+2022-04-12,Bos,Alan's Quality Team,Rafael Devers,BN
+2022-04-12,Bal,Alan's Quality Team,Cedric Mullins,BN
+2022-04-12,Bos,Alan's Quality Team,J.D. Martinez,BN
+2022-04-12,Cle,Alan's Quality Team,José Ramírez,BN
+2022-04-12,Tor,Alan's Quality Team,Lourdes Gurriel Jr.,BN
+2022-04-12,NYM,Alan's Quality Team,Max Scherzer,SP
+2022-04-12,SD,Alan's Quality Team,Joe Musgrove,SP
+2022-04-12,Bos,Alan's Quality Team,Tanner Houck,RP
+2022-04-12,LAD,Alan's Quality Team,Blake Treinen,RP
+2022-04-12,Cin,Alan's Quality Team,Tyler Mahle,P
+2022-04-12,Det,Alan's Quality Team,Eduardo Rodriguez,P
+2022-04-12,Hou,Alan's Quality Team,José Urquidy,P
+2022-04-12,SF,Alan's Quality Team,Anthony DeSclafani,P
+2022-04-12,CWS,Bob Frederick's Expert Team,Yasmani Grandal,C
+2022-04-12,LAD,Bob Frederick's Expert Team,Freddie Freeman,1B
+2022-04-12,TB,Bob Frederick's Expert Team,Brandon Lowe,2B
+2022-04-12,Bos,Bob Frederick's Expert Team,Bobby Dalbec,3B
+2022-04-12,Bos,Bob Frederick's Expert Team,Trevor Story,SS
+2022-04-12,Hou,Bob Frederick's Expert Team,Yordan Alvarez,OF
+2022-04-12,Tor,Bob Frederick's Expert Team,George Springer,OF
+2022-04-12,Bal,Bob Frederick's Expert Team,Ryan Mountcastle,OF
+2022-04-12,LAD,Bob Frederick's Expert Team,Max Muncy,Util
+2022-04-12,CWS,Bob Frederick's Expert Team,Andrew Vaughn,Util
+2022-04-12,StL,Bob Frederick's Expert Team,Tyler O'Neill,BN
+2022-04-12,Bal,Bob Frederick's Expert Team,Adley Rutschman,BN
+2022-04-12,NYM,Bob Frederick's Expert Team,Tylor Megill,SP
+2022-04-12,Phi,Bob Frederick's Expert Team,Zach Eflin,SP
+2022-04-12,Pit,Bob Frederick's Expert Team,David Bednar,RP
+2022-04-12,NYM,Bob Frederick's Expert Team,Edwin Díaz,RP
+2022-04-12,Mil,Bob Frederick's Expert Team,Devin Williams,P
+2022-04-12,Ari,Bob Frederick's Expert Team,Merrill Kelly,P
+2022-04-12,Phi,Bob Frederick's Expert Team,Brad Hand,P
+2022-04-12,SD,Bob Frederick's Expert Team,MacKenzie Gore,P
+2022-04-12,Ari,Bob Frederick's Expert Team,Zac Gallen,BN
+2022-04-12,Sea,Bob Frederick's Expert Team,Matt Brash,BN
+2022-04-12,LAD,Bob Frederick's Expert Team,Trevor Bauer,BN
+2022-04-12,CWS,Bob Frederick's Expert Team,Lucas Giolito,IL
+2022-04-12,Phi,Balz Deep,J.T. Realmuto,C
+2022-04-12,CWS,Balz Deep,José Abreu,1B
+2022-04-12,Atl,Balz Deep,Ozzie Albies,2B
+2022-04-12,LAA,Balz Deep,Anthony Rendon,3B
+2022-04-12,Tor,Balz Deep,Bo Bichette,SS
+2022-04-12,ChC,Balz Deep,Seiya Suzuki,OF
+2022-04-12,Mil,Balz Deep,Hunter Renfroe,OF
+2022-04-12,LAA,Balz Deep,Jared Walsh,OF
+2022-04-12,NYY,Balz Deep,Anthony Rizzo,Util
+2022-04-12,Hou,Balz Deep,Jeremy Peña,Util
+2022-04-12,NYY,Balz Deep,Joey Gallo,BN
+2022-04-12,Col,Balz Deep,Randal Grichuk,BN
+2022-04-12,Sea,Balz Deep,Robbie Ray,SP
+2022-04-12,CWS,Balz Deep,Dylan Cease,SP
+2022-04-12,StL,Balz Deep,Giovanny Gallegos,RP
+2022-04-12,Ari,Balz Deep,Mark Melancon,RP
+2022-04-12,Was,Balz Deep,Kyle Finnegan,P
+2022-04-12,SD,Balz Deep,Robert Suarez,P
+2022-04-12,KC,Balz Deep,Zack Greinke,P
+2022-04-12,Mil,Balz Deep,Brandon Woodruff,P
+2022-04-12,SF,Balz Deep,Alex Cobb,BN
+2022-04-12,Tor,Balz Deep,Hyun Jin Ryu,BN
+2022-04-12,StL,Balz Deep,Steven Matz,BN
+2022-04-12,SD,Balz Deep,Mike Clevinger,IL
+2022-04-12,ChC,Kyle Austin's Awesome Team,Willson Contreras,C
+2022-04-12,Atl,Kyle Austin's Awesome Team,Matt Olson,1B
+2022-04-12,Hou,Kyle Austin's Awesome Team,Jose Altuve,2B
+2022-04-12,Col,Kyle Austin's Awesome Team,Kris Bryant,3B
+2022-04-12,NYM,Kyle Austin's Awesome Team,Francisco Lindor,SS
+2022-04-12,Phi,Kyle Austin's Awesome Team,Kyle Schwarber,OF
+2022-04-12,ChC,Kyle Austin's Awesome Team,Ian Happ,OF
+2022-04-12,Atl,Kyle Austin's Awesome Team,Marcell Ozuna,OF
+2022-04-12,SD,Kyle Austin's Awesome Team,Luke Voit,Util
+2022-04-12,Sea,Kyle Austin's Awesome Team,Jarred Kelenic,Util
+2022-04-12,Atl,Kyle Austin's Awesome Team,Eddie Rosario,BN
+2022-04-12,ChC,Kyle Austin's Awesome Team,Nick Madrigal,BN
+2022-04-12,LAD,Kyle Austin's Awesome Team,Gavin Lux,BN
+2022-04-12,Ari,Kyle Austin's Awesome Team,Ketel Marte,BN
+2022-04-12,NYY,Kyle Austin's Awesome Team,Gerrit Cole,SP
+2022-04-12,Tor,Kyle Austin's Awesome Team,Kevin Gausman,SP
+2022-04-12,SF,Kyle Austin's Awesome Team,Jake McGee,RP
+2022-04-12,KC,Kyle Austin's Awesome Team,Scott Barlow,RP
+2022-04-12,Hou,Kyle Austin's Awesome Team,Justin Verlander,P
+2022-04-12,ChC,Kyle Austin's Awesome Team,Marcus Stroman,P
+2022-04-12,Cle,Kyle Austin's Awesome Team,Cal Quantrill,P
+2022-04-12,Atl,Kyle Austin's Awesome Team,Kyle Wright,P
+2022-04-12,LAA,Kyle Austin's Awesome Team,Patrick Sandoval,BN
+2022-04-12,Tex,This Year’s The Year,Mitch Garver,C
+2022-04-12,Col,This Year’s The Year,C.J. Cron,1B
+2022-04-12,Det,This Year’s The Year,Javier Báez,2B
+2022-04-12,LAD,This Year’s The Year,Chris Taylor,3B
+2022-04-12,Min,This Year’s The Year,Jorge Polanco,SS
+2022-04-12,NYY,This Year’s The Year,Aaron Judge,OF
+2022-04-12,NYM,This Year’s The Year,Starling Marte,OF
+2022-04-12,Hou,This Year’s The Year,Kyle Tucker,OF
+2022-04-12,Was,This Year’s The Year,Nelson Cruz,Util
+2022-04-12,Cle,This Year’s The Year,Franmil Reyes,Util
+2022-04-12,Hou,This Year’s The Year,Alex Bregman,BN
+2022-04-12,Sea,This Year’s The Year,Chris Flexen,SP
+2022-04-12,SF,This Year’s The Year,Alex Wood,SP
+2022-04-12,Sea,This Year’s The Year,Drew Steckenrider,RP
+2022-04-12,LAA,This Year’s The Year,Raisel Iglesias,RP
+2022-04-12,CWS,This Year’s The Year,Liam Hendriks,P
+2022-04-12,Col,This Year’s The Year,Alex Colomé,P
+2022-04-12,SF,This Year’s The Year,Camilo Doval,P
+2022-04-12,Sea,This Year’s The Year,Paul Sewald,P
+2022-04-12,TB,This Year’s The Year,Corey Kluber,BN
+2022-04-12,Cle,This Year’s The Year,Zach Plesac,BN
+2022-04-12,ChC,This Year’s The Year,Kyle Hendricks,BN
+2022-04-12,Sea,This Year’s The Year,Logan Gilbert,BN
+2022-04-12,CWS,This Year’s The Year,AJ Pollock,IL
+2022-04-12,SD,This Year’s The Year,Blake Snell,IL
+2022-04-12,Ari,Scott M's Neat Team,Daulton Varsho,C
+2022-04-12,Atl,Scott M's Neat Team,Austin Riley,1B
+2022-04-12,Phi,Scott M's Neat Team,Jean Segura,2B
+2022-04-12,Sea,Scott M's Neat Team,Ty France,3B
+2022-04-12,Mia,Scott M's Neat Team,Jazz Chisholm Jr.,SS
+2022-04-12,KC,Scott M's Neat Team,Andrew Benintendi,OF
+2022-04-12,KC,Scott M's Neat Team,Whit Merrifield,OF
+2022-04-12,Tex,Scott M's Neat Team,Adolis García,OF
+2022-04-12,Sea,Scott M's Neat Team,Julio Rodríguez,Util
+2022-04-12,Cle,Scott M's Neat Team,Steven Kwan,Util
+2022-04-12,CWS,Scott M's Neat Team,Josh Harrison,BN
+2022-04-12,SF,Scott M's Neat Team,Brandon Crawford,BN
+2022-04-12,LAD,Scott M's Neat Team,Walker Buehler,SP
+2022-04-12,NYM,Scott M's Neat Team,Chris Bassitt,SP
+2022-04-12,Mil,Scott M's Neat Team,Josh Hader,RP
+2022-04-12,LAD,Scott M's Neat Team,Craig Kimbrel,RP
+2022-04-12,Atl,Scott M's Neat Team,Spencer Strider,P
+2022-04-12,Phi,Scott M's Neat Team,Ranger Suárez,P
+2022-04-12,Tor,Scott M's Neat Team,Alek Manoah,P
+2022-04-12,Cin,Scott M's Neat Team,Hunter Greene,P
+2022-04-12,Cin,Scott M's Neat Team,Nick Lodolo,BN
+2022-04-12,Cle,Scott M's Neat Team,Emmanuel Clase,BN
+2022-04-12,Hou,Scott M's Neat Team,Luis Garcia,BN
+2022-04-12,Atl,Scott M's Neat Team,Ronald Acuña Jr.,IL
+2022-04-12,Was,Hoyne Park Fighting Cocks,Keibert Ruiz,C
+2022-04-12,StL,Hoyne Park Fighting Cocks,Paul Goldschmidt,1B
+2022-04-12,LAD,Hoyne Park Fighting Cocks,Mookie Betts,2B
+2022-04-12,Det,Hoyne Park Fighting Cocks,Spencer Torkelson,3B
+2022-04-12,Tex,Hoyne Park Fighting Cocks,Marcus Semien,SS
+2022-04-12,Atl,Hoyne Park Fighting Cocks,Adam Duvall,OF
+2022-04-12,Phi,Hoyne Park Fighting Cocks,Bryce Harper,OF
+2022-04-12,Hou,Hoyne Park Fighting Cocks,Michael Brantley,OF
+2022-04-12,Bos,Hoyne Park Fighting Cocks,Xander Bogaerts,Util
+2022-04-12,Min,Hoyne Park Fighting Cocks,Carlos Correa,Util
+2022-04-12,Bos,Hoyne Park Fighting Cocks,Alex Verdugo,BN
+2022-04-12,NYM,Hoyne Park Fighting Cocks,Jeff McNeil,BN
+2022-04-12,Mia,Hoyne Park Fighting Cocks,Trevor Rogers,SP
+2022-04-12,Min,Hoyne Park Fighting Cocks,Sonny Gray,SP
+2022-04-12,Mia,Hoyne Park Fighting Cocks,Anthony Bender,RP
+2022-04-12,Hou,Hoyne Park Fighting Cocks,Ryan Pressly,RP
+2022-04-12,CWS,Hoyne Park Fighting Cocks,Kendall Graveman,P
+2022-04-12,SD,Hoyne Park Fighting Cocks,Taylor Rogers,P
+2022-04-12,NYY,Hoyne Park Fighting Cocks,Jonathan Loáisiga,P
+2022-04-12,ChC,Hoyne Park Fighting Cocks,David Robertson,P
+2022-04-12,LAD,Hoyne Park Fighting Cocks,Clayton Kershaw,BN
+2022-04-12,SD,Hoyne Park Fighting Cocks,Sean Manaea,BN
+2022-04-12,TB,Hoyne Park Fighting Cocks,J.P. Feyereisen,BN
+2022-04-12,CWS,Hoyne Park Fighting Cocks,Lance Lynn,IL
+2022-04-12,Min,Eaton Her Posey,Gary Sánchez,C
+2022-04-12,Cin,Eaton Her Posey,Joey Votto,1B
+2022-04-12,Col,Eaton Her Posey,Ryan McMahon,2B
+2022-04-12,Det,Eaton Her Posey,Jeimer Candelario,3B
+2022-04-12,Tex,Eaton Her Posey,Corey Seager,SS
+2022-04-12,Was,Eaton Her Posey,Juan Soto,OF
+2022-04-12,LAA,Eaton Her Posey,Mike Trout,OF
+2022-04-12,CWS,Eaton Her Posey,Eloy Jiménez,OF
+2022-04-12,Sea,Eaton Her Posey,Jesse Winker,Util
+2022-04-12,Tex,Eaton Her Posey,Nathaniel Lowe,Util
+2022-04-12,LAA,Eaton Her Posey,Tyler Wade,BN
+2022-04-12,Atl,Eaton Her Posey,Ian Anderson,SP
+2022-04-12,TB,Eaton Her Posey,Drew Rasmussen,SP
+2022-04-12,Det,Eaton Her Posey,Gregory Soto,RP
+2022-04-12,Sea,Eaton Her Posey,Diego Castillo,RP
+2022-04-12,Tor,Eaton Her Posey,José Berríos,P
+2022-04-12,SF,Eaton Her Posey,Carlos Rodón,P
+2022-04-12,NYM,Eaton Her Posey,Carlos Carrasco,P
+2022-04-12,Phi,Eaton Her Posey,Zack Wheeler,P
+2022-04-12,Det,Eaton Her Posey,Casey Mize,BN
+2022-04-12,Phi,Eaton Her Posey,Kyle Gibson,BN
+2022-04-12,Bos,Eaton Her Posey,Nathan Eovaldi,BN
+2022-04-12,Hou,Eaton Her Posey,Framber Valdez,BN
+2022-04-12,Tor,Eaton Her Posey,Teoscar Hernández,IL
+2022-04-12,CWS,Eaton Her Posey,Yoán Moncada,IL
+2022-04-12,TB,Eaton Her Posey,Shane Baz,IL
+2022-04-12,NYY,BaseBalzers,Kyle Higashioka,C
+2022-04-12,NYM,BaseBalzers,Pete Alonso,1B
+2022-04-12,Cle,BaseBalzers,Owen Miller,2B
+2022-04-12,NYY,BaseBalzers,Josh Donaldson,3B
+2022-04-12,SD,BaseBalzers,C.J. Abrams,SS
+2022-04-12,CWS,BaseBalzers,Luis Robert,OF
+2022-04-12,Col,BaseBalzers,Connor Joe,OF
+2022-04-12,Min,BaseBalzers,Byron Buxton,OF
+2022-04-12,LAA,BaseBalzers,Shohei Ohtani (Batter),Util
+2022-04-12,KC,BaseBalzers,Bobby Witt Jr.,Util
+2022-04-12,TB,BaseBalzers,Josh Lowe,BN
+2022-04-12,NYY,BaseBalzers,Gleyber Torres,BN
+2022-04-12,SD,BaseBalzers,Yu Darvish,SP
+2022-04-12,Atl,BaseBalzers,Charlie Morton,SP
+2022-04-12,Atl,BaseBalzers,Kenley Jansen,RP
+2022-04-12,TB,BaseBalzers,Andrew Kittredge,RP
+2022-04-12,Col,BaseBalzers,Daniel Bard,P
+2022-04-12,Min,BaseBalzers,Jhoan Duran,P
+2022-04-12,NYY,BaseBalzers,Luis Severino,P
+2022-04-12,Phi,BaseBalzers,Corey Knebel,P
+2022-04-12,CWS,BaseBalzers,Michael Kopech,BN
+2022-04-12,Mia,BaseBalzers,Jesús Luzardo,BN
+2022-04-12,LAD,BaseBalzers,Julio Urías,BN
+2022-04-12,Mil,BaseBalzers,Luis Urías,IL
+2022-04-12,Was,BaseBalzers,Stephen Strasburg,IL
+2022-04-12,LAD,AbeFroman,Will Smith,C
+2022-04-12,Bal,AbeFroman,Trey Mancini,1B
+2022-04-12,Det,AbeFroman,Jonathan Schoop,2B
+2022-04-12,Tor,AbeFroman,Matt Chapman,3B
+2022-04-12,KC,AbeFroman,Adalberto Mondesi,SS
+2022-04-12,Col,AbeFroman,Charlie Blackmon,OF
+2022-04-12,ChC,AbeFroman,Patrick Wisdom,OF
+2022-04-12,Cle,AbeFroman,Myles Straw,OF
+2022-04-12,TB,AbeFroman,Wander Franco,Util
+2022-04-12,Mia,AbeFroman,Jesús Aguilar,Util
+2022-04-12,Bal,AbeFroman,John Means,SP
+2022-04-12,LAA,AbeFroman,Noah Syndergaard,SP
+2022-04-12,SF,AbeFroman,Tyler Rogers,RP
+2022-04-12,Ari,AbeFroman,Ian Kennedy,RP
+2022-04-12,Bos,AbeFroman,Jake Diekman,P
+2022-04-12,Was,AbeFroman,Tanner Rainey,P
+2022-04-12,Mil,AbeFroman,Corbin Burnes,P
+2022-04-12,LAA,AbeFroman,Shohei Ohtani (Pitcher),P
+2022-04-12,TB,AbeFroman,Shane McClanahan,BN
+2022-04-12,Atl,AbeFroman,Max Fried,BN
+2022-04-12,Cle,AbeFroman,Shane Bieber,BN
+2022-04-12,Mia,AbeFroman,Dylan Floro,BN
+2022-04-12,Cin,AbeFroman,Lucas Sims,BN
+2022-04-12,NYM,AbeFroman,Jacob deGrom,IL
+2022-04-12,Cin,AbeFroman,Luis Castillo,IL
+2022-04-12,StL,AbeFroman,Jack Flaherty,IL
+2022-04-13,Atl,Ice Trea,Travis d'Arnaud,C
+2022-04-13,Was,Ice Trea,Josh Bell,1B
+2022-04-13,LAD,Ice Trea,Trea Turner,2B
+2022-04-13,SD,Ice Trea,Manny Machado,3B
+2022-04-13,SD,Ice Trea,Jake Cronenworth,SS
+2022-04-13,TB,Ice Trea,Randy Arozarena,OF
+2022-04-13,Pit,Ice Trea,Bryan Reynolds,OF
+2022-04-13,Mil,Ice Trea,Christian Yelich,OF
+2022-04-13,Det,Ice Trea,Austin Meadows,Util
+2022-04-13,CWS,Ice Trea,Tim Anderson,Util
+2022-04-13,StL,Ice Trea,Dylan Carlson,BN
+2022-04-13,Mia,Ice Trea,Pablo López,SP
+2022-04-13,Min,Ice Trea,Joe Ryan,SP
+2022-04-13,Atl,Ice Trea,Collin McHugh,RP
+2022-04-13,Oak,Ice Trea,Lou Trivino,RP
+2022-04-13,Mia,Ice Trea,Cole Sulser,P
+2022-04-13,NYY,Ice Trea,Chad Green,P
+2022-04-13,Col,Ice Trea,Germán Márquez,P
+2022-04-13,Bos,Ice Trea,Matt Barnes,P
+2022-04-13,Oak,Ice Trea,Frankie Montas,BN
+2022-04-13,Mia,Ice Trea,Sandy Alcantara,BN
+2022-04-13,Cle,Ice Trea,Triston McKenzie,BN
+2022-04-13,SF,Ice Trea,Logan Webb,BN
+2022-04-13,KC,Beer Tank,Salvador Perez,C
+2022-04-13,Tor,Beer Tank,Vladimir Guerrero Jr.,1B
+2022-04-13,StL,Beer Tank,Tommy Edman,2B
+2022-04-13,StL,Beer Tank,Nolan Arenado,3B
+2022-04-13,Mil,Beer Tank,Willy Adames,SS
+2022-04-13,LAD,Beer Tank,Cody Bellinger,OF
+2022-04-13,Sea,Beer Tank,Mitch Haniger,OF
+2022-04-13,SD,Beer Tank,Trent Grisham,OF
+2022-04-13,NYY,Beer Tank,DJ LeMahieu,Util
+2022-04-13,LAD,Beer Tank,Justin Turner,Util
+2022-04-13,Tor,Beer Tank,Alejandro Kirk,BN
+2022-04-13,Cin,Beer Tank,Tommy Pham,BN
+2022-04-13,Cle,Beer Tank,Amed Rosario,BN
+2022-04-13,Bos,Beer Tank,Christian Vázquez,BN
+2022-04-13,Mil,Beer Tank,Freddy Peralta,SP
+2022-04-13,Was,Beer Tank,Josiah Gray,SP
+2022-04-13,NYY,Beer Tank,Aroldis Chapman,RP
+2022-04-13,Tor,Beer Tank,Jordan Romano,RP
+2022-04-13,Phi,Beer Tank,Aaron Nola,P
+2022-04-13,Tex,Beer Tank,Joe Barlow,P
+2022-04-13,Atl,Beer Tank,Will Smith,P
+2022-04-13,StL,Beer Tank,Adam Wainwright,P
+2022-04-13,Tex,Beer Tank,Jon Gray,BN
+2022-04-13,SD,Beer Tank,Fernando Tatis Jr.,IL
+2022-04-13,Hou,Beer Tank,Lance McCullers Jr.,IL
+2022-04-13,Bos,Beer Tank,Chris Sale,IL
+2022-04-13,Cin,Alan's Quality Team,Tyler Stephenson,C
+2022-04-13,Phi,Alan's Quality Team,Rhys Hoskins,1B
+2022-04-13,Cin,Alan's Quality Team,Jonathan India,2B
+2022-04-13,Pit,Alan's Quality Team,Ke'Bryan Hayes,3B
+2022-04-13,Atl,Alan's Quality Team,Dansby Swanson,SS
+2022-04-13,Phi,Alan's Quality Team,Nick Castellanos,OF
+2022-04-13,Mia,Alan's Quality Team,Jorge Soler,OF
+2022-04-13,Mia,Alan's Quality Team,Avisaíl García,OF
+2022-04-13,NYY,Alan's Quality Team,Giancarlo Stanton,Util
+2022-04-13,Col,Alan's Quality Team,Brendan Rodgers,Util
+2022-04-13,Bos,Alan's Quality Team,Rafael Devers,BN
+2022-04-13,Bal,Alan's Quality Team,Cedric Mullins,BN
+2022-04-13,Bos,Alan's Quality Team,J.D. Martinez,BN
+2022-04-13,Cle,Alan's Quality Team,José Ramírez,BN
+2022-04-13,Tor,Alan's Quality Team,Lourdes Gurriel Jr.,BN
+2022-04-13,NYM,Alan's Quality Team,Max Scherzer,SP
+2022-04-13,SD,Alan's Quality Team,Joe Musgrove,SP
+2022-04-13,Bos,Alan's Quality Team,Tanner Houck,RP
+2022-04-13,LAD,Alan's Quality Team,Blake Treinen,RP
+2022-04-13,Cin,Alan's Quality Team,Tyler Mahle,P
+2022-04-13,Det,Alan's Quality Team,Eduardo Rodriguez,P
+2022-04-13,Hou,Alan's Quality Team,José Urquidy,P
+2022-04-13,SF,Alan's Quality Team,Anthony DeSclafani,P
+2022-04-13,CWS,Bob Frederick's Expert Team,Yasmani Grandal,C
+2022-04-13,LAD,Bob Frederick's Expert Team,Freddie Freeman,1B
+2022-04-13,TB,Bob Frederick's Expert Team,Brandon Lowe,2B
+2022-04-13,Bos,Bob Frederick's Expert Team,Bobby Dalbec,3B
+2022-04-13,Bos,Bob Frederick's Expert Team,Trevor Story,SS
+2022-04-13,Hou,Bob Frederick's Expert Team,Yordan Alvarez,OF
+2022-04-13,Tor,Bob Frederick's Expert Team,George Springer,OF
+2022-04-13,Bal,Bob Frederick's Expert Team,Ryan Mountcastle,OF
+2022-04-13,LAD,Bob Frederick's Expert Team,Max Muncy,Util
+2022-04-13,CWS,Bob Frederick's Expert Team,Andrew Vaughn,Util
+2022-04-13,StL,Bob Frederick's Expert Team,Tyler O'Neill,BN
+2022-04-13,Bal,Bob Frederick's Expert Team,Adley Rutschman,BN
+2022-04-13,NYM,Bob Frederick's Expert Team,Tylor Megill,SP
+2022-04-13,Phi,Bob Frederick's Expert Team,Zach Eflin,SP
+2022-04-13,Pit,Bob Frederick's Expert Team,David Bednar,RP
+2022-04-13,NYM,Bob Frederick's Expert Team,Edwin Díaz,RP
+2022-04-13,Mil,Bob Frederick's Expert Team,Devin Williams,P
+2022-04-13,Ari,Bob Frederick's Expert Team,Merrill Kelly,P
+2022-04-13,Phi,Bob Frederick's Expert Team,Brad Hand,P
+2022-04-13,SD,Bob Frederick's Expert Team,MacKenzie Gore,P
+2022-04-13,Ari,Bob Frederick's Expert Team,Zac Gallen,BN
+2022-04-13,Sea,Bob Frederick's Expert Team,Matt Brash,BN
+2022-04-13,LAD,Bob Frederick's Expert Team,Trevor Bauer,BN
+2022-04-13,CWS,Bob Frederick's Expert Team,Lucas Giolito,IL
+2022-04-13,Phi,Balz Deep,J.T. Realmuto,C
+2022-04-13,CWS,Balz Deep,José Abreu,1B
+2022-04-13,Atl,Balz Deep,Ozzie Albies,2B
+2022-04-13,LAA,Balz Deep,Anthony Rendon,3B
+2022-04-13,Tor,Balz Deep,Bo Bichette,SS
+2022-04-13,ChC,Balz Deep,Seiya Suzuki,OF
+2022-04-13,Mil,Balz Deep,Hunter Renfroe,OF
+2022-04-13,LAA,Balz Deep,Jared Walsh,OF
+2022-04-13,NYY,Balz Deep,Anthony Rizzo,Util
+2022-04-13,Hou,Balz Deep,Jeremy Peña,Util
+2022-04-13,NYY,Balz Deep,Joey Gallo,BN
+2022-04-13,Col,Balz Deep,Randal Grichuk,BN
+2022-04-13,Sea,Balz Deep,Robbie Ray,SP
+2022-04-13,CWS,Balz Deep,Dylan Cease,SP
+2022-04-13,StL,Balz Deep,Giovanny Gallegos,RP
+2022-04-13,Ari,Balz Deep,Mark Melancon,RP
+2022-04-13,Was,Balz Deep,Kyle Finnegan,P
+2022-04-13,SD,Balz Deep,Robert Suarez,P
+2022-04-13,KC,Balz Deep,Zack Greinke,P
+2022-04-13,Mil,Balz Deep,Brandon Woodruff,P
+2022-04-13,SF,Balz Deep,Alex Cobb,BN
+2022-04-13,Tor,Balz Deep,Hyun Jin Ryu,BN
+2022-04-13,StL,Balz Deep,Steven Matz,BN
+2022-04-13,SD,Balz Deep,Mike Clevinger,IL
+2022-04-13,ChC,Kyle Austin's Awesome Team,Willson Contreras,C
+2022-04-13,Atl,Kyle Austin's Awesome Team,Matt Olson,1B
+2022-04-13,Hou,Kyle Austin's Awesome Team,Jose Altuve,2B
+2022-04-13,Col,Kyle Austin's Awesome Team,Kris Bryant,3B
+2022-04-13,NYM,Kyle Austin's Awesome Team,Francisco Lindor,SS
+2022-04-13,Phi,Kyle Austin's Awesome Team,Kyle Schwarber,OF
+2022-04-13,ChC,Kyle Austin's Awesome Team,Ian Happ,OF
+2022-04-13,Atl,Kyle Austin's Awesome Team,Marcell Ozuna,OF
+2022-04-13,SD,Kyle Austin's Awesome Team,Luke Voit,Util
+2022-04-13,Sea,Kyle Austin's Awesome Team,Jarred Kelenic,Util
+2022-04-13,Atl,Kyle Austin's Awesome Team,Eddie Rosario,BN
+2022-04-13,ChC,Kyle Austin's Awesome Team,Nick Madrigal,BN
+2022-04-13,LAD,Kyle Austin's Awesome Team,Gavin Lux,BN
+2022-04-13,Ari,Kyle Austin's Awesome Team,Ketel Marte,BN
+2022-04-13,NYY,Kyle Austin's Awesome Team,Gerrit Cole,SP
+2022-04-13,Tor,Kyle Austin's Awesome Team,Kevin Gausman,SP
+2022-04-13,SF,Kyle Austin's Awesome Team,Jake McGee,RP
+2022-04-13,KC,Kyle Austin's Awesome Team,Scott Barlow,RP
+2022-04-13,Hou,Kyle Austin's Awesome Team,Justin Verlander,P
+2022-04-13,ChC,Kyle Austin's Awesome Team,Marcus Stroman,P
+2022-04-13,Cle,Kyle Austin's Awesome Team,Cal Quantrill,P
+2022-04-13,Atl,Kyle Austin's Awesome Team,Kyle Wright,P
+2022-04-13,LAA,Kyle Austin's Awesome Team,Patrick Sandoval,BN
+2022-04-13,Tex,This Year’s The Year,Mitch Garver,C
+2022-04-13,Col,This Year’s The Year,C.J. Cron,1B
+2022-04-13,Det,This Year’s The Year,Javier Báez,2B
+2022-04-13,LAD,This Year’s The Year,Chris Taylor,3B
+2022-04-13,Min,This Year’s The Year,Jorge Polanco,SS
+2022-04-13,NYY,This Year’s The Year,Aaron Judge,OF
+2022-04-13,NYM,This Year’s The Year,Starling Marte,OF
+2022-04-13,Hou,This Year’s The Year,Kyle Tucker,OF
+2022-04-13,Was,This Year’s The Year,Nelson Cruz,Util
+2022-04-13,Cle,This Year’s The Year,Franmil Reyes,Util
+2022-04-13,Hou,This Year’s The Year,Alex Bregman,BN
+2022-04-13,Sea,This Year’s The Year,Chris Flexen,SP
+2022-04-13,SF,This Year’s The Year,Alex Wood,SP
+2022-04-13,Sea,This Year’s The Year,Drew Steckenrider,RP
+2022-04-13,LAA,This Year’s The Year,Raisel Iglesias,RP
+2022-04-13,CWS,This Year’s The Year,Liam Hendriks,P
+2022-04-13,Col,This Year’s The Year,Alex Colomé,P
+2022-04-13,SF,This Year’s The Year,Camilo Doval,P
+2022-04-13,Sea,This Year’s The Year,Paul Sewald,P
+2022-04-13,TB,This Year’s The Year,Corey Kluber,BN
+2022-04-13,Cle,This Year’s The Year,Zach Plesac,BN
+2022-04-13,ChC,This Year’s The Year,Kyle Hendricks,BN
+2022-04-13,Sea,This Year’s The Year,Logan Gilbert,BN
+2022-04-13,CWS,This Year’s The Year,AJ Pollock,IL
+2022-04-13,SD,This Year’s The Year,Blake Snell,IL
+2022-04-13,Ari,Scott M's Neat Team,Daulton Varsho,C
+2022-04-13,Atl,Scott M's Neat Team,Austin Riley,1B
+2022-04-13,Phi,Scott M's Neat Team,Jean Segura,2B
+2022-04-13,Sea,Scott M's Neat Team,Ty France,3B
+2022-04-13,Mia,Scott M's Neat Team,Jazz Chisholm Jr.,SS
+2022-04-13,KC,Scott M's Neat Team,Andrew Benintendi,OF
+2022-04-13,KC,Scott M's Neat Team,Whit Merrifield,OF
+2022-04-13,Tex,Scott M's Neat Team,Adolis García,OF
+2022-04-13,Sea,Scott M's Neat Team,Julio Rodríguez,Util
+2022-04-13,Cle,Scott M's Neat Team,Steven Kwan,Util
+2022-04-13,CWS,Scott M's Neat Team,Josh Harrison,BN
+2022-04-13,SF,Scott M's Neat Team,Brandon Crawford,BN
+2022-04-13,LAD,Scott M's Neat Team,Walker Buehler,SP
+2022-04-13,NYM,Scott M's Neat Team,Chris Bassitt,SP
+2022-04-13,Mil,Scott M's Neat Team,Josh Hader,RP
+2022-04-13,LAD,Scott M's Neat Team,Craig Kimbrel,RP
+2022-04-13,Atl,Scott M's Neat Team,Spencer Strider,P
+2022-04-13,Phi,Scott M's Neat Team,Ranger Suárez,P
+2022-04-13,Tor,Scott M's Neat Team,Alek Manoah,P
+2022-04-13,Cin,Scott M's Neat Team,Hunter Greene,P
+2022-04-13,Cin,Scott M's Neat Team,Nick Lodolo,BN
+2022-04-13,Cle,Scott M's Neat Team,Emmanuel Clase,BN
+2022-04-13,Hou,Scott M's Neat Team,Luis Garcia,BN
+2022-04-13,Atl,Scott M's Neat Team,Ronald Acuña Jr.,IL
+2022-04-13,Was,Hoyne Park Fighting Cocks,Keibert Ruiz,C
+2022-04-13,StL,Hoyne Park Fighting Cocks,Paul Goldschmidt,1B
+2022-04-13,LAD,Hoyne Park Fighting Cocks,Mookie Betts,2B
+2022-04-13,Det,Hoyne Park Fighting Cocks,Spencer Torkelson,3B
+2022-04-13,Tex,Hoyne Park Fighting Cocks,Marcus Semien,SS
+2022-04-13,Atl,Hoyne Park Fighting Cocks,Adam Duvall,OF
+2022-04-13,Phi,Hoyne Park Fighting Cocks,Bryce Harper,OF
+2022-04-13,Hou,Hoyne Park Fighting Cocks,Michael Brantley,OF
+2022-04-13,Bos,Hoyne Park Fighting Cocks,Xander Bogaerts,Util
+2022-04-13,Min,Hoyne Park Fighting Cocks,Carlos Correa,Util
+2022-04-13,Bos,Hoyne Park Fighting Cocks,Alex Verdugo,BN
+2022-04-13,NYM,Hoyne Park Fighting Cocks,Jeff McNeil,BN
+2022-04-13,Mia,Hoyne Park Fighting Cocks,Trevor Rogers,SP
+2022-04-13,Min,Hoyne Park Fighting Cocks,Sonny Gray,SP
+2022-04-13,Mia,Hoyne Park Fighting Cocks,Anthony Bender,RP
+2022-04-13,Hou,Hoyne Park Fighting Cocks,Ryan Pressly,RP
+2022-04-13,CWS,Hoyne Park Fighting Cocks,Kendall Graveman,P
+2022-04-13,SD,Hoyne Park Fighting Cocks,Taylor Rogers,P
+2022-04-13,NYY,Hoyne Park Fighting Cocks,Jonathan Loáisiga,P
+2022-04-13,ChC,Hoyne Park Fighting Cocks,David Robertson,P
+2022-04-13,LAD,Hoyne Park Fighting Cocks,Clayton Kershaw,BN
+2022-04-13,SD,Hoyne Park Fighting Cocks,Sean Manaea,BN
+2022-04-13,TB,Hoyne Park Fighting Cocks,J.P. Feyereisen,BN
+2022-04-13,CWS,Hoyne Park Fighting Cocks,Lance Lynn,IL
+2022-04-13,Min,Eaton Her Posey,Gary Sánchez,C
+2022-04-13,Cin,Eaton Her Posey,Joey Votto,1B
+2022-04-13,Col,Eaton Her Posey,Ryan McMahon,2B
+2022-04-13,Det,Eaton Her Posey,Jeimer Candelario,3B
+2022-04-13,Tex,Eaton Her Posey,Corey Seager,SS
+2022-04-13,Was,Eaton Her Posey,Juan Soto,OF
+2022-04-13,LAA,Eaton Her Posey,Mike Trout,OF
+2022-04-13,CWS,Eaton Her Posey,Eloy Jiménez,OF
+2022-04-13,Sea,Eaton Her Posey,Jesse Winker,Util
+2022-04-13,Tex,Eaton Her Posey,Nathaniel Lowe,Util
+2022-04-13,LAA,Eaton Her Posey,Tyler Wade,BN
+2022-04-13,Atl,Eaton Her Posey,Ian Anderson,SP
+2022-04-13,TB,Eaton Her Posey,Drew Rasmussen,SP
+2022-04-13,Det,Eaton Her Posey,Gregory Soto,RP
+2022-04-13,Sea,Eaton Her Posey,Diego Castillo,RP
+2022-04-13,Tor,Eaton Her Posey,José Berríos,P
+2022-04-13,SF,Eaton Her Posey,Carlos Rodón,P
+2022-04-13,NYM,Eaton Her Posey,Carlos Carrasco,P
+2022-04-13,Phi,Eaton Her Posey,Zack Wheeler,P
+2022-04-13,Det,Eaton Her Posey,Casey Mize,BN
+2022-04-13,Phi,Eaton Her Posey,Kyle Gibson,BN
+2022-04-13,Bos,Eaton Her Posey,Nathan Eovaldi,BN
+2022-04-13,Hou,Eaton Her Posey,Framber Valdez,BN
+2022-04-13,Tor,Eaton Her Posey,Teoscar Hernández,IL
+2022-04-13,CWS,Eaton Her Posey,Yoán Moncada,IL
+2022-04-13,TB,Eaton Her Posey,Shane Baz,IL
+2022-04-13,NYY,BaseBalzers,Kyle Higashioka,C
+2022-04-13,NYM,BaseBalzers,Pete Alonso,1B
+2022-04-13,Cle,BaseBalzers,Owen Miller,2B
+2022-04-13,NYY,BaseBalzers,Josh Donaldson,3B
+2022-04-13,SD,BaseBalzers,C.J. Abrams,SS
+2022-04-13,CWS,BaseBalzers,Luis Robert,OF
+2022-04-13,Col,BaseBalzers,Connor Joe,OF
+2022-04-13,Min,BaseBalzers,Byron Buxton,OF
+2022-04-13,LAA,BaseBalzers,Shohei Ohtani (Batter),Util
+2022-04-13,KC,BaseBalzers,Bobby Witt Jr.,Util
+2022-04-13,TB,BaseBalzers,Josh Lowe,BN
+2022-04-13,NYY,BaseBalzers,Gleyber Torres,BN
+2022-04-13,SD,BaseBalzers,Yu Darvish,SP
+2022-04-13,Atl,BaseBalzers,Charlie Morton,SP
+2022-04-13,Atl,BaseBalzers,Kenley Jansen,RP
+2022-04-13,TB,BaseBalzers,Andrew Kittredge,RP
+2022-04-13,Col,BaseBalzers,Daniel Bard,P
+2022-04-13,Min,BaseBalzers,Jhoan Duran,P
+2022-04-13,NYY,BaseBalzers,Luis Severino,P
+2022-04-13,Phi,BaseBalzers,Corey Knebel,P
+2022-04-13,CWS,BaseBalzers,Michael Kopech,BN
+2022-04-13,Mia,BaseBalzers,Jesús Luzardo,BN
+2022-04-13,LAD,BaseBalzers,Julio Urías,BN
+2022-04-13,Mil,BaseBalzers,Luis Urías,IL
+2022-04-13,Was,BaseBalzers,Stephen Strasburg,IL
+2022-04-13,LAD,AbeFroman,Will Smith,C
+2022-04-13,Bal,AbeFroman,Trey Mancini,1B
+2022-04-13,Det,AbeFroman,Jonathan Schoop,2B
+2022-04-13,Tor,AbeFroman,Matt Chapman,3B
+2022-04-13,KC,AbeFroman,Adalberto Mondesi,SS
+2022-04-13,Col,AbeFroman,Charlie Blackmon,OF
+2022-04-13,ChC,AbeFroman,Patrick Wisdom,OF
+2022-04-13,Cle,AbeFroman,Myles Straw,OF
+2022-04-13,TB,AbeFroman,Wander Franco,Util
+2022-04-13,Mia,AbeFroman,Jesús Aguilar,Util
+2022-04-13,Bal,AbeFroman,John Means,SP
+2022-04-13,LAA,AbeFroman,Noah Syndergaard,SP
+2022-04-13,SF,AbeFroman,Tyler Rogers,RP
+2022-04-13,Ari,AbeFroman,Ian Kennedy,RP
+2022-04-13,Bos,AbeFroman,Jake Diekman,P
+2022-04-13,Was,AbeFroman,Tanner Rainey,P
+2022-04-13,Mil,AbeFroman,Corbin Burnes,P
+2022-04-13,LAA,AbeFroman,Shohei Ohtani (Pitcher),P
+2022-04-13,TB,AbeFroman,Shane McClanahan,BN
+2022-04-13,Atl,AbeFroman,Max Fried,BN
+2022-04-13,Cle,AbeFroman,Shane Bieber,BN
+2022-04-13,Mia,AbeFroman,Dylan Floro,BN
+2022-04-13,Cin,AbeFroman,Lucas Sims,BN
+2022-04-13,NYM,AbeFroman,Jacob deGrom,IL
+2022-04-13,Cin,AbeFroman,Luis Castillo,IL
+2022-04-13,StL,AbeFroman,Jack Flaherty,IL
+2022-04-14,Atl,Ice Trea,Travis d'Arnaud,C
+2022-04-14,Was,Ice Trea,Josh Bell,1B
+2022-04-14,LAD,Ice Trea,Trea Turner,2B
+2022-04-14,SD,Ice Trea,Manny Machado,3B
+2022-04-14,SD,Ice Trea,Jake Cronenworth,SS
+2022-04-14,TB,Ice Trea,Randy Arozarena,OF
+2022-04-14,Pit,Ice Trea,Bryan Reynolds,OF
+2022-04-14,Mil,Ice Trea,Christian Yelich,OF
+2022-04-14,Det,Ice Trea,Austin Meadows,Util
+2022-04-14,CWS,Ice Trea,Tim Anderson,Util
+2022-04-14,StL,Ice Trea,Dylan Carlson,BN
+2022-04-14,Mia,Ice Trea,Pablo López,SP
+2022-04-14,Min,Ice Trea,Joe Ryan,SP
+2022-04-14,Atl,Ice Trea,Collin McHugh,RP
+2022-04-14,Oak,Ice Trea,Lou Trivino,RP
+2022-04-14,Mia,Ice Trea,Cole Sulser,P
+2022-04-14,NYY,Ice Trea,Chad Green,P
+2022-04-14,Col,Ice Trea,Germán Márquez,P
+2022-04-14,Bos,Ice Trea,Matt Barnes,P
+2022-04-14,Oak,Ice Trea,Frankie Montas,BN
+2022-04-14,Mia,Ice Trea,Sandy Alcantara,BN
+2022-04-14,Cle,Ice Trea,Triston McKenzie,BN
+2022-04-14,SF,Ice Trea,Logan Webb,BN
+2022-04-14,KC,Beer Tank,Salvador Perez,C
+2022-04-14,Tor,Beer Tank,Vladimir Guerrero Jr.,1B
+2022-04-14,StL,Beer Tank,Tommy Edman,2B
+2022-04-14,StL,Beer Tank,Nolan Arenado,3B
+2022-04-14,Mil,Beer Tank,Willy Adames,SS
+2022-04-14,LAD,Beer Tank,Cody Bellinger,OF
+2022-04-14,Sea,Beer Tank,Mitch Haniger,OF
+2022-04-14,SD,Beer Tank,Trent Grisham,OF
+2022-04-14,NYY,Beer Tank,DJ LeMahieu,Util
+2022-04-14,LAD,Beer Tank,Justin Turner,Util
+2022-04-14,Tor,Beer Tank,Alejandro Kirk,BN
+2022-04-14,Cin,Beer Tank,Tommy Pham,BN
+2022-04-14,Cle,Beer Tank,Amed Rosario,BN
+2022-04-14,Bos,Beer Tank,Christian Vázquez,BN
+2022-04-14,Mil,Beer Tank,Freddy Peralta,SP
+2022-04-14,Was,Beer Tank,Josiah Gray,SP
+2022-04-14,NYY,Beer Tank,Aroldis Chapman,RP
+2022-04-14,Tor,Beer Tank,Jordan Romano,RP
+2022-04-14,Phi,Beer Tank,Aaron Nola,P
+2022-04-14,Tex,Beer Tank,Joe Barlow,P
+2022-04-14,Atl,Beer Tank,Will Smith,P
+2022-04-14,StL,Beer Tank,Adam Wainwright,P
+2022-04-14,Tex,Beer Tank,Jon Gray,BN
+2022-04-14,SD,Beer Tank,Fernando Tatis Jr.,IL
+2022-04-14,Hou,Beer Tank,Lance McCullers Jr.,IL
+2022-04-14,Bos,Beer Tank,Chris Sale,IL
+2022-04-14,Cin,Alan's Quality Team,Tyler Stephenson,C
+2022-04-14,Phi,Alan's Quality Team,Rhys Hoskins,1B
+2022-04-14,Cin,Alan's Quality Team,Jonathan India,2B
+2022-04-14,Pit,Alan's Quality Team,Ke'Bryan Hayes,3B
+2022-04-14,Atl,Alan's Quality Team,Dansby Swanson,SS
+2022-04-14,Phi,Alan's Quality Team,Nick Castellanos,OF
+2022-04-14,Mia,Alan's Quality Team,Jorge Soler,OF
+2022-04-14,Mia,Alan's Quality Team,Avisaíl García,OF
+2022-04-14,NYY,Alan's Quality Team,Giancarlo Stanton,Util
+2022-04-14,Col,Alan's Quality Team,Brendan Rodgers,Util
+2022-04-14,Bos,Alan's Quality Team,Rafael Devers,BN
+2022-04-14,Bal,Alan's Quality Team,Cedric Mullins,BN
+2022-04-14,Bos,Alan's Quality Team,J.D. Martinez,BN
+2022-04-14,Cle,Alan's Quality Team,José Ramírez,BN
+2022-04-14,Tor,Alan's Quality Team,Lourdes Gurriel Jr.,BN
+2022-04-14,NYM,Alan's Quality Team,Max Scherzer,SP
+2022-04-14,SD,Alan's Quality Team,Joe Musgrove,SP
+2022-04-14,Bos,Alan's Quality Team,Tanner Houck,RP
+2022-04-14,LAD,Alan's Quality Team,Blake Treinen,RP
+2022-04-14,Cin,Alan's Quality Team,Tyler Mahle,P
+2022-04-14,Det,Alan's Quality Team,Eduardo Rodriguez,P
+2022-04-14,Hou,Alan's Quality Team,José Urquidy,P
+2022-04-14,SF,Alan's Quality Team,Anthony DeSclafani,P
+2022-04-14,CWS,Bob Frederick's Expert Team,Yasmani Grandal,C
+2022-04-14,LAD,Bob Frederick's Expert Team,Freddie Freeman,1B
+2022-04-14,TB,Bob Frederick's Expert Team,Brandon Lowe,2B
+2022-04-14,Bos,Bob Frederick's Expert Team,Bobby Dalbec,3B
+2022-04-14,Bos,Bob Frederick's Expert Team,Trevor Story,SS
+2022-04-14,Hou,Bob Frederick's Expert Team,Yordan Alvarez,OF
+2022-04-14,Tor,Bob Frederick's Expert Team,George Springer,OF
+2022-04-14,Bal,Bob Frederick's Expert Team,Ryan Mountcastle,OF
+2022-04-14,LAD,Bob Frederick's Expert Team,Max Muncy,Util
+2022-04-14,CWS,Bob Frederick's Expert Team,Andrew Vaughn,Util
+2022-04-14,StL,Bob Frederick's Expert Team,Tyler O'Neill,BN
+2022-04-14,Bal,Bob Frederick's Expert Team,Adley Rutschman,BN
+2022-04-14,NYM,Bob Frederick's Expert Team,Tylor Megill,SP
+2022-04-14,Phi,Bob Frederick's Expert Team,Zach Eflin,SP
+2022-04-14,Pit,Bob Frederick's Expert Team,David Bednar,RP
+2022-04-14,NYM,Bob Frederick's Expert Team,Edwin Díaz,RP
+2022-04-14,Mil,Bob Frederick's Expert Team,Devin Williams,P
+2022-04-14,Ari,Bob Frederick's Expert Team,Merrill Kelly,P
+2022-04-14,Phi,Bob Frederick's Expert Team,Brad Hand,P
+2022-04-14,SD,Bob Frederick's Expert Team,MacKenzie Gore,P
+2022-04-14,Ari,Bob Frederick's Expert Team,Zac Gallen,BN
+2022-04-14,Sea,Bob Frederick's Expert Team,Matt Brash,BN
+2022-04-14,LAD,Bob Frederick's Expert Team,Trevor Bauer,BN
+2022-04-14,CWS,Bob Frederick's Expert Team,Lucas Giolito,IL
+2022-04-14,Phi,Balz Deep,J.T. Realmuto,C
+2022-04-14,CWS,Balz Deep,José Abreu,1B
+2022-04-14,Atl,Balz Deep,Ozzie Albies,2B
+2022-04-14,LAA,Balz Deep,Anthony Rendon,3B
+2022-04-14,Tor,Balz Deep,Bo Bichette,SS
+2022-04-14,ChC,Balz Deep,Seiya Suzuki,OF
+2022-04-14,Mil,Balz Deep,Hunter Renfroe,OF
+2022-04-14,LAA,Balz Deep,Jared Walsh,OF
+2022-04-14,NYY,Balz Deep,Anthony Rizzo,Util
+2022-04-14,Hou,Balz Deep,Jeremy Peña,Util
+2022-04-14,NYY,Balz Deep,Joey Gallo,BN
+2022-04-14,Col,Balz Deep,Randal Grichuk,BN
+2022-04-14,Sea,Balz Deep,Robbie Ray,SP
+2022-04-14,CWS,Balz Deep,Dylan Cease,SP
+2022-04-14,StL,Balz Deep,Giovanny Gallegos,RP
+2022-04-14,Ari,Balz Deep,Mark Melancon,RP
+2022-04-14,Was,Balz Deep,Kyle Finnegan,P
+2022-04-14,SD,Balz Deep,Robert Suarez,P
+2022-04-14,KC,Balz Deep,Zack Greinke,P
+2022-04-14,Mil,Balz Deep,Brandon Woodruff,P
+2022-04-14,SF,Balz Deep,Alex Cobb,BN
+2022-04-14,Tor,Balz Deep,Hyun Jin Ryu,BN
+2022-04-14,StL,Balz Deep,Steven Matz,BN
+2022-04-14,SD,Balz Deep,Mike Clevinger,IL
+2022-04-14,ChC,Kyle Austin's Awesome Team,Willson Contreras,C
+2022-04-14,Atl,Kyle Austin's Awesome Team,Matt Olson,1B
+2022-04-14,Hou,Kyle Austin's Awesome Team,Jose Altuve,2B
+2022-04-14,Col,Kyle Austin's Awesome Team,Kris Bryant,3B
+2022-04-14,NYM,Kyle Austin's Awesome Team,Francisco Lindor,SS
+2022-04-14,Phi,Kyle Austin's Awesome Team,Kyle Schwarber,OF
+2022-04-14,ChC,Kyle Austin's Awesome Team,Ian Happ,OF
+2022-04-14,Atl,Kyle Austin's Awesome Team,Marcell Ozuna,OF
+2022-04-14,SD,Kyle Austin's Awesome Team,Luke Voit,Util
+2022-04-14,Sea,Kyle Austin's Awesome Team,Jarred Kelenic,Util
+2022-04-14,Atl,Kyle Austin's Awesome Team,Eddie Rosario,BN
+2022-04-14,ChC,Kyle Austin's Awesome Team,Nick Madrigal,BN
+2022-04-14,LAD,Kyle Austin's Awesome Team,Gavin Lux,BN
+2022-04-14,Ari,Kyle Austin's Awesome Team,Ketel Marte,BN
+2022-04-14,NYY,Kyle Austin's Awesome Team,Gerrit Cole,SP
+2022-04-14,Tor,Kyle Austin's Awesome Team,Kevin Gausman,SP
+2022-04-14,SF,Kyle Austin's Awesome Team,Jake McGee,RP
+2022-04-14,KC,Kyle Austin's Awesome Team,Scott Barlow,RP
+2022-04-14,Hou,Kyle Austin's Awesome Team,Justin Verlander,P
+2022-04-14,ChC,Kyle Austin's Awesome Team,Marcus Stroman,P
+2022-04-14,Cle,Kyle Austin's Awesome Team,Cal Quantrill,P
+2022-04-14,Atl,Kyle Austin's Awesome Team,Kyle Wright,P
+2022-04-14,LAA,Kyle Austin's Awesome Team,Patrick Sandoval,BN
+2022-04-14,Tex,This Year’s The Year,Mitch Garver,C
+2022-04-14,Col,This Year’s The Year,C.J. Cron,1B
+2022-04-14,Det,This Year’s The Year,Javier Báez,2B
+2022-04-14,LAD,This Year’s The Year,Chris Taylor,3B
+2022-04-14,Min,This Year’s The Year,Jorge Polanco,SS
+2022-04-14,NYY,This Year’s The Year,Aaron Judge,OF
+2022-04-14,NYM,This Year’s The Year,Starling Marte,OF
+2022-04-14,Hou,This Year’s The Year,Kyle Tucker,OF
+2022-04-14,Was,This Year’s The Year,Nelson Cruz,Util
+2022-04-14,Cle,This Year’s The Year,Franmil Reyes,Util
+2022-04-14,Hou,This Year’s The Year,Alex Bregman,BN
+2022-04-14,Sea,This Year’s The Year,Chris Flexen,SP
+2022-04-14,SF,This Year’s The Year,Alex Wood,SP
+2022-04-14,Sea,This Year’s The Year,Drew Steckenrider,RP
+2022-04-14,LAA,This Year’s The Year,Raisel Iglesias,RP
+2022-04-14,CWS,This Year’s The Year,Liam Hendriks,P
+2022-04-14,Col,This Year’s The Year,Alex Colomé,P
+2022-04-14,SF,This Year’s The Year,Camilo Doval,P
+2022-04-14,Sea,This Year’s The Year,Paul Sewald,P
+2022-04-14,TB,This Year’s The Year,Corey Kluber,BN
+2022-04-14,Cle,This Year’s The Year,Zach Plesac,BN
+2022-04-14,ChC,This Year’s The Year,Kyle Hendricks,BN
+2022-04-14,Sea,This Year’s The Year,Logan Gilbert,BN
+2022-04-14,CWS,This Year’s The Year,AJ Pollock,IL
+2022-04-14,SD,This Year’s The Year,Blake Snell,IL
+2022-04-14,Ari,Scott M's Neat Team,Daulton Varsho,C
+2022-04-14,Atl,Scott M's Neat Team,Austin Riley,1B
+2022-04-14,Phi,Scott M's Neat Team,Jean Segura,2B
+2022-04-14,Sea,Scott M's Neat Team,Ty France,3B
+2022-04-14,Mia,Scott M's Neat Team,Jazz Chisholm Jr.,SS
+2022-04-14,KC,Scott M's Neat Team,Andrew Benintendi,OF
+2022-04-14,KC,Scott M's Neat Team,Whit Merrifield,OF
+2022-04-14,Tex,Scott M's Neat Team,Adolis García,OF
+2022-04-14,Sea,Scott M's Neat Team,Julio Rodríguez,Util
+2022-04-14,Cle,Scott M's Neat Team,Steven Kwan,Util
+2022-04-14,CWS,Scott M's Neat Team,Josh Harrison,BN
+2022-04-14,SF,Scott M's Neat Team,Brandon Crawford,BN
+2022-04-14,LAD,Scott M's Neat Team,Walker Buehler,SP
+2022-04-14,NYM,Scott M's Neat Team,Chris Bassitt,SP
+2022-04-14,Mil,Scott M's Neat Team,Josh Hader,RP
+2022-04-14,LAD,Scott M's Neat Team,Craig Kimbrel,RP
+2022-04-14,Atl,Scott M's Neat Team,Spencer Strider,P
+2022-04-14,Phi,Scott M's Neat Team,Ranger Suárez,P
+2022-04-14,Tor,Scott M's Neat Team,Alek Manoah,P
+2022-04-14,Cin,Scott M's Neat Team,Hunter Greene,P
+2022-04-14,Cin,Scott M's Neat Team,Nick Lodolo,BN
+2022-04-14,Cle,Scott M's Neat Team,Emmanuel Clase,BN
+2022-04-14,Hou,Scott M's Neat Team,Luis Garcia,BN
+2022-04-14,Atl,Scott M's Neat Team,Ronald Acuña Jr.,IL
+2022-04-14,Was,Hoyne Park Fighting Cocks,Keibert Ruiz,C
+2022-04-14,StL,Hoyne Park Fighting Cocks,Paul Goldschmidt,1B
+2022-04-14,LAD,Hoyne Park Fighting Cocks,Mookie Betts,2B
+2022-04-14,Det,Hoyne Park Fighting Cocks,Spencer Torkelson,3B
+2022-04-14,Tex,Hoyne Park Fighting Cocks,Marcus Semien,SS
+2022-04-14,Atl,Hoyne Park Fighting Cocks,Adam Duvall,OF
+2022-04-14,Phi,Hoyne Park Fighting Cocks,Bryce Harper,OF
+2022-04-14,Hou,Hoyne Park Fighting Cocks,Michael Brantley,OF
+2022-04-14,Bos,Hoyne Park Fighting Cocks,Xander Bogaerts,Util
+2022-04-14,Min,Hoyne Park Fighting Cocks,Carlos Correa,Util
+2022-04-14,Bos,Hoyne Park Fighting Cocks,Alex Verdugo,BN
+2022-04-14,NYM,Hoyne Park Fighting Cocks,Jeff McNeil,BN
+2022-04-14,Mia,Hoyne Park Fighting Cocks,Trevor Rogers,SP
+2022-04-14,Min,Hoyne Park Fighting Cocks,Sonny Gray,SP
+2022-04-14,Mia,Hoyne Park Fighting Cocks,Anthony Bender,RP
+2022-04-14,Hou,Hoyne Park Fighting Cocks,Ryan Pressly,RP
+2022-04-14,CWS,Hoyne Park Fighting Cocks,Kendall Graveman,P
+2022-04-14,SD,Hoyne Park Fighting Cocks,Taylor Rogers,P
+2022-04-14,NYY,Hoyne Park Fighting Cocks,Jonathan Loáisiga,P
+2022-04-14,ChC,Hoyne Park Fighting Cocks,David Robertson,P
+2022-04-14,LAD,Hoyne Park Fighting Cocks,Clayton Kershaw,BN
+2022-04-14,SD,Hoyne Park Fighting Cocks,Sean Manaea,BN
+2022-04-14,TB,Hoyne Park Fighting Cocks,J.P. Feyereisen,BN
+2022-04-14,CWS,Hoyne Park Fighting Cocks,Lance Lynn,IL
+2022-04-14,Min,Eaton Her Posey,Gary Sánchez,C
+2022-04-14,Cin,Eaton Her Posey,Joey Votto,1B
+2022-04-14,Col,Eaton Her Posey,Ryan McMahon,2B
+2022-04-14,Det,Eaton Her Posey,Jeimer Candelario,3B
+2022-04-14,Tex,Eaton Her Posey,Corey Seager,SS
+2022-04-14,Was,Eaton Her Posey,Juan Soto,OF
+2022-04-14,LAA,Eaton Her Posey,Mike Trout,OF
+2022-04-14,CWS,Eaton Her Posey,Eloy Jiménez,OF
+2022-04-14,Sea,Eaton Her Posey,Jesse Winker,Util
+2022-04-14,Tex,Eaton Her Posey,Nathaniel Lowe,Util
+2022-04-14,LAA,Eaton Her Posey,Tyler Wade,BN
+2022-04-14,Atl,Eaton Her Posey,Ian Anderson,SP
+2022-04-14,TB,Eaton Her Posey,Drew Rasmussen,SP
+2022-04-14,Det,Eaton Her Posey,Gregory Soto,RP
+2022-04-14,Sea,Eaton Her Posey,Diego Castillo,RP
+2022-04-14,Tor,Eaton Her Posey,José Berríos,P
+2022-04-14,SF,Eaton Her Posey,Carlos Rodón,P
+2022-04-14,NYM,Eaton Her Posey,Carlos Carrasco,P
+2022-04-14,Phi,Eaton Her Posey,Zack Wheeler,P
+2022-04-14,Det,Eaton Her Posey,Casey Mize,BN
+2022-04-14,Phi,Eaton Her Posey,Kyle Gibson,BN
+2022-04-14,Bos,Eaton Her Posey,Nathan Eovaldi,BN
+2022-04-14,Hou,Eaton Her Posey,Framber Valdez,BN
+2022-04-14,Tor,Eaton Her Posey,Teoscar Hernández,IL
+2022-04-14,CWS,Eaton Her Posey,Yoán Moncada,IL
+2022-04-14,TB,Eaton Her Posey,Shane Baz,IL
+2022-04-14,NYY,BaseBalzers,Kyle Higashioka,C
+2022-04-14,NYM,BaseBalzers,Pete Alonso,1B
+2022-04-14,Cle,BaseBalzers,Owen Miller,2B
+2022-04-14,NYY,BaseBalzers,Josh Donaldson,3B
+2022-04-14,SD,BaseBalzers,C.J. Abrams,SS
+2022-04-14,CWS,BaseBalzers,Luis Robert,OF
+2022-04-14,Col,BaseBalzers,Connor Joe,OF
+2022-04-14,Min,BaseBalzers,Byron Buxton,OF
+2022-04-14,LAA,BaseBalzers,Shohei Ohtani (Batter),Util
+2022-04-14,KC,BaseBalzers,Bobby Witt Jr.,Util
+2022-04-14,TB,BaseBalzers,Josh Lowe,BN
+2022-04-14,NYY,BaseBalzers,Gleyber Torres,BN
+2022-04-14,SD,BaseBalzers,Yu Darvish,SP
+2022-04-14,Atl,BaseBalzers,Charlie Morton,SP
+2022-04-14,Atl,BaseBalzers,Kenley Jansen,RP
+2022-04-14,TB,BaseBalzers,Andrew Kittredge,RP
+2022-04-14,Col,BaseBalzers,Daniel Bard,P
+2022-04-14,Min,BaseBalzers,Jhoan Duran,P
+2022-04-14,NYY,BaseBalzers,Luis Severino,P
+2022-04-14,Phi,BaseBalzers,Corey Knebel,P
+2022-04-14,CWS,BaseBalzers,Michael Kopech,BN
+2022-04-14,Mia,BaseBalzers,Jesús Luzardo,BN
+2022-04-14,LAD,BaseBalzers,Julio Urías,BN
+2022-04-14,Mil,BaseBalzers,Luis Urías,IL
+2022-04-14,Was,BaseBalzers,Stephen Strasburg,IL
+2022-04-14,LAD,AbeFroman,Will Smith,C
+2022-04-14,Bal,AbeFroman,Trey Mancini,1B
+2022-04-14,Det,AbeFroman,Jonathan Schoop,2B
+2022-04-14,Tor,AbeFroman,Matt Chapman,3B
+2022-04-14,KC,AbeFroman,Adalberto Mondesi,SS
+2022-04-14,Col,AbeFroman,Charlie Blackmon,OF
+2022-04-14,ChC,AbeFroman,Patrick Wisdom,OF
+2022-04-14,Cle,AbeFroman,Myles Straw,OF
+2022-04-14,TB,AbeFroman,Wander Franco,Util
+2022-04-14,Mia,AbeFroman,Jesús Aguilar,Util
+2022-04-14,Bal,AbeFroman,John Means,SP
+2022-04-14,LAA,AbeFroman,Noah Syndergaard,SP
+2022-04-14,SF,AbeFroman,Tyler Rogers,RP
+2022-04-14,Ari,AbeFroman,Ian Kennedy,RP
+2022-04-14,Bos,AbeFroman,Jake Diekman,P
+2022-04-14,Was,AbeFroman,Tanner Rainey,P
+2022-04-14,Mil,AbeFroman,Corbin Burnes,P
+2022-04-14,LAA,AbeFroman,Shohei Ohtani (Pitcher),P
+2022-04-14,TB,AbeFroman,Shane McClanahan,BN
+2022-04-14,Atl,AbeFroman,Max Fried,BN
+2022-04-14,Cle,AbeFroman,Shane Bieber,BN
+2022-04-14,Mia,AbeFroman,Dylan Floro,BN
+2022-04-14,Cin,AbeFroman,Lucas Sims,BN
+2022-04-14,NYM,AbeFroman,Jacob deGrom,IL
+2022-04-14,Cin,AbeFroman,Luis Castillo,IL
+2022-04-14,StL,AbeFroman,Jack Flaherty,IL
