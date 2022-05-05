@@ -1,7 +1,7 @@
 full_name,editorial_team_abbr,until
 Fernando Tatis Jr.,SD,6/15/22
 Jacob deGrom,NYM,5/15/22
-Teoscar Hernandez,TOR,5/5/22
+Teoscar Hernandez,TOR,5/10/22
 Alex Reyes,STL,6/15/22
 AJ Pollock,CWS,4/23/22
 Lance Lynn,CWS,6/1/22
@@ -9,12 +9,12 @@ Lance McCullers Jr.,HOU,5/15/22
 Trevor Bauer,LAD,10/5/22
 Blake Snell,SD,5/10/22
 Luis Urias,MIL,5/5/22
-Luis Castillo,CIN,5/5/22
+Luis Castillo,CIN,5/8/22
 John Means,BAL,5/15/22
 Jon Gray,TEX,5/5/22
-Jack Flaherty,STL,5/5/22
-Casey Mize,DET,5/5/22
-Yoan Moncada,CWS,5/5/22
+Jack Flaherty,STL,5/15/22
+Casey Mize,DET,5/15/22
+Yoan Moncada,CWS,5/10/22
 Lucas Sims,CIN,4/23/22
 Dylan Floro,MIA,5/10/22
 Chris Sale,BOS,6/15/22
@@ -26,7 +26,7 @@ Abraham Almonte,MIL,10/5/22
 Adam Eaton,LAA,10/5/22
 Adbert Alzolay,CHC,6/15/22
 Alex Cobb,SF,5/1/22
-Alex Kirilloff,MIN,5/5/22
+Alex Kirilloff,MIN,5/15/22
 Andrew Heaney,LAD,5/10/22
 Andrew Stevenson,WAS,10/5/22
 Asdrubal Cabrera,CIN,10/5/22
@@ -49,7 +49,6 @@ Ehire Adrianza,WAS,10/5/22
 Eric Sogard,CHC,10/5/22
 Erik Gonzalez,MIA,10/5/22
 Evan Longoria,SF,5/15/22
-Garrett Hampson,COL,5/15/22
 Gerardo Parra,WAS,10/5/22
 Greg Holland,TEX,10/5/22
 Gregory Polanco,TOR,10/5/22
@@ -74,7 +73,6 @@ Jonathan Davis,MIL,10/5/22
 Jose Altuve,HOU,5/7/22
 Jose Cisnero,DET,10/5/22
 Jose Peraza,NYY,10/5/22
-Jose Rojas,LAA,10/5/22
 Josh Reddick,NYM,10/5/22
 Josh Rojas,ARI,5/15/22
 Joshua Fuentes,TOR,10/5/22
@@ -104,9 +102,8 @@ Phil Gosselin,ATL,10/5/22
 Rex Brothers,MIL,10/5/22
 Ronald Torreyes,PHI,10/5/22
 Ryan Pressly,HOU,5/15/22
-Ryan Yarbrough,TB,5/10/22
 Ryan Zimmerman,WAS,10/5/22
-Sonny Gray,MIN,5/5/22
+Sonny Gray,MIN,5/10/22
 Starlin Castro,WAS,10/5/22
 Stephen Vogt,OAK,5/15/22
 Taijuan Walker,NYM,5/1/22
@@ -116,7 +113,6 @@ Tejay Antone,CIN,10/5/22
 Tommy La Stella,SF,5/15/22
 Tres Barrera,WAS,10/5/22
 Tyler Glasnow,TB,7/1/22
-Tyler Stephenson,CIN,5/10/22
 Wade Miley,CHC,5/15/22
 Willians Astudillo,MIA,10/5/22
 Wilmer Difo,ARI,10/5/22
@@ -126,7 +122,7 @@ Yu Chang,CLE,5/15/22
 Zack Short,DET,10/5/22
 David Dahl,MIL,10/5/22
 Pat Valaika,ATL,10/5/22
-Anthony DeSclafani,SF,5/3/22
+Anthony DeSclafani,SF,5/15/22
 Blake Treinen,LAD,5/10/22
 Clint Frazier,CHC,6/1/22
 Francisco Mejia,TB,5/10/22
@@ -135,10 +131,10 @@ Victor Reyes,DET,5/10/22
 Liam Hendriks,CWS,5/1/22
 Alex De Goti,HOU,10/5/22
 Andrew Young,WAS,10/5/22
-Anthony Alford,PIT,10/5/22
+Anthony Alford,CLE,10/5/22
 Austin Dean,SF,10/5/22
 Breyvic Valera,TOR,10/5/22
-Cavan Biggio,TOR,5/5/22
+Cavan Biggio,TOR,5/10/22
 Chadwick Tromp,ATL,10/5/22
 Connor Wong,BOS,10/5/22
 Corey Ray,MIL,10/5/22
@@ -180,7 +176,6 @@ Luis Marte,MIA,10/5/22
 Luke Voit,SD,5/10/22
 Max Schrock,CIN,7/25/22
 Michael Perez,PIT,10/5/22
-Mike Yastrzemski,SF,5/10/22
 Pablo Reyes,MIL,10/5/22
 Pablo Sandoval,CLE,10/5/22
 Patrick Kivlehan,CWS,10/5/22
@@ -189,7 +184,6 @@ Rafael Marchan,PHI,7/25/22
 Rene Rivera,WAS,10/5/22
 Richie Martin,BAL,10/5/22
 Rodolfo Castro,PIT,10/5/22
-Ronnie Dawson,CIN,10/5/22
 Ryan LaMarre,NYY,10/5/22
 Sam Haggerty,SEA,10/5/22
 Seby Zavala,CWS,10/5/22
@@ -201,7 +195,6 @@ Vidal Brujan,TB,10/5/22
 Webster Rivas,SD,10/5/22
 Yohel Pozo,TEX,10/5/22
 Yonny Hernandez,ARI,10/5/22
-Alejo Lopez,CIN,10/5/22
 Alex Blandino,SF,10/5/22
 Eddie Rosario,ATL,5/10/22
 JT Riddle,CIN,10/5/22
@@ -243,3 +236,32 @@ Bailey Ober,MIN,5/15/22
 Jake Brentz,KC,5/15/22
 Jose Suarez,LAA,10/5/22
 Miguel Sano,MIN,5/15/22
+Alan Trejo,COL,10/5/22
+Andrew Vaughn,CWS,5/15/22
+Bobby Bradley,CLE,10/5/22
+Carlos Santana,KC,5/20/22
+Donovan Walton,SEA,10/5/22
+Drew Smyly,CHC,5/15/22
+Dustin Garneau,DET,10/5/22
+Edmundo Sosa,STL,5/20/22
+Jaylin Davis,BOS,10/5/22
+Jo Adell,LAA,10/5/22
+Joey Votto,CIN,5/15/22
+Jose Godoy,MIN,10/5/22
+Josh Lowe,TB,10/5/22
+Kelvin Gutierrez,BAL,10/5/22
+Kevin Smith,BAL,10/5/22
+Kyle Garlick,MIN,5/20/22
+Luke Williams,SF,10/5/22
+Matt Davidson,ARI,10/5/22
+Miguel Andujar,NYY,10/5/22
+Mike Brosseau,MIL,10/5/22
+Mike Ford,SF,10/5/22
+Nick Allen,OAK,10/5/22
+Nick Senzel,CIN,5/15/22
+Rene Pinto,TB,10/5/22
+Sam Huff,TEX,10/5/22
+Steven Matz,STL,5/10/22
+Tyler Naquin,CIN,5/15/22
+Willie Calhoun,TEX,10/5/22
+Zach McKinstry,LAD,10/5/22
