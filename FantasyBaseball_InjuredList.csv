@@ -1,12 +1,12 @@
 full_name,editorial_team_abbr,until
 Fernando Tatis Jr.,SD,6/15/22
 Jacob deGrom,NYM,5/15/22
-Alex Reyes,STL,6/15/22
+Alex Reyes,STL,5/16/22
 AJ Pollock,CWS,4/23/22
 Lance Lynn,CWS,6/1/22
 Lance McCullers Jr.,HOU,5/15/22
 Trevor Bauer,LAD,10/5/22
-Blake Snell,SD,5/10/22
+Blake Snell,SD,5/16/22
 Luis Urias,MIL,5/5/22
 Luis Castillo,CIN,5/9/22
 John Means,BAL,5/15/22
@@ -26,7 +26,7 @@ Adam Eaton,LAA,10/5/22
 Adbert Alzolay,CHC,6/15/22
 Alex Cobb,SF,5/1/22
 Alex Kirilloff,MIN,5/15/22
-Andrew Heaney,LAD,5/10/22
+Andrew Heaney,LAD,6/1/22
 Andrew Stevenson,WAS,10/5/22
 Asdrubal Cabrera,CIN,10/5/22
 Austin Adams,SD,6/15/22
@@ -191,7 +191,7 @@ Webster Rivas,SD,10/5/22
 Yohel Pozo,TEX,10/5/22
 Yonny Hernandez,ARI,10/5/22
 Alex Blandino,SF,10/5/22
-Eddie Rosario,ATL,5/10/22
+Eddie Rosario,ATL,6/1/22
 JT Riddle,CIN,10/5/22
 Matt Carpenter,TEX,10/5/22
 Taylor Motter,BOS,10/5/22
@@ -201,7 +201,6 @@ Kevin Newman,PIT,6/1/22
 Jonah Heim,TEX,5/1/22
 Hoy Park,PIT,10/5/22
 Drew Ellis,ARI,10/5/22
-Wil Myers,SD,5/15/22
 Nick Lodolo,CIN,5/15/22
 Alex Dickerson,ATL,10/5/22
 Justin Williams,PHI,10/5/22
@@ -215,7 +214,7 @@ Brandon Belt,SF,5/10/22
 Danny Santana,BOS,10/5/22
 Joe Panik,MIA,10/5/22
 Jose Rondon,STL,10/5/22
-Kris Bryant,COL,5/10/22
+Kris Bryant,COL,6/1/22
 Pedro Severino,MIL,10/5/22
 Ramon Laureano,OAK,6/1/22
 Richard Rodriguez,ATL,10/5/22
@@ -245,13 +244,12 @@ Kelvin Gutierrez,BAL,10/5/22
 Kevin Smith,BAL,10/5/22
 Kyle Garlick,MIN,5/20/22
 Luke Williams,SF,10/5/22
-Matt Davidson,ARI,10/5/22
+Matt Davidson,OAK,10/5/22
 Miguel Andujar,NYY,10/5/22
 Mike Ford,SF,10/5/22
 Nick Allen,OAK,10/5/22
 Nick Senzel,CIN,5/15/22
 Rene Pinto,TB,10/5/22
-Sam Huff,TEX,10/5/22
 Willie Calhoun,TEX,10/5/22
 Zach McKinstry,LAD,10/5/22
 Cam Gallagher,KC,5/15/22
@@ -263,7 +261,6 @@ Adam Wainwright,STL,5/16/22
 Andrew McCutchen,MIL,5/17/22
 Brian Anderson,MIA,5/16/22
 Didi Gregorius,PHI,5/17/22
-Frank Schwindel,CHC,10/5/22
 Isaac Paredes,TB,10/5/22
 Jason Vosler,SF,10/5/22
 Jon Berti,MIA,5/17/22
@@ -278,3 +275,13 @@ Tom Murphy,SEA,5/20/22
 Trevor Larnach,MIN,5/20/22
 Zack Wheeler,PHI,5/18/22
 Mitch Garver,TEX,6/1/22
+Akil Baddoo,DET,10/5/22
+Carlos Correa,MIN,6/1/22
+David Robertson,CHC,5/21/22
+Edward Olivares,KC,7/1/22
+Jake Burger,CWS,10/5/22
+Jorge Lopez,BAL,5/16/22
+Max Stassi,LAA,5/21/22
+Nick Madrigal,CHC,5/21/22
+Paul DeJong,STL,10/5/22
+Trayce Thompson,SD,10/5/22
