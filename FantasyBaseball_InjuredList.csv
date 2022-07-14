@@ -1,6 +1,6 @@
 full_name,editorial_team_abbr,until
 Fernando Tatis Jr.,SD,7/21/22
-Jacob deGrom,NYM,7/10/22
+Jacob deGrom,NYM,7/25/22
 Alex Reyes,STL,5/16/22
 AJ Pollock,CWS,4/23/22
 Lance Lynn,CWS,6/15/22
@@ -15,7 +15,6 @@ Casey Mize,DET,5/15/22
 Yoan Moncada,CWS,5/10/22
 Lucas Sims,CIN,4/23/22
 Dylan Floro,MIA,5/10/22
-Chris Sale,BOS,7/15/22
 Shane Baz,TB,6/10/22
 Abraham Almonte,MIL,10/5/22
 Adam Eaton,LAA,10/5/22
@@ -40,7 +39,7 @@ Domingo German,NYY,7/1/22
 Donovan Solano,CIN,5/15/22
 Ehire Adrianza,WAS,10/5/22
 Eric Sogard,CHC,10/5/22
-Evan Longoria,SF,5/15/22
+Evan Longoria,SF,7/15/22
 Gerardo Parra,WAS,10/5/22
 Greg Holland,TEX,10/5/22
 Gregory Polanco,TOR,10/5/22
@@ -91,7 +90,7 @@ Starlin Castro,WAS,10/5/22
 Taijuan Walker,NYM,5/1/22
 Taylor Jones,HOU,10/5/22
 Tejay Antone,CIN,10/5/22
-Tommy La Stella,SF,5/15/22
+Tommy La Stella,SF,7/20/22
 Tres Barrera,WAS,10/5/22
 Tyler Glasnow,TB,7/1/22
 Wade Miley,CHC,5/15/22
@@ -121,7 +120,6 @@ Derek Fisher,MIN,10/5/22
 Deven Marrero,MIA,10/5/22
 Dexter Fowler,LAA,10/5/22
 Dillon Thomas,LAA,10/5/22
-Eloy Jimenez,CWS,7/25/22
 Ender Inciarte,NYY,10/5/22
 Estevan Florial,NYY,10/5/22
 Gabriel Arias,CLE,10/5/22
@@ -166,7 +164,6 @@ JT Riddle,CIN,10/5/22
 Matt Carpenter,TEX,10/5/22
 Taylor Motter,BOS,10/5/22
 Ali Sanchez,STL,10/5/22
-Kevin Newman,PIT,7/15/22
 Jonah Heim,TEX,5/1/22
 Nick Lodolo,CIN,5/15/22
 Alex Dickerson,ATL,10/5/22
@@ -181,7 +178,7 @@ Brandon Belt,SF,6/15/22
 Danny Santana,BOS,10/5/22
 Joe Panik,MIA,10/5/22
 Jose Rondon,STL,10/5/22
-Kris Bryant,COL,6/20/22
+Kris Bryant,COL,7/15/22
 Pedro Severino,MIL,10/5/22
 Ramon Laureano,OAK,6/1/22
 Richard Rodriguez,ATL,10/5/22
@@ -207,7 +204,6 @@ Kyle Garlick,MIN,6/20/22
 Mike Ford,SF,10/5/22
 Nick Senzel,CIN,5/15/22
 Willie Calhoun,TEX,10/5/22
-Zach McKinstry,LAD,10/5/22
 Luis Arraez,MIN,5/15/22
 Robinson Cano,SD,5/15/22
 Adam Wainwright,STL,5/16/22
@@ -217,7 +213,6 @@ Jon Berti,MIA,5/30/22
 Kurt Suzuki,LAA,5/17/22
 Marcus Stroman,CHC,5/18/22
 Roberto Perez,PIT,10/5/22
-Sergio Alcantara,ARI,10/5/22
 Stephen Piscotty,OAK,7/1/22
 Tim Locastro,NYY,10/5/22
 Tom Murphy,SEA,10/5/22
@@ -234,7 +229,7 @@ Brandon Lowe,TB,8/1/22
 Curt Casali,SF,5/30/22
 Dylan Carlson,STL,6/10/22
 Grayson Rodriguez,BAL,10/5/22
-James McCann,NYM,7/1/22
+James McCann,NYM,7/25/22
 Jarred Kelenic,SEA,10/5/22
 Joey Gallo,NYY,5/30/22
 Jose Godoy,MIN,10/5/22
@@ -252,7 +247,6 @@ Carlos Correa,MIN,6/8/22
 Chad Wallach,LAA,10/5/22
 Erik Gonzalez,MIA,10/5/22
 Gilberto Celestino,MIN,6/8/22
-Hunter Renfroe,MIL,7/20/22
 Joe Dunand,ATL,10/5/22
 Joe Ryan,MIN,6/15/22
 Jonathan Villar,CHC,6/8/22
@@ -260,9 +254,8 @@ Ken Giles,SEA,7/1/22
 Seiya Suzuki,CHC,7/1/22
 Tim Anderson,CWS,6/19/22
 Travis Demeritte,ATL,10/5/22
-Travis Jankowski,NYM,7/15/22
 Vinny Capra,TOR,10/5/22
-Wander Franco,TB,6/20/22
+Wander Franco,TB,9/1/22
 Yan Gomes,CHC,6/10/22
 Darin Ruf,SF,6/10/22
 Franmil Reyes,CLE,6/30/22
@@ -284,11 +277,8 @@ Josh VanMeter,PIT,7/1/22
 Miguel Andujar,NYY,10/5/22
 Mike Brosseau,MIL,6/24/22
 Collin McHugh,ATL,6/15/22
-Corey Dickerson,STL,7/20/22
-Danny Jansen,TOR,7/15/22
 Jason Vosler,SF,10/5/22
 Jeimer Candelario,DET,6/20/22
-Joey Bart,SF,10/5/22
 Johan Camargo,PHI,8/15/22
 Josh Smith,TEX,6/20/22
 Mark Contreras,MIN,10/5/22
@@ -301,23 +291,20 @@ Daz Cameron,DET,10/5/22
 Jack Mayfield,LAA,10/5/22
 Kolten Wong,MIL,6/20/22
 Mike Zunino,TB,7/20/22
-Mitch Garver,TEX,6/20/22
-Tyler Stephenson,CIN,8/1/22
+Mitch Garver,TEX,10/5/22
 Elehuris Montero,COL,10/5/22
 Jo Adell,LAA,10/5/22
 Ramon Urias,BAL,6/25/22
 Eli White,TEX,10/5/22
 Jeremy Pena,HOU,7/1/22
-Jake McCarthy,ARI,10/5/22
 Garrett Hampson,COL,7/1/22
 Ozzie Albies,ATL,9/1/22
 Jorge Polanco,MIN,7/1/22
 Jesus Sanchez,MIA,7/1/22
 Colin Moran,CIN,10/5/22
-Christian Arroyo,BOS,7/1/22
+Christian Arroyo,BOS,7/20/22
 Jesus Aguilar,MIA,7/1/22
 Aristides Aquino,CIN,8/1/22
-Sam Hilliard,COL,10/5/22
 Derek Hill,DET,10/5/22
 Alejo Lopez,CIN,10/5/22
 Josh Hader,MIL,6/22/22
@@ -327,14 +314,11 @@ Jesus Luzardo,MIA,8/1/22
 Adam Haseley,CWS,10/5/22
 Alan Trejo,COL,10/5/22
 Anthony Rendon,LAA,10/5/22
-Austin Hedges,CLE,7/31/22
 Bryce Harper,PHI,9/1/22
-Chris Bassitt,NYM,7/15/22
 Danny Mendick,CWS,7/31/22
 David Peterson,NYM,7/6/22
 Dustin May,LAD,7/31/22
 Eddy Alvarez,LAD,10/5/22
-Esteury Ruiz,SD,10/5/22
 Ezequiel Duran,TEX,10/5/22
 Frank Schwindel,CHC,7/15/22
 Harrison Bader,STL,7/25/22
@@ -342,12 +326,9 @@ J.P. Feyereisen,TB,10/5/22
 Jazz Chisholm Jr.,MIA,7/15/22
 Jerar Encarnacion,MIA,10/5/22
 Jesse Winker,SEA,7/11/22
-Jonathan Aranda,TB,10/5/22
 Jorge Soler,MIA,7/31/22
-Jose Siri,HOU,10/5/22
 Lorenzo Cain,MIL,10/5/22
 Luis Barrera,OAK,10/5/22
-Luis Gonzalez,SF,7/15/22
 Luke Raley,TB,10/5/22
 Mark Mathias,MIL,10/5/22
 Matt Davidson,OAK,10/5/22
@@ -358,12 +339,10 @@ Oscar Gonzalez,CLE,7/15/22
 Pavin Smith,ARI,10/5/22
 Richie Martin,BAL,10/5/22
 Riley Adams,WAS,10/5/22
-Sam Huff,TEX,10/5/22
 TJ Friedl,CIN,10/5/22
 Taylor Trammell,SEA,7/30/22
-Thairo Estrada,SF,7/15/22
 Ty France,SEA,7/10/22
-Tyler O'Neill,STL,7/10/22
+Tyler O'Neill,STL,7/15/22
 Tyler Wade,LAA,10/5/22
 Tylor Megill,NYM,8/31/22
 Tyrone Taylor,MIL,7/15/22
@@ -378,3 +357,21 @@ Donovan Walton,SF,10/5/22
 Hoy Park,PIT,10/5/22
 Jason Heyward,CHC,7/20/22
 Tucupita Marcano,PIT,10/5/22
+Aaron Nola,PHI,7/14/22
+Alec Bohm,PHI,7/14/22
+Bligh Madris,PIT,10/5/22
+Bryan Reynolds,PIT,8/1/22
+Chris Okey,CIN,10/5/22
+Conner Capel,STL,10/5/22
+Cooper Hummel,ARI,10/5/22
+J.T. Realmuto,PHI,7/14/22
+Jake Burger,CWS,7/25/22
+Jeff McNeil,NYM,7/15/22
+Jurickson Profar,SD,7/20/22
+Kevin Kiermaier,TB,10/5/22
+Kody Clemens,DET,10/5/22
+Oscar Mercado,CLE,10/5/22
+Rene Pinto,TB,10/5/22
+Richie Palacios,CLE,10/5/22
+Vidal Brujan,TB,10/5/22
+Yordan Alvarez,HOU,7/20/22
