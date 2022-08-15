@@ -5,9 +5,11 @@ FINANCE
 SPORTS
 ENTERTAINMENT
 LIFE
+SEARCH
 SHOPPING
 YAHOO PLUS
 MORE...
+Upgrade Now
 fantasy
 Search query
 
@@ -16,12 +18,12 @@ Taylor
  Mail
 Yahoo Sports Fantasy Football
 
-Mariners Fan Anonymous but Fun (ID# 832265) 
+Mariners Fan Anonymous but Fun (ID# 39828) 
 
 Type to search players...
 
- 
-Football '21
+Open chat
+Football '22
 League
 My Team
 Matchups
@@ -39,10 +41,6 @@ Mock Drafts
  
 Draft Results
  
-Draft Kit
- 
-Cheat Sheets
- 
 Draft Analysis
  
 Pre-Draft Values
@@ -50,12 +48,10 @@ Pre-Draft Values
 Mock Draft Report Card
  
 Last Season
-$1,000Risk-Free First Bet
-when you sign up
-for BetMGM
+Risk-FreeFirst Bet up to $1,000*
 Yahoo! SportsboookBetMGM
-*New Users only. Must be 21+. CO, IA, IN, MI, NJ, PA, TN, VA, or WV only.
-Bet on football*
+*New BetMGM users only. 21+. Terms apply. Please gamble responsibly.
+AZ, CO, IL, IN, IA, LA, MI, NJ, NY, PA, TN, VA, WV, or WY only.
 Bet on BetMGM
 Draft Analysis
 Standard Drafts
@@ -69,7 +65,7 @@ WR
  
 RB
  
-TE
+W/T
  
 W/R/T
  
@@ -84,421 +80,416 @@ Proj Salary
 Avg Salary
 Percent Drafted
 
-No new player Notes
-Christian McCaffrey Car - RB
-Sun 10:00 am vs NYJ
-
+Player Note
+Jonathan Taylor Ind - RB
+Sun 10:00 am @Hou
+
 $64
-$72.8
+$72.9
 100%
 
 No new player Notes
-Dalvin Cook Min - RB
-Sun 10:00 am @Cin
-
+Cooper Kupp LAR - WR
+Thu 5:20 pm vs Buf
+
+$55
+$60.5
+100%
+
+No new player Notes
+Austin Ekeler LAC - RB
+Sun 1:25 pm vs LV
+
 $57
-$65.5
+$62.8
+100%
+
+Player Note
+Christian McCaffrey Car - RB
+Sun 10:00 am vs Cle
+
+$54
+$60.8
 100%
 
 No new player Notes
 Derrick Henry Ten - RB
-Sun 10:00 am vs Ari
-
+Sun 1:25 pm vs NYG
+
 $55
-$69.8
-100%
-
-No new player Notes
-Alvin Kamara NO - RB
-Sun 1:25 pm vs GB
-
-$55
-$62.7
-100%
-
-No new player Notes
-Ezekiel Elliott Dal - RB
-Thu 5:20 pm @TB
-
-$55
-$59.1
-100%
-
-No new player Notes
-Jonathan Taylor Ind - RB
-Sun 10:00 am vs Sea
-
-$48
-$57.7
-100%
-
-No new player Notes
-Nick Chubb Cle - RB
-Sun 1:25 pm @KC
-
-$54
-$57.4
-100%
-
-Player Note
-Saquon Barkley NYG - RB
-Q
-Sun 1:25 pm vs Den
-
-$53
-$59.3
-100%
-
-Player Note
-Tyreek Hill KC - WR
-Sun 1:25 pm vs Cle
-
-$52
-$56.8
-100%
-
-No new player Notes
-Aaron Jones GB - RB
-Q
-Sun 1:25 pm @NO
-
-$54
-$53.2
-100%
-
-No new player Notes
-Stefon Diggs Buf - WR
-Q
-Sun 10:00 am vs Pit
-
-$50
-$53.2
-100%
-
-No new player Notes
-Travis Kelce KC - TE
-Sun 1:25 pm vs Cle
-
-$48
-$52.0
-100%
-
-No new player Notes
-Davante Adams GB - WR
-Sun 1:25 pm @NO
-
-$52
-$52.1
-100%
-
-No new player Notes
-Patrick Mahomes KC - QB
-Sun 1:25 pm vs Cle
-
-$35
-$36.3
-100%
-
-New Player Note
-Austin Ekeler LAC - RB
-Sun 10:00 am @Was
-
-$46
-$46.4
-100%
-
-New Player Note
-Antonio Gibson Was - RB
-Sun 10:00 am vs LAC
-
-$43
-$43.2
-100%
-
-Player Note
-Calvin Ridley Atl - WR
-Sun 10:00 am vs Phi
-
-$43
-$35.6
-100%
-
-No new player Notes
-DeAndre Hopkins Ari - WR
-Q
-Sun 10:00 am @Ten
-
-$43
-$43.2
-100%
-
-No new player Notes
-Cam Akers LAR - RB
-NFI-A
-Sun 5:20 pm vs Chi
-
-$0
-$43.8
-54%
-
-Player Note
-Najee Harris Pit - RB
-Sun 10:00 am @Buf
-
-$46
-$36.3
+$61.8
 100%
 
 Player Note
 Justin Jefferson Min - WR
-Q
+Sun 1:25 pm vs GB
+
+$54
+$58.5
+100%
+
+No new player Notes
+Dalvin Cook Min - RB
+Sun 1:25 pm vs GB
+
+$55
+$59.5
+100%
+
+No new player Notes
+Ja'Marr Chase Cin - WR
+Sun 10:00 am vs Pit
+
+$52
+$55.5
+100%
+
+Player Note
+Najee Harris Pit - RB
 Sun 10:00 am @Cin
-
-$40
-$36.6
+
+$53
+$56.1
 100%
 
 No new player Notes
 Joe Mixon Cin - RB
-Sun 10:00 am vs Min
-
-$36
-$39.4
-100%
-
-No new player Notes
-DK Metcalf Sea - WR
-Sun 10:00 am @Ind
-
-$36
-$38.0
-100%
-
-No new player Notes
-A.J. Brown Ten - WR
-Sun 10:00 am vs Ari
-
-$38
-$37.9
-100%
-
-No new player Notes
-Clyde Edwards-Helaire KC - RB
-Sun 1:25 pm vs Cle
-
-$36
-$33.4
-100%
-
-No new player Notes
-J.K. Dobbins Bal - RB
-Mon 5:15 pm @LV
-
-$33
-$31.7
-100%
-
-No new player Notes
-George Kittle SF - TE
-Sun 10:00 am @Det
-
-$30
-$29.3
-100%
-
-Player Note
-Josh Allen Buf - QB
 Sun 10:00 am vs Pit
-
-$23
-$21.9
+
+$52
+$54.1
 100%
 
-Player Note
-Darren Waller LV - TE
-Q
-Mon 5:15 pm vs Bal
-
+No new player Notes
+Stefon Diggs Buf - WR
+Thu 5:20 pm @LAR
+
+$46
+$46.3
+100%
+
+No new player Notes
+Davante Adams LV - WR
+Sun 1:25 pm @LAC
+
+$48
+$48.0
+100%
+
+No new player Notes
+Nick Chubb Cle - RB
+Sun 10:00 am @Car
+
+$50
+$50.2
+100%
+
+No new player Notes
+Aaron Jones GB - RB
+Sun 1:25 pm @Min
+
 $36
-$22.6
+$37.8
 100%
 
 No new player Notes
-Terry McLaurin Was - WR
-Sun 10:00 am vs LAC
-
-$36
-$26.2
-100%
-
-No new player Notes
-Allen Robinson II Chi - WR
-Q
-Sun 5:20 pm @LAR
-
-$36
-$25.5
-100%
-
-No new player Notes
-David Montgomery Chi - RB
-Sun 5:20 pm @LAR
-
-$36
-$21.5
-100%
-
-No new player Notes
-Keenan Allen LAC - WR
-Sun 10:00 am @Was
-
-$36
-$24.9
-100%
-
-No new player Notes
-Mike Evans TB - WR
-Thu 5:20 pm vs Dal
-
-$30
-$19.4
-100%
-
-No new player Notes
-Chris Godwin TB - WR
-Thu 5:20 pm vs Dal
-
-$33
-$16.5
-100%
-
-Player Note
-Miles Sanders Phi - RB
-Sun 10:00 am @Atl
-
-$25
-$26.6
-100%
-
-No new player Notes
-Chris Carson Sea - RB
-Sun 10:00 am @Ind
-
-$35
-$21.2
-100%
-
-Player Note
-D'Andre Swift Det - RB
-Q
-Sun 10:00 am vs SF
-
-$24
-$24.3
-100%
-
-No new player Notes
-Josh Jacobs LV - RB
-Mon 5:15 pm vs Bal
-
-$23
-$16.2
+Travis Kelce KC - TE
+Sun 1:25 pm @Ari
+
+$43
+$43.5
 100%
 
 No new player Notes
 CeeDee Lamb Dal - WR
-Thu 5:20 pm @TB
-
+Sun 5:20 pm vs TB
+
+$43
+$41.1
+100%
+
+No new player Notes
+D'Andre Swift Det - RB
+Sun 10:00 am vs Phi
+
+$46
+$43.8
+100%
+
+No new player Notes
+Leonard Fournette TB - RB
+Sun 5:20 pm @Dal
+
+$43
+$41.0
+100%
+
+No new player Notes
+Deebo Samuel SF - WR
+Sun 10:00 am @Chi
+
+$40
+$38.0
+100%
+
+No new player Notes
+Josh Allen Buf - QB
+Thu 5:20 pm @LAR
+
 $36
-$15.0
+$33.2
 100%
 
 Player Note
-Lamar Jackson Bal - QB
-Mon 5:15 pm @LV
-
-$23
-$13.0
+Mike Evans TB - WR
+Q
+Sun 5:20 pm @Dal
+
+$36
+$31.9
+100%
+
+New Player Note
+Alvin Kamara NO - RB
+Sun 10:00 am @Atl
+
+$38
+$38.2
 100%
 
 No new player Notes
-Kyler Murray Ari - QB
-Sun 10:00 am @Ten
-
-$18
-$12.0
+Saquon Barkley NYG - RB
+Sun 1:25 pm @Ten
+
+$35
+$35.0
 100%
 
 Player Note
-Julio Jones Ten - WR
-Q
-Sun 10:00 am vs Ari
-
-$23
-$15.4
-100%
-
-Player Note
-Amari Cooper Dal - WR
-Q
-Thu 5:20 pm @TB
-
-$24
-$14.7
-100%
-
-No new player Notes
-Robert Woods LAR - WR
-Sun 5:20 pm vs Chi
-
-$27
-$11.4
-100%
-
-Player Note
-Darrell Henderson Jr. LAR - RB
-Q
-Sun 5:20 pm vs Chi
-
-$29
-$14.7
-55%
-
-No new player Notes
-Cooper Kupp LAR - WR
-Sun 5:20 pm vs Chi
-
-$28
-$8.0
+Javonte Williams Den - RB
+Mon 5:15 pm @Sea
+
+$48
+$44.4
 100%
 
 No new player Notes
 Mark Andrews Bal - TE
-Mon 5:15 pm @LV
-
-$18
-$9.6
+Sun 10:00 am @NYJ
+
+$36
+$33.3
 100%
 
 No new player Notes
-T.J. Hockenson Det - TE
+Tyreek Hill Mia - WR
+Sun 10:00 am vs NE
+
+$36
+$31.8
+100%
+
+No new player Notes
+Ezekiel Elliott Dal - RB
+Sun 5:20 pm vs TB
+
+$33
+$27.3
+100%
+
+Player Note
+Tee Higgins Cin - WR
+Q
+Sun 10:00 am vs Pit
+
+$36
+$27.2
+100%
+
+No new player Notes
+Keenan Allen LAC - WR
+Sun 1:25 pm vs LV
+
+$36
+$27.0
+100%
+
+No new player Notes
+James Conner Ari - RB
+Sun 1:25 pm vs KC
+
+$30
+$24.7
+100%
+
+No new player Notes
+Michael Pittman Jr. Ind - WR
+Sun 10:00 am @Hou
+
+$30
+$22.4
+100%
+
+No new player Notes
+A.J. Brown Phi - WR
+Sun 10:00 am @Det
+
+$33
+$23.3
+100%
+
+New Player Note
+Cam Akers LAR - RB
+Q
+Thu 5:20 pm vs Buf
+
+$36
+$25.6
+100%
+
+Player Note
+Patrick Mahomes KC - QB
+Sun 1:25 pm @Ari
+
+$18
+$14.2
+100%
+
+Player Note
+David Montgomery Chi - RB
 Q
 Sun 10:00 am vs SF
-
-$23
-$10.2
+
+$35
+$22.7
 100%
 
 No new player Notes
-Adam Thielen Min - WR
-Sun 10:00 am @Cin
+Justin Herbert LAC - QB
+Sun 1:25 pm vs LV
+
+$21
+$14.7
+100%
+
+No new player Notes
+Kyle Pitts Atl - TE
+Sun 10:00 am vs NO
+
+$23
+$17.4
+100%
+
+No new player Notes
+DJ Moore Car - WR
+Q
+Sun 10:00 am vs Cle
+
+$25
+$15.3
+100%
+
+Player Note
+Breece Hall NYJ - RB
+Sun 10:00 am vs Bal
 
+$24
+$16.1
+100%
+
+Player Note
+Eli Mitchell SF - RB
+Q
+Sun 10:00 am @Chi
+
+$27
+$17.3
+100%
+
+No new player Notes
+Terry McLaurin Was - WR
+Sun 10:00 am vs Jax
+
 $22
-$9.4
+$12.2
+100%
+
+Player Note
+Antonio Gibson Was - RB
+Sun 10:00 am vs Jax
+
+$36
+$23.4
+100%
+
+No new player Notes
+Jaylen Waddle Mia - WR
+Sun 10:00 am vs NE
+
+$28
+$14.9
+100%
+
+Player Note
+Lamar Jackson Bal - QB
+Sun 10:00 am @NYJ
+
+$23
+$13.5
+100%
+
+No new player Notes
+George Kittle SF - TE
+Sun 10:00 am @Chi
+
+$22
+$12.4
+100%
+
+New Player Note
+Darren Waller LV - TE
+Q
+Sun 1:25 pm @LAC
+
+$23
+$11.8
+100%
+
+No new player Notes
+Mike Williams LAC - WR
+Sun 1:25 pm vs LV
+
+$13
+$8.8
+100%
+
+Player Note
+Josh Jacobs LV - RB
+Sun 1:25 pm @LAC
+
+$24
+$13.1
+100%
+
+Player Note
+Diontae Johnson Pit - WR
+Q
+Sun 10:00 am @Cin
+
+$29
+$13.5
+100%
+
+Player Note
+Travis Etienne Jr. Jax - RB
+Sun 10:00 am @Was
+
+$23
+$12.8
 100%
 Previous 50 Next 50
 
 Yahoo Sports - NBC Sports Network - Paid Fantasy Terms - Terms - Feedback - Privacy Dashboard - Privacy - About Our Ads - Help
 Certain Data by Stats Perform and Rotowire
 
-© 2021 Yahoo Fantasy Sports LLC. All rights reserved.
+© 2022 Yahoo Fantasy Sports LLC. All rights reserved.

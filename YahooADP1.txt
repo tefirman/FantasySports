@@ -5,9 +5,11 @@ FINANCE
 SPORTS
 ENTERTAINMENT
 LIFE
+SEARCH
 SHOPPING
 YAHOO PLUS
 MORE...
+Upgrade Now
 fantasy
 Search query
 
@@ -16,27 +18,42 @@ Taylor
  Mail
 Yahoo Sports Fantasy Football
 
- 
-Football '21
-NFL Updates
+Mariners Fans Anonymous (ID# 49869) 
+
+Type to search players...
+
+Open chat
+Football '22
+League
+My Team
+Matchups
+Players
 Research
 Draft
+StatTracker
 Fantasy Shop
+ 
  Yahoo Fantasy 
+Plus 
 Overview
  
 Mock Drafts
  
-Draft Kit
+Draft Results
  
 Draft Analysis
  
+Pre-Draft Rankings
+ 
+Draft Picks
+ 
 Mock Draft Report Card
+ 
+Last Season
  Yahoo Sports Daily Fantasy
-Quick Match 
-Play a Quick Match
-Meet Your Match
-Join a fairly and automatically matched Head-to-Head contest.
+Yahoo Cup 
+Enter League
+Free entry ⋅ $50,000 guaranteed prizes
 Draft Analysis
 Standard Drafts
  
@@ -49,7 +66,7 @@ WR
  
 RB
  
-TE
+W/T
  
 W/R/T
  
@@ -57,321 +74,423 @@ K
  
 DEF
 Previous 50 Next 50
+ 
 Name
+ 
 Avg Pick
 Avg Round
 Percent Drafted
-No new player Notes
-Christian McCaffrey Car - RB
-Sun 10:00 am vs NYJ
-1.2
-1.0
-100%
-No new player Notes
-Dalvin Cook Min - RB
-Sun 10:00 am @Cin
-2.5
-1.0
-100%
-No new player Notes
-Derrick Henry Ten - RB
-Sun 10:00 am vs Ari
-3.3
-1.0
-100%
-No new player Notes
-Alvin Kamara NO - RB
-Sun 1:25 pm vs GB
-4.6
-1.1
-100%
-No new player Notes
+
+Player Note
 Jonathan Taylor Ind - RB
-Sun 10:00 am vs Sea
-5.9
+Sun 10:00 am @Hou
+
 1.1
+1.0
 100%
-Player Note
-Ezekiel Elliott Dal - RB
-Thu 5:20 pm @TB
-7.6
-1.1
-100%
-Player Note
-Saquon Barkley NYG - RB
-PUP-P
-Sun 1:25 pm vs Den
-7.6
-1.2
-100%
-Player Note
-Nick Chubb Cle - RB
-Sun 1:25 pm @KC
-8.2
-1.2
-100%
-New Player Note
-Tyreek Hill KC - WR
-Q
-Sun 1:25 pm vs Cle
-8.7
-1.2
-100%
+
 No new player Notes
-Stefon Diggs Buf - WR
-Sun 10:00 am vs Pit
-11.6
-1.8
+Cooper Kupp LAR - WR
+Thu 5:20 pm vs Buf
+
+3.9
+1.0
 100%
-No new player Notes
-Aaron Jones GB - RB
-Sun 1:25 pm @NO
-12.0
-1.9
-100%
-No new player Notes
-Travis Kelce KC - TE
-Sun 1:25 pm vs Cle
-12.2
-1.9
-100%
-Player Note
-Davante Adams GB - WR
-Sun 1:25 pm @NO
-15.0
-2.1
-100%
-No new player Notes
-Patrick Mahomes KC - QB
-Sun 1:25 pm vs Cle
-15.0
-2.1
-100%
+
 No new player Notes
 Austin Ekeler LAC - RB
-Sun 10:00 am @Was
-17.2
-2.3
+Sun 1:25 pm vs LV
+
+3.9
+1.0
 100%
-No new player Notes
-Cam Akers LAR - RB
-NFI-A
-Sun 5:20 pm vs Chi
-17.2
-2.4
-49%
-No new player Notes
-Antonio Gibson Was - RB
-Sun 10:00 am vs LAC
-18.0
-2.3
-100%
-No new player Notes
-DeAndre Hopkins Ari - WR
-Q
-Sun 10:00 am @Ten
-19.9
-2.5
-100%
-No new player Notes
-DK Metcalf Sea - WR
-Sun 10:00 am @Ind
-20.9
-2.7
-100%
-No new player Notes
-Justin Jefferson Min - WR
-Sun 10:00 am @Cin
-21.6
-2.8
-100%
-New Player Note
-Calvin Ridley Atl - WR
-Sun 10:00 am vs Phi
-21.8
-2.8
-100%
+
 Player Note
-A.J. Brown Ten - WR
-Sun 10:00 am vs Ari
-21.8
-2.8
+Christian McCaffrey Car - RB
+Sun 10:00 am vs Cle
+
+4.8
+1.1
 100%
+
+No new player Notes
+Derrick Henry Ten - RB
+Sun 1:25 pm vs NYG
+
+5.0
+1.1
+100%
+
+Player Note
+Justin Jefferson Min - WR
+Sun 1:25 pm vs GB
+
+6.0
+1.1
+100%
+
+No new player Notes
+Dalvin Cook Min - RB
+Sun 1:25 pm vs GB
+
+6.4
+1.1
+100%
+
+No new player Notes
+Ja'Marr Chase Cin - WR
+Sun 10:00 am vs Pit
+
+9.0
+1.2
+100%
+
+Player Note
+Najee Harris Pit - RB
+Sun 10:00 am @Cin
+
+9.0
+1.3
+100%
+
 No new player Notes
 Joe Mixon Cin - RB
-Sun 10:00 am vs Min
-22.1
-2.8
-100%
-New Player Note
-Najee Harris Pit - RB
-Sun 10:00 am @Buf
-22.3
-2.9
-100%
-No new player Notes
-Clyde Edwards-Helaire KC - RB
-Sun 1:25 pm vs Cle
-23.5
-3.0
-100%
-No new player Notes
-J.K. Dobbins Bal - RB
-Mon 5:15 pm @LV
-24.3
-3.1
-100%
-No new player Notes
-George Kittle SF - TE
-Sun 10:00 am @Det
-27.9
-3.4
-100%
-Player Note
-Josh Allen Buf - QB
 Sun 10:00 am vs Pit
-29.6
-3.6
+
+10.9
+1.6
 100%
+
 No new player Notes
-Terry McLaurin Was - WR
-Sun 10:00 am vs LAC
-30.8
-3.7
+Stefon Diggs Buf - WR
+Thu 5:20 pm @LAR
+
+12.5
+1.9
 100%
+
 No new player Notes
-Darren Waller LV - TE
-Mon 5:15 pm vs Bal
-31.1
-3.8
+Davante Adams LV - WR
+Sun 1:25 pm @LAC
+
+13.8
+2.0
 100%
+
 No new player Notes
-Allen Robinson II Chi - WR
-Sun 5:20 pm @LAR
-32.6
-3.9
+Nick Chubb Cle - RB
+Sun 10:00 am @Car
+
+14.6
+2.0
 100%
+
 No new player Notes
-Miles Sanders Phi - RB
-Sun 10:00 am @Atl
-33.6
-3.9
+Aaron Jones GB - RB
+Sun 1:25 pm @Min
+
+14.8
+2.1
 100%
+
 No new player Notes
-Keenan Allen LAC - WR
-Sun 10:00 am @Was
-33.9
-4.0
+Travis Kelce KC - TE
+Sun 1:25 pm @Ari
+
+16.8
+2.2
 100%
-Player Note
-David Montgomery Chi - RB
-Sun 5:20 pm @LAR
-34.3
-4.1
-100%
-Player Note
-D'Andre Swift Det - RB
-Sun 10:00 am vs SF
-34.3
-4.0
-100%
-No new player Notes
-Mike Evans TB - WR
-Thu 5:20 pm vs Dal
-36.5
-4.3
-100%
-No new player Notes
-Chris Godwin TB - WR
-Thu 5:20 pm vs Dal
-37.7
-4.4
-100%
-No new player Notes
-Josh Jacobs LV - RB
-Mon 5:15 pm vs Bal
-37.8
-4.5
-100%
-No new player Notes
-Chris Carson Sea - RB
-Sun 10:00 am @Ind
-38.5
-4.5
-100%
-No new player Notes
-Julio Jones Ten - WR
-Q
-Sun 10:00 am vs Ari
-41.8
-4.8
-100%
-No new player Notes
-Kyler Murray Ari - QB
-Sun 10:00 am @Ten
-43.1
-5.0
-100%
+
 No new player Notes
 CeeDee Lamb Dal - WR
-Thu 5:20 pm @TB
-43.4
-5.0
+Sun 5:20 pm vs TB
+
+17.7
+2.3
 100%
-Player Note
-Lamar Jackson Bal - QB
-COVID-19
-Mon 5:15 pm @LV
-43.5
-5.0
-100%
-New Player Note
-Amari Cooper Dal - WR
-PUP-P
-Thu 5:20 pm @TB
-45.8
-5.2
-100%
+
 No new player Notes
-Robert Woods LAR - WR
-Sun 5:20 pm vs Chi
-47.9
-5.5
+D'Andre Swift Det - RB
+Sun 10:00 am vs Phi
+
+18.2
+2.3
 100%
+
+No new player Notes
+Leonard Fournette TB - RB
+Sun 5:20 pm @Dal
+
+20.3
+2.6
+100%
+
+No new player Notes
+Deebo Samuel SF - WR
+Sun 10:00 am @Chi
+
+20.3
+2.6
+100%
+
+No new player Notes
+Josh Allen Buf - QB
+Thu 5:20 pm @LAR
+
+20.5
+2.6
+100%
+
+Player Note
+Mike Evans TB - WR
+Q
+Sun 5:20 pm @Dal
+
+21.7
+2.7
+100%
+
+New Player Note
+Alvin Kamara NO - RB
+Sun 10:00 am @Atl
+
+21.7
+2.8
+100%
+
+No new player Notes
+Saquon Barkley NYG - RB
+Sun 1:25 pm @Ten
+
+22.3
+2.8
+100%
+
+Player Note
+Javonte Williams Den - RB
+Mon 5:15 pm @Sea
+
+23.8
+2.9
+100%
+
 No new player Notes
 Mark Andrews Bal - TE
-Mon 5:15 pm @LV
-49.4
-5.7
+Sun 10:00 am @NYJ
+
+24.7
+3.1
 100%
+
 No new player Notes
-Adam Thielen Min - WR
-Sun 10:00 am @Cin
-50.2
-5.7
+Tyreek Hill Mia - WR
+Sun 10:00 am vs NE
+
+25.0
+3.1
 100%
+
+No new player Notes
+Ezekiel Elliott Dal - RB
+Sun 5:20 pm vs TB
+
+29.6
+3.5
+100%
+
 Player Note
-T.J. Hockenson Det - TE
-Sun 10:00 am vs SF
-50.4
-5.8
-100%
-No new player Notes
-Myles Gaskin Mia - RB
-Sun 1:25 pm @NE
-50.6
-5.7
-100%
-New Player Note
-Dak Prescott Dal - QB
+Tee Higgins Cin - WR
 Q
-Thu 5:20 pm @TB
-51.9
-5.9
+Sun 10:00 am vs Pit
+
+30.1
+3.5
+100%
+
+No new player Notes
+Keenan Allen LAC - WR
+Sun 1:25 pm vs LV
+
+30.5
+3.6
+100%
+
+No new player Notes
+James Conner Ari - RB
+Sun 1:25 pm vs KC
+
+31.8
+3.8
+100%
+
+No new player Notes
+Michael Pittman Jr. Ind - WR
+Sun 10:00 am @Hou
+
+32.7
+3.8
+100%
+
+No new player Notes
+A.J. Brown Phi - WR
+Sun 10:00 am @Det
+
+34.0
+4.0
+100%
+
+New Player Note
+Cam Akers LAR - RB
+Q
+Thu 5:20 pm vs Buf
+
+35.8
+4.2
+100%
+
+Player Note
+Patrick Mahomes KC - QB
+Sun 1:25 pm @Ari
+
+35.8
+4.2
+100%
+
+Player Note
+David Montgomery Chi - RB
+Q
+Sun 10:00 am vs SF
+
+36.8
+4.3
+100%
+
+No new player Notes
+Justin Herbert LAC - QB
+Sun 1:25 pm vs LV
+
+38.1
+4.5
+100%
+
+No new player Notes
+Kyle Pitts Atl - TE
+Sun 10:00 am vs NO
+
+39.4
+4.6
+100%
+
+No new player Notes
+DJ Moore Car - WR
+Q
+Sun 10:00 am vs Cle
+
+40.6
+4.7
+100%
+
+Player Note
+Breece Hall NYJ - RB
+Sun 10:00 am vs Bal
+
+41.4
+4.7
+100%
+
+Player Note
+Eli Mitchell SF - RB
+Q
+Sun 10:00 am @Chi
+
+42.2
+4.8
+100%
+
+No new player Notes
+Terry McLaurin Was - WR
+Sun 10:00 am vs Jax
+
+43.6
+5.0
+100%
+
+Player Note
+Antonio Gibson Was - RB
+Sun 10:00 am vs Jax
+
+43.6
+4.9
+100%
+
+No new player Notes
+Jaylen Waddle Mia - WR
+Sun 10:00 am vs NE
+
+44.1
+5.0
+100%
+
+Player Note
+Lamar Jackson Bal - QB
+Sun 10:00 am @NYJ
+
+44.1
+5.1
+100%
+
+No new player Notes
+George Kittle SF - TE
+Sun 10:00 am @Chi
+
+44.8
+5.1
+100%
+
+New Player Note
+Darren Waller LV - TE
+Q
+Sun 1:25 pm @LAC
+
+47.5
+5.4
+100%
+
+No new player Notes
+Mike Williams LAC - WR
+Sun 1:25 pm vs LV
+
+48.2
+5.5
+100%
+
+Player Note
+Josh Jacobs LV - RB
+Sun 1:25 pm @LAC
+
+48.2
+5.4
+100%
+
+Player Note
+Diontae Johnson Pit - WR
+Q
+Sun 10:00 am @Cin
+
+48.3
+5.4
+100%
+
+Player Note
+Travis Etienne Jr. Jax - RB
+Sun 10:00 am @Was
+
+51.3
+5.7
 100%
 Previous 50 Next 50
 
 Yahoo Sports - NBC Sports Network - Paid Fantasy Terms - Terms - Feedback - Privacy Dashboard - Privacy - About Our Ads - Help
 Certain Data by Stats Perform and Rotowire
 
-© 2021 Yahoo Fantasy Sports LLC. All rights reserved.
+© 2022 Yahoo Fantasy Sports LLC. All rights reserved.

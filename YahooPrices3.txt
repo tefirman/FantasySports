@@ -5,9 +5,11 @@ FINANCE
 SPORTS
 ENTERTAINMENT
 LIFE
+SEARCH
 SHOPPING
 YAHOO PLUS
 MORE...
+Upgrade Now
 fantasy
 Search query
 
@@ -16,12 +18,12 @@ Taylor
  Mail
 Yahoo Sports Fantasy Football
 
-Mariners Fan Anonymous but Fun (ID# 832265) 
+Mariners Fan Anonymous but Fun (ID# 39828) 
 
 Type to search players...
 
- 
-Football '21
+Open chat
+Football '22
 League
 My Team
 Matchups
@@ -39,10 +41,6 @@ Mock Drafts
  
 Draft Results
  
-Draft Kit
- 
-Cheat Sheets
- 
 Draft Analysis
  
 Pre-Draft Values
@@ -50,13 +48,11 @@ Pre-Draft Values
 Mock Draft Report Card
  
 Last Season
-$1,000Risk-Free First Bet
-when you sign up
-for BetMGM
-Yahoo! SportsboookBetMGM
-*New Users only. Must be 21+. CO, IA, IN, MI, NJ, PA, TN, VA, or WV only.
-Bet on football*
-Bet on BetMGM
+ Yahoo Sports Daily Fantasy
+Quick Match 
+Play a Quick Match
+Meet Your Match
+Join a fairly and automatically matched Head-to-Head contest.
 Draft Analysis
 Standard Drafts
  
@@ -69,7 +65,7 @@ WR
  
 RB
  
-TE
+W/T
  
 W/R/T
  
@@ -84,421 +80,420 @@ Proj Salary
 Avg Salary
 Percent Drafted
 
-Player Note
-DJ Chark Jr. Jax - WR
-Q
-Sun 10:00 am @Hou
-
-$7
-$2.0
+No new player Notes
+Elijah Moore NYJ - WR
+Sun 10:00 am vs Bal
+
+$16
+$3.2
 100%
-
-No new player Notes
-David Johnson Hou - RB
-Sun 10:00 am vs Jax
-
-$12
-$2.0
-100%
-
-No new player Notes
-Jerry Jeudy Den - WR
-Sun 1:25 pm @NYG
-
-$8
-$2.1
-92%
-
-Player Note
-Zack Moss Buf - RB
-Q
-Sun 10:00 am vs Pit
-
-$7
-$2.3
-99%
-
-Player Note
-Michael Carter NYJ - RB
-Sun 10:00 am @Car
-
-$9
-$2.7
-87%
-
-No new player Notes
-Greg Zuerlein Dal - K
-PUP-P
-Thu 5:20 pm @TB
-
-$0
-$1.1
-96%
-
-No new player Notes
-Rob Gronkowski TB - TE
-Thu 5:20 pm vs Dal
-
-$1
-$1.6
-65%
-
-Player Note
-Joe Burrow Cin - QB
-Sun 10:00 am vs Min
-
-$6
-$1.7
-100%
-
-No new player Notes
-AJ Dillon GB - RB
-Sun 1:25 pm @NO
-
-$8
-$1.7
-100%
-
-No new player Notes
-Tyler Bass Buf - K
-Sun 10:00 am vs Pit
-
-$0
-$1.3
-64%
-
-No new player Notes
-Brandin Cooks Hou - WR
-Sun 10:00 am vs Jax
-
-$7
-$1.4
-97%
-
-New Player Note
-James Conner Ari - RB
-COVID-19
-Sun 10:00 am @Ten
-
-$8
-$1.7
-94%
-
-Player Note
-Mike Gesicki Mia - TE
-Sun 1:25 pm @NE
-
-$5
-$1.4
-97%
-
-Player Note
-Wil Lutz NO - K
-O
-Sun 1:25 pm vs GB
-
-$0
-$1.0
-85%
-
-Player Note
-Tyler Boyd Cin - WR
-Sun 10:00 am vs Min
-
-$8
-$1.4
-98%
-
-No new player Notes
-Kenyan Drake LV - RB
-Mon 5:15 pm vs Bal
-
-$7
-$1.6
-99%
-
-No new player Notes
-Will Fuller V Mia - WR
-SUSP
-Sun 1:25 pm @NE
-
-$7
-$1.6
-98%
-
-No new player Notes
-Antonio Brown TB - WR
-Thu 5:20 pm vs Dal
-
-$7
-$2.1
-47%
-
-Player Note
-DeVonta Smith Phi - WR
-Q
-Sun 10:00 am @Atl
-
-$6
-$1.7
-54%
 
 No new player Notes
 Indianapolis Ind - DEF
-Sun 10:00 am vs Sea
-
-$1
+Sun 10:00 am @Hou
+
+$0
 $1.2
-95%
-
-No new player Notes
-Jarvis Landry Cle - WR
-Sun 1:25 pm @KC
-
-$6
-$1.3
-63%
+99%
 
 Player Note
-Curtis Samuel Was - WR
-PUP-P
-Sun 10:00 am vs LAC
+Kenneth Walker III Sea - RB
+Mon 5:15 pm vs Den
+
+$12
+$2.7
+100%
+
+No new player Notes
+Daniel Carlson LV - K
+Sun 1:25 pm @LAC
+
+$0
+$1.2
+98%
+
+Player Note
+Trey Lance SF - QB
+Sun 10:00 am @Chi
 
 $7
-$1.3
-92%
+$2.4
+100%
 
-No new player Notes
-Jason Sanders Mia - K
-Sun 1:25 pm @NE
-
-$0
-$1.1
-87%
-
-No new player Notes
-Cleveland Cle - DEF
-Sun 1:25 pm @KC
-
-$0
-$1.1
-88%
-
-Player Note
-Gus Edwards Bal - RB
-Mon 5:15 pm @LV
-
+New Player Note
+Brandon Aiyuk SF - WR
+Sun 10:00 am @Chi
+
 $8
-$1.2
-96%
+$1.8
+100%
 
 No new player Notes
-Kansas City KC - DEF
-Sun 1:25 pm vs Cle
-
-$1
-$1.1
-90%
-
-Player Note
-Irv Smith Jr. Min - TE
-Sun 10:00 am @Cin
-
-$5
-$1.4
+Matt Gay LAR - K
+Thu 5:20 pm vs Buf
+
+$0
+$1.3
 98%
 
 No new player Notes
-Ben Roethlisberger Pit - QB
-Sun 10:00 am @Buf
-
-$1
-$1.1
-11%
-
-No new player Notes
-Matt Ryan Atl - QB
-Sun 10:00 am vs Phi
+Allen Lazard GB - WR
+Sun 1:25 pm @Min
 
 $6
-$1.4
-94%
-
-No new player Notes
-Jared Goff Det - QB
-Sun 10:00 am vs SF
-
-$1
-$1.0
-1%
-
-New Player Note
-Trevor Lawrence Jax - QB
-Sun 10:00 am @Hou
-
-$5
-$1.5
-80%
-
-No new player Notes
-Eric Ebron Pit - TE
-Sun 10:00 am @Buf
-
-$1
-$1.0
-1%
+$2.3
+87%
 
 Player Note
-Hunter Henry NE - TE
-Q
-Sun 1:25 pm vs Mia
-
-$3
-$1.3
-85%
-
-No new player Notes
-Baker Mayfield Cle - QB
-Sun 1:25 pm @KC
-
-$3
-$1.2
-85%
-
-Player Note
-Mark Ingram II Hou - RB
-Sun 10:00 am vs Jax
-
-$1
-$1.1
-1%
-
-No new player Notes
-Randall Cobb GB - WR
-Sun 1:25 pm @NO
-
-$0
-$1.1
-1%
-
-No new player Notes
-Tony Pollard Dal - RB
-Thu 5:20 pm @TB
-
-$6
-$1.2
-82%
-
-No new player Notes
-Devin Singletary Buf - RB
-Sun 10:00 am vs Pit
-
-$6
-$1.2
-70%
-
-No new player Notes
-Corey Davis NYJ - WR
-Sun 10:00 am @Car
-
-$4
-$1.9
-35%
-
-No new player Notes
-Cam Newton NE - QB
-Sun 1:25 pm vs Mia
-
-$1
-$1.5
-4%
-
-No new player Notes
-Zach Ertz Phi - TE
-Sun 10:00 am @Atl
-
-$1
-$1.2
-6%
-
-No new player Notes
-Nyheim Hines Ind - RB
-Q
-Sun 10:00 am vs Sea
-
-$6
-$1.3
-42%
-
-New Player Note
-Mike Williams LAC - WR
-Q
-Sun 10:00 am @Was
-
-$6
-$2.0
-34%
-
-No new player Notes
-James White NE - RB
-Sun 1:25 pm vs Mia
-
-$1
-$1.1
-3%
-
-Player Note
-Jaylen Waddle Mia - WR
-Sun 1:25 pm @NE
-
-$1
-$1.3
-28%
-
-Player Note
-Michael Gallup Dal - WR
-Thu 5:20 pm @TB
-
+DeVonta Smith Phi - WR
+Sun 10:00 am @Det
+
 $7
 $1.5
-31%
+97%
 
 No new player Notes
-Dallas Dal - DEF
-Thu 5:20 pm @TB
+Derek Carr LV - QB
+Sun 1:25 pm @LAC
+
+$7
+$1.7
+99%
+
+No new player Notes
+Tyler Lockett Sea - WR
+Mon 5:15 pm vs Den
+
+$9
+$1.8
+99%
+
+No new player Notes
+James Cook Buf - RB
+Thu 5:20 pm @LAR
 
-$0
-$1.0
-1%
+$7
+$1.9
+99%
 
 No new player Notes
-Nick Folk NE - K
+Pat Freiermuth Pit - TE
+Sun 10:00 am @Cin
+
+$7
+$1.5
+97%
+
+No new player Notes
+Harrison Butker KC - K
 Q
-Sun 1:25 pm vs Mia
-
+Sun 1:25 pm @Ari
+
 $0
 $1.3
+96%
+
+No new player Notes
+Denver Den - DEF
+Mon 5:15 pm @Sea
+
+$0
+$1.1
+96%
+
+Player Note
+Kirk Cousins Min - QB
+Q
+Sun 1:25 pm vs GB
+
+$7
+$1.6
+97%
+
+New Player Note
+Ronald Jones II KC - RB
+Sun 1:25 pm @Ari
+
+$9
+$1.4
+71%
+
+No new player Notes
+New Orleans NO - DEF
+Sun 10:00 am @Atl
+
+$0
+$1.2
+93%
+
+No new player Notes
+Rob Gronkowski TB - TE
+NA
+Sun 5:20 pm @Dal
+
+$6
+$2.3
+42%
+
+No new player Notes
+Mike Gesicki Mia - TE
+Sun 10:00 am vs NE
+
+$6
+$1.4
+87%
+
+Player Note
+Marlon Mack Hou - RB
+Sun 10:00 am vs Ind
+
+$0
+$1.6
+39%
+
+No new player Notes
+Christian Kirk Jax - WR
+Q
+Sun 10:00 am @Was
+
+$3
+$1.5
+58%
+
+Player Note
+Russell Gage TB - WR
+Q
+Sun 5:20 pm @Dal
+
+$5
+$1.3
+70%
+
+Player Note
+Drake London Atl - WR
+Q
+Sun 10:00 am vs NO
+
+$7
+$1.8
+67%
+
+Player Note
+Albert Okwuegbunam Den - TE
+Mon 5:15 pm @Sea
+
+$6
+$1.3
+96%
+
+Player Note
+James Robinson Jax - RB
+Q
+Sun 10:00 am @Was
+
+$6
+$1.5
+73%
+
+No new player Notes
+Darrell Henderson Jr. LAR - RB
+Q
+Thu 5:20 pm vs Buf
+
+$6
+$1.4
+73%
+
+No new player Notes
+Robert Woods Ten - WR
+Q
+Sun 1:25 pm vs NYG
+
+$4
+$1.5
+51%
+
+No new player Notes
+Michael Carter NYJ - RB
+Sun 10:00 am vs Bal
+
+$7
+$1.2
+80%
+
+Player Note
+George Pickens Pit - WR
+Sun 10:00 am @Cin
+
+$0
+$1.6
+8%
+
+No new player Notes
+Julio Jones TB - WR
+Sun 5:20 pm @Dal
+
+$0
+$1.6
 20%
 
 No new player Notes
-Cole Beasley Buf - WR
-Sun 10:00 am vs Pit
+Los Angeles LAC - DEF
+Sun 1:25 pm vs LV
+
+$0
+$1.1
+84%
+
+Player Note
+Dameon Pierce Hou - RB
+Sun 10:00 am vs Ind
+
+$1
+$2.6
+34%
+
+Player Note
+Baker Mayfield Car - QB
+Sun 10:00 am vs Cle
+
+$0
+$1.4
+2%
+
+No new player Notes
+Younghoe Koo Atl - K
+Sun 10:00 am vs NO
+
+$0
+$1.0
+54%
+
+No new player Notes
+Dallas Dal - DEF
+Sun 5:20 pm vs TB
+
+$0
+$1.2
+58%
+
+Player Note
+Alexander Mattison Min - RB
+Sun 1:25 pm vs GB
+
+$7
+$1.5
+87%
+
+Player Note
+Zach Wilson NYJ - QB
+Q
+Sun 10:00 am vs Bal
+
+$0
+$1.0
+0%
+
+No new player Notes
+Green Bay GB - DEF
+Sun 1:25 pm @Min
+
+$0
+$1.2
+87%
+
+Player Note
+Carson Wentz Was - QB
+Sun 10:00 am vs Jax
+
+$0
+$1.0
+0%
+
+Player Note
+Chase Claypool Pit - WR
+Q
+Sun 10:00 am @Cin
+
+$4
+$1.3
+52%
+
+No new player Notes
+Greg Joseph Min - K
+Sun 1:25 pm vs GB
+
+$0
+$1.0
+42%
+
+Player Note
+Mac Jones NE - QB
+Sun 10:00 am @Mia
+
+$1
+$1.1
+15%
+
+No new player Notes
+Cameron Brate TB - TE
+Sun 5:20 pm @Dal
+
+$0
+$1.0
+0%
+
+No new player Notes
+Chris Olave NO - WR
+Sun 10:00 am @Atl
+
+$3
+$1.5
+39%
+
+No new player Notes
+Raheem Mostert Mia - RB
+Sun 10:00 am vs NE
+
+$7
+$1.5
+29%
+
+No new player Notes
+Hunter Henry NE - TE
+Sun 10:00 am @Mia
+
+$3
+$1.1
+80%
+
+No new player Notes
+Ryan Tannehill Ten - QB
+Sun 1:25 pm vs NYG
 
 $1
 $1.1
 5%
 
-Player Note
-Marquise Brown Bal - WR
+No new player Notes
+Greg Zuerlein NYJ - K
 Q
-Mon 5:15 pm @LV
+Sun 10:00 am vs Bal
+
+$0
+$1.0
+17%
+
+No new player Notes
+Tua Tagovailoa Mia - QB
+Sun 10:00 am vs NE
 
-$4
-$1.3
-61%
+$5
+$1.4
+84%
 Previous 50 Next 50
 
 Yahoo Sports - NBC Sports Network - Paid Fantasy Terms - Terms - Feedback - Privacy Dashboard - Privacy - About Our Ads - Help
 Certain Data by Stats Perform and Rotowire
 
-© 2021 Yahoo Fantasy Sports LLC. All rights reserved.
+© 2022 Yahoo Fantasy Sports LLC. All rights reserved.
