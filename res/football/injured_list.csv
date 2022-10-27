@@ -1,7 +1,7 @@
 name,position,current_team,until
 Chad Hansen,WR,ATL,17
 Chris Blewitt,K,CLE,17
-Cole Beasley,WR,TAM,2
+Cole Beasley,WR,TAM,17
 Devonta Freeman,RB,BAL,17
 Dominik Eberle,K,DET,17
 Ethan Wolf,TE,NOR,17
@@ -28,7 +28,7 @@ Odell Beckham Jr.,WR,LAR,17
 Rob Gronkowski,TE,TAM,17
 Rodney Adams,WR,NYJ,17
 Ryan Fitzpatrick,QB,WAS,17
-Sam Sloman,K,PIT,17
+Sam Sloman,K,SFO,17
 Scottie Phillips,RB,HOU,17
 T.Y. Hilton,WR,IND,17
 Tarik Cohen,RB,CHI,17
@@ -44,7 +44,7 @@ Davion Davis,WR,HOU,17
 Deshaun Watson,QB,CLE,11
 Gus Edwards,RB,BAL,7
 Jaeden Graham,TE,PHI,17
-Jordan Howard,RB,PHI,17
+Jordan Howard,RB,NOR,17
 Jordan Veasy,WR,OAK,17
 Kawaan Baker,WR,NOR,17
 Kurt Benkert,QB,GNB,17
@@ -162,7 +162,7 @@ Javonte Williams,RB,DEN,17
 Landen Akers,WR,LAR,17
 Lynn Bowden Jr.,WR,NWE,17
 Matt Cole,WR,WAS,17
-Michael Badgley,K,CHI,17
+Michael Badgley,K,DET,17
 Nick Bawden,RB,NYJ,17
 Sean Mannion,QB,SEA,17
 Sterling Shepard,WR,NYG,17
@@ -182,3 +182,16 @@ J.K. Dobbins,RB,BAL,12
 Breece Hall,RB,NYJ,17
 D.K. Metcalf,WR,SEA,9
 Mike Williams,WR,LAC,10
+DJ Chark,WR,DET,11
+Russell Gage,WR,TAM,8
+David Blough,QB,MIN,17
+Matt Ryan,QB,IND,17
+Cam Akers,RB,LAR,17
+Devontae Booker,RB,NYG,17
+Daniel Bellinger,TE,NYG,17
+David Njoku,TE,CLE,10
+Maxx Williams,TE,ARI,17
+Cameron Dicker,K,PHI,17
+Dustin Hopkins,K,LAC,9
+Taylor Bertolet,K,LAC,17
+Allen Lazard,WR,GNB,8
