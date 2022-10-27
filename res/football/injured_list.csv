@@ -34,7 +34,6 @@ T.Y. Hilton,WR,IND,17
 Tarik Cohen,RB,CHI,17
 Tyrell Williams,WR,DET,17
 Will Fuller,WR,MIA,17
-Blake Bortles,QB,NOR,17
 Brandon Dillon,TE,NOR,17
 Chris Carson,RB,SEA,17
 Cody Core,WR,MIA,17
@@ -47,11 +46,10 @@ Jaeden Graham,TE,PHI,17
 Jordan Howard,RB,NOR,17
 Jordan Veasy,WR,OAK,17
 Kawaan Baker,WR,NOR,17
-Kurt Benkert,QB,GNB,17
+Kurt Benkert,QB,SFO,17
 Michael Gallup,WR,DAL,2
 Tim Patrick,WR,DEN,17
 Trey Edmunds,RB,PIT,17
-Brett Hundley,QB,BAL,17
 Chris Herndon,TE,NOR,17
 Chris Lacy,WR,OAK,17
 Cody Thompson,WR,SEA,17
@@ -82,7 +80,6 @@ Elijah Mitchell,RB,SFO,8
 Keenan Allen,WR,LAC,2
 Rodrigo Blankenship,K,IND,17
 Harrison Butker,K,KAN,3
-Keke Coutee,WR,IND,17
 Travis Fulgham,WR,GNB,17
 Trey Lance,QB,SFO,17
 Mike Evans,WR,TAM,3
@@ -92,7 +89,6 @@ Antoine Wesley,WR,ARI,17
 Godwin Igwebuike,RB,DET,17
 Jacques Patrick,RB,CIN,17
 Kristian Wilkerson,WR,NWE,17
-MyCole Pruitt,TE,ATL,17
 Ricky Seals-Jones,TE,NYG,17
 Seth Williams,WR,JAX,17
 Ty'Son Williams,RB,IND,17
@@ -117,10 +113,9 @@ Dez Fitzpatrick,WR,TEN,17
 Dillon Stoner,WR,OAK,17
 Duke Johnson,RB,BUF,17
 Easop Winston,WR,CLE,17
-Garrett Gilbert,QB,OAK,17
+Garrett Gilbert,QB,NWE,17
 Giovani Bernard,RB,TAM,8
 Greg Ward,WR,PHI,17
-Isaiah Coulter,WR,CHI,17
 Isaiah Zuber,WR,OAK,17
 Ishmael Hyman,WR,GNB,17
 Ja'Marcus Bradley,WR,CLE,17
@@ -130,7 +125,6 @@ Jakeem Grant,WR,CLE,17
 Jeff Driskel,QB,HOU,17
 Jermar Jefferson,RB,DET,17
 Keelan Doss,WR,NYG,17
-Kellen Mond,QB,CLE,17
 Kenny Yeboah,TE,NYJ,17
 Kirk Merritt,WR,NOR,17
 Kyle Philips,WR,TEN,3
@@ -154,7 +148,6 @@ Trey Quinn,WR,DEN,17
 Tristan Vizcaino,K,NWE,17
 Andre Baccellia,WR,ARI,17
 Antonio Williams,RB,NYG,17
-Byron Pringle,WR,CHI,17
 Jacob Harris,TE,LAR,17
 Jamison Crowder,WR,BUF,17
 Jason Huntley,RB,PIT,17
@@ -166,9 +159,9 @@ Michael Badgley,K,DET,17
 Nick Bawden,RB,NYJ,17
 Sean Mannion,QB,SEA,17
 Sterling Shepard,WR,NYG,17
-Treylon Burks,WR,TEN,7
+Treylon Burks,WR,TEN,9
 Tua Tagovailoa,QB,MIA,6
-Van Jefferson,WR,LAR,9
+Van Jefferson,WR,LAR,7
 Cordarrelle Patterson,RB,ATL,9
 Jonathan Taylor,RB,IND,5
 Damien Harris,RB,NWE,6
@@ -181,7 +174,7 @@ Carson Wentz,QB,WAS,12
 J.K. Dobbins,RB,BAL,12
 Breece Hall,RB,NYJ,17
 D.K. Metcalf,WR,SEA,9
-Mike Williams,WR,LAC,10
+Mike Williams,WR,LAC,11
 DJ Chark,WR,DET,11
 Russell Gage,WR,TAM,8
 David Blough,QB,MIN,17
@@ -195,3 +188,8 @@ Cameron Dicker,K,PHI,17
 Dustin Hopkins,K,LAC,9
 Taylor Bertolet,K,LAC,17
 Allen Lazard,WR,GNB,8
+Darrius Shepherd,WR,DEN,17
+DeSean Jackson,WR,BAL,17
+Mike Boone,RB,DEN,11
+Ronnie Rivers,RB,LAR,17
+Ty Chandler,RB,MIN,17
