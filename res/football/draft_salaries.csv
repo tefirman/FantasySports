@@ -1,0 +1,251 @@
+avg_salary,name,position,proj_salary,yahoo_team
+$72.9,Jonathan Taylor,RB,$64,Ind
+$60.5,Cooper Kupp,WR,$55,LAR
+$62.8,Austin Ekeler,RB,$57,LAC
+$60.8,Christian McCaffrey,RB,$54,Car
+$61.8,Derrick Henry,RB,$55,Ten
+$58.5,Justin Jefferson,WR,$54,Min
+$59.5,Dalvin Cook,RB,$55,Min
+$55.5,Ja'Marr Chase,WR,$52,Cin
+$56.1,Najee Harris,RB,$53,Pit
+$54.1,Joe Mixon,RB,$52,Cin
+$46.3,Stefon Diggs,WR,$46,Buf
+$48.0,Davante Adams,WR,$48,LV
+$50.2,Nick Chubb,RB,$50,Cle
+$37.8,Aaron Jones,RB,$36,GB
+$43.5,Travis Kelce,TE,$43,KC
+$41.1,CeeDee Lamb,WR,$43,Dal
+$43.8,D'Andre Swift,RB,$46,Det
+$41.0,Leonard Fournette,RB,$43,TB
+$38.0,Deebo Samuel,WR,$40,SF
+$33.2,Josh Allen,QB,$36,Buf
+$31.9,Mike Evans,WR,$36,TB
+$38.2,Alvin Kamara,RB,$38,NO
+$35.0,Saquon Barkley,RB,$35,NYG
+$44.4,Javonte Williams,RB,$48,Den
+$33.3,Mark Andrews,TE,$36,Bal
+$31.8,Tyreek Hill,WR,$36,Mia
+$27.3,Ezekiel Elliott,RB,$33,Dal
+$27.2,Tee Higgins,WR,$36,Cin
+$27.0,Keenan Allen,WR,$36,LAC
+$24.7,James Conner,RB,$30,Ari
+$22.4,Michael Pittman Jr.,WR,$30,Ind
+$23.3,A.J. Brown,WR,$33,Phi
+$25.6,Cam Akers,RB,$36,LAR
+$14.2,Patrick Mahomes,QB,$18,KC
+$22.7,David Montgomery,RB,$35,Chi
+$14.7,Justin Herbert,QB,$21,LAC
+$17.4,Kyle Pitts,TE,$23,Atl
+$15.3,DJ Moore,WR,$25,Car
+$16.1,Breece Hall,RB,$24,NYJ
+$17.3,Eli Mitchell,RB,$27,SF
+$12.2,Terry McLaurin,WR,$22,Was
+$23.4,Antonio Gibson,RB,$36,Was
+$14.9,Jaylen Waddle,WR,$28,Mia
+$13.5,Lamar Jackson,QB,$23,Bal
+$12.4,George Kittle,TE,$22,SF
+$11.8,Darren Waller,TE,$23,LV
+$8.8,Mike Williams,WR,$13,LAC
+$13.1,Josh Jacobs,RB,$24,LV
+$13.5,Diontae Johnson,WR,$29,Pit
+$12.8,Travis Etienne Jr.,RB,$23,Jax
+$8.2,Courtland Sutton,WR,$18,Den
+$7.1,Joe Burrow,QB,$16,Cin
+$11.8,J.K. Dobbins,RB,$23,Bal
+$8.5,DK Metcalf,WR,$22,Sea
+$6.5,Dalton Schultz,TE,$16,Dal
+$6.4,Kyler Murray,QB,$14,Ari
+$5.8,Allen Robinson II,WR,$10,LAR
+$9.7,AJ Dillon,RB,$23,GB
+$5.5,Jalen Hurts,QB,$12,Phi
+$4.8,Tom Brady,QB,$12,TB
+$5.8,Jerry Jeudy,WR,$18,Den
+$4.7,JuJu Smith-Schuster,WR,$13,KC
+$4.4,T.J. Hockenson,TE,$14,Det
+$8.1,Damien Harris,RB,$23,NE
+$3.2,Dallas Goedert,TE,$8,Phi
+$4.3,Buffalo,DEF,$2,Buf
+$4.2,Gabriel Davis,WR,$9,Buf
+$4.1,Brandin Cooks,WR,$14,Hou
+$5.4,Clyde Edwards-Helaire,RB,$12,KC
+$3.7,Russell Wilson,QB,$8,Den
+$7.7,Miles Sanders,RB,$22,Phi
+$3.6,Marquise Brown,WR,$10,Ari
+$3.6,Dak Prescott,QB,$8,Dal
+$7.5,Amari Cooper,WR,$22,Cle
+$4.9,Amon-Ra St. Brown,WR,$18,Det
+$7.9,Devin Singletary,RB,$22,Buf
+$2.7,Dawson Knox,TE,$10,Buf
+$3.2,Justin Tucker,K,$0,Bal
+$2.0,Tampa Bay,DEF,$1,TB
+$6.3,Michael Thomas,WR,$18,NO
+$2.0,San Francisco,DEF,$1,SF
+$3.7,Rashod Bateman,WR,$16,Bal
+$2.7,Adam Thielen,WR,$7,Min
+$5.0,Rashaad Penny,RB,$18,Sea
+$2.5,Evan McPherson,K,$0,Cin
+$2.9,Aaron Rodgers,QB,$6,GB
+$2.5,Matthew Stafford,QB,$8,LAR
+$2.3,Zach Ertz,TE,$6,Ari
+$3.8,Kareem Hunt,RB,$14,Cle
+$1.7,Los Angeles,DEF,$0,LAR
+$3.3,Chase Edmonds,RB,$13,Mia
+$4.1,Chris Godwin,WR,$9,TB
+$3.3,Tony Pollard,RB,$12,Dal
+$2.5,Darnell Mooney,WR,$8,Chi
+$1.5,Tyler Bass,K,$0,Buf
+$2.8,Cordarrelle Patterson,RB,$7,Atl
+$3.4,Rhamondre Stevenson,RB,$12,NE
+$2.8,Melvin Gordon III,RB,$12,Den
+$1.8,Hunter Renfrow,WR,$7,LV
+$4.7,DeAndre Hopkins,WR,$7,Ari
+$3.2,Elijah Moore,WR,$16,NYJ
+$1.2,Indianapolis,DEF,$0,Ind
+$2.7,Kenneth Walker III,RB,$12,Sea
+$1.2,Daniel Carlson,K,$0,LV
+$2.4,Trey Lance,QB,$7,SF
+$1.8,Brandon Aiyuk,WR,$8,SF
+$1.3,Matt Gay,K,$0,LAR
+$2.3,Allen Lazard,WR,$6,GB
+$1.5,DeVonta Smith,WR,$7,Phi
+$1.7,Derek Carr,QB,$7,LV
+$1.8,Tyler Lockett,WR,$9,Sea
+$1.9,James Cook,RB,$7,Buf
+$1.5,Pat Freiermuth,TE,$7,Pit
+$1.3,Harrison Butker,K,$0,KC
+$1.1,Denver,DEF,$0,Den
+$1.6,Kirk Cousins,QB,$7,Min
+$1.4,Ronald Jones II,RB,$9,KC
+$1.2,New Orleans,DEF,$0,NO
+$2.3,Rob Gronkowski,TE,$6,TB
+$1.4,Mike Gesicki,TE,$6,Mia
+$1.6,Marlon Mack,RB,$0,Hou
+$1.5,Christian Kirk,WR,$3,Jax
+$1.3,Russell Gage,WR,$5,TB
+$1.8,Drake London,WR,$7,Atl
+$1.3,Albert Okwuegbunam,TE,$6,Den
+$1.5,James Robinson,RB,$6,Jax
+$1.4,Darrell Henderson Jr.,RB,$6,LAR
+$1.5,Robert Woods,WR,$4,Ten
+$1.2,Michael Carter,RB,$7,NYJ
+$1.6,George Pickens,WR,$0,Pit
+$1.6,Julio Jones,WR,$0,TB
+$1.1,Los Angeles,DEF,$0,LAC
+$2.6,Dameon Pierce,RB,$1,Hou
+$1.4,Baker Mayfield,QB,$0,Car
+$1.0,Younghoe Koo,K,$0,Atl
+$1.2,Dallas,DEF,$0,Dal
+$1.5,Alexander Mattison,RB,$7,Min
+$1.0,Zach Wilson,QB,$0,NYJ
+$1.2,Green Bay,DEF,$0,GB
+$1.0,Carson Wentz,QB,$0,Was
+$1.3,Chase Claypool,WR,$4,Pit
+$1.0,Greg Joseph,K,$0,Min
+$1.1,Mac Jones,QB,$1,NE
+$1.0,Cameron Brate,TE,$0,TB
+$1.5,Chris Olave,WR,$3,NO
+$1.5,Raheem Mostert,RB,$7,Mia
+$1.1,Hunter Henry,TE,$3,NE
+$1.1,Ryan Tannehill,QB,$1,Ten
+$1.0,Greg Zuerlein,K,$0,NYJ
+$1.4,Tua Tagovailoa,QB,$5,Mia
+$2.7,Deshaun Watson,QB,$6,Cle
+$1.4,Kadarius Toney,WR,$1,NYG
+$1.3,Las Vegas,DEF,$0,LV
+$1.5,Mecole Hardman,WR,$0,KC
+$1.4,Nyheim Hines,RB,$5,Ind
+$1.0,Robbie Gould,K,$0,SF
+$1.0,Nick Folk,K,$0,NE
+$1.1,Sony Michel,RB,$1,Mia
+$1.1,Sammy Watkins,WR,$0,GB
+$1.4,Mark Ingram II,RB,$0,NO
+$1.1,Odell Beckham Jr.,WR,$0,LAR
+$1.5,Jarvis Landry,WR,$2,NO
+$1.2,Garrett Wilson,WR,$2,NYJ
+$1.1,Baltimore,DEF,$0,Bal
+$1.1,Kenny Golladay,WR,$0,NYG
+$1.3,Justin Fields,QB,$4,Chi
+$1.4,Jalen Tolbert,WR,$0,Dal
+$1.3,Rachaad White,RB,$0,TB
+$1.3,DeVante Parker,WR,$1,NE
+$1.1,Jared Goff,QB,$0,Det
+$1.0,Hayden Hurst,TE,$0,Cin
+$1.0,Chris Boswell,K,$0,Pit
+$1.1,Tyler Boyd,WR,$1,Cin
+$1.2,Marquez Valdes-Scantling,WR,$1,KC
+$1.5,Treylon Burks,WR,$5,Ten
+$1.3,Tyler Allgeier,RB,$0,Atl
+$1.7,Brian Robinson Jr.,RB,$0,Was
+$1.4,Isaiah Spiller,RB,$0,LAC
+$1.2,Jameis Winston,QB,$0,NO
+$1.4,DJ Chark Jr.,WR,$1,Det
+$1.0,Tim Patrick,WR,$0,Den
+$1.2,Jakobi Meyers,WR,$1,NE
+$1.1,Darrel Williams,RB,$1,Ari
+$1.3,J.D. McKissic,RB,$4,Was
+$1.1,Evan Engram,TE,$0,Jax
+$1.6,Isiah Pacheco,RB,$0,KC
+$1.5,Christian Watson,WR,$0,GB
+$1.4,Skyy Moore,WR,$0,KC
+$1.2,Jamaal Williams,RB,$3,Det
+$1.1,Cole Kmet,TE,$3,Chi
+$1.1,David Njoku,TE,$1,Cle
+$1.0,Matt Ryan,QB,$1,Ind
+$1.2,Alec Pierce,WR,$0,Ind
+$1.0,Cade York,K,$0,Cle
+$1.1,Rondale Moore,WR,$0,Ari
+$1.3,Kenneth Gainwell,RB,$2,Phi
+$1.3,Khalil Herbert,RB,$0,Chi
+$1.0,Tyler Higbee,TE,$1,LAR
+$1.2,Zamir White,RB,$0,LV
+$1.0,Trevor Lawrence,QB,$1,Jax
+$1.1,Jahan Dotson,WR,$0,Was
+$1.9,Romeo Doubs,WR,$0,GB
+$2.1,Jameson Williams,WR,$0,Det
+$1.1,D'Onta Foreman,RB,$1,Car
+$1.1,Washington,DEF,$0,Was
+$1.2,Wil Lutz,K,$0,NO
+$1.1,Noah Fant,TE,$2,Sea
+$1.0,Austin Hooper,TE,$0,Ten
+$1.5,Michael Gallup,WR,$5,Dal
+$1.3,Matt Prater,K,$0,Ari
+$1.1,Irv Smith Jr.,TE,$1,Min
+$1.1,Robert Tonyan,TE,$1,GB
+$1.0,New England,DEF,$0,NE
+$1.4,Gus Edwards,RB,$3,Bal
+$1.0,Jason Sanders,K,$0,Mia
+$1.1,Pittsburgh,DEF,$0,Pit
+$1.0,Daniel Jones,QB,$0,NYG
+$2.3,Rodrigo Blankenship,K,$0,Ind
+$1.5,Tennessee,DEF,$0,Ten
+$1.0,Jake Elliott,K,$0,Phi
+$1.0,Gerald Everett,TE,$0,LAC
+$1.1,Logan Thomas,TE,$2,Was
+$1.1,Ryan Succop,K,$0,TB
+$1.0,Cleveland,DEF,$0,Cle
+$1.2,Brandon McManus,K,$0,Den
+$1.1,Dustin Hopkins,K,$0,LAC
+$1.0,Kansas City,DEF,$0,KC
+$1.0,Miami,DEF,$0,Mia
+$1.0,Philadelphia,DEF,$0,Phi
+$1.0,Cincinnati,DEF,$0,Cin
+$1.0,Minnesota,DEF,$0,Min
+$-,Nico Collins,WR,$0,Hou
+$-,Corey Davis,WR,$1,NYJ
+$-,K.J. Osborn,WR,$0,Min
+$-,Samaje Perine,RB,$0,Cin
+$-,Robbie Anderson,WR,$0,Car
+$-,Kendrick Bourne,WR,$0,NE
+$-,Eno Benjamin,RB,$0,Ari
+$-,Mo Alie-Cox,TE,$0,Ind
+$-,Dontrell Hilliard,RB,$1,Ten
+$-,Parris Campbell,WR,$0,Ind
+$-,Van Jefferson,WR,$0,LAR
+$-,Isaiah McKenzie,WR,$0,Buf
+$-,Marcus Mariota,QB,$0,Atl
+$-,Boston Scott,RB,$0,Phi
+$-,Tyrion Davis-Price,RB,$0,SF
+$-,D'Ernest Johnson,RB,$1,Cle
+$-,Wan'Dale Robinson,WR,$0,NYG
+$-,David Bell,WR,$0,Cle
+$-,Davis Mills,QB,$0,Hou
