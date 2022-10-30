@@ -94,13 +94,9 @@ def establish_oauth(season=None,name=None,new_login=False):
     teams = [{'team_key':teams_info[str(ind)]['team'][0][0]['team_key'],\
     'name':teams_info[str(ind)]['team'][0][2]['name']} for ind in range(teams_info['count'])]
     try:
-#        nfl_teams = pd.read_csv("https://raw.githubusercontent.com/" + \
-#        "tefirman/FantasySports/master/FantasyFootball_NFLTeams.csv")
         nfl_teams = pd.read_csv("https://raw.githubusercontent.com/" + \
         "tefirman/FantasySports/master/res/football/team_abbrevs.csv")
     except:
-#        nfl_teams = [team.split(',') for team in requests.get("https://raw.githubusercontent.com/" + \
-#        "tefirman/FantasySports/master/FantasyFootball_NFLTeams.csv",verify=False).text.split('\r')]
         nfl_teams = [team.split(',') for team in requests.get("https://raw.githubusercontent.com/" + \
         "tefirman/FantasySports/master/res/football/team_abbrevs.csv",verify=False).text.split('\r')]
         nfl_teams = pd.DataFrame(nfl_teams[1:],columns=nfl_teams[0])
@@ -235,6 +231,7 @@ def get_players(week=None):
     rosters.player_id = rosters.player_id.astype(int)
     if not week:
         week = lg.current_week()
+    selected = pd.DataFrame(columns=['player_id','selected_position','fantasy_team'])
     for team in teams:
         tm = lg.to_team(team['team_key'])
         players = pd.DataFrame(tm.roster(week))
@@ -242,7 +239,9 @@ def get_players(week=None):
             continue
         if (~players.player_id.isin(rosters.player_id)).any():
             print('Some players are missing... ' + ', '.join(players.loc[~players.player_id.isin(rosters.player_id),'name']))
-        rosters.loc[rosters.player_id.isin(players.player_id.tolist()),'fantasy_team'] = team['name']
+        players['fantasy_team'] = team['name']
+        selected = selected.append(players[['player_id','selected_position','fantasy_team']],ignore_index=True,sort=False)
+    rosters = pd.merge(left=rosters,right=selected,how='left',on='player_id')
     if 'fantasy_team' not in rosters.columns:
         rosters['fantasy_team'] = None
     rosters.loc[rosters.player_id == 100014,'name'] += ' Rams'
@@ -256,8 +255,8 @@ def get_players(week=None):
     inds = rosters.position.apply(len) == 0
     rosters.loc[inds,'position'] = 'TE'
     rosters.loc[~inds,'position'] = rosters.loc[~inds,'position'].apply(lambda x: x[0])
-    rosters = rosters[['name','eligible_positions','status','player_id',
-    'editorial_team_abbr','fantasy_team','position']]
+    rosters = rosters[['name','eligible_positions','selected_position','status',
+    'player_id','editorial_team_abbr','fantasy_team','position']]
     return rosters
 
 def get_games(start,finish):
@@ -413,13 +412,9 @@ basaloppqbtime=[1.0,0.0,0.0,0.0],tot=None,war_sim=True):
         tot['weeks_ago'] = (datetime.datetime.now() - pd.to_datetime(tot.boxscore.str[:8],infer_datetime_format=True)).dt.days/7.0
         
         try:
-#            corrections = pd.read_csv("https://raw.githubusercontent.com/" + \
-#            "tefirman/FantasySports/master/FantasyFootball_NameCorrections.csv")
             corrections = pd.read_csv("https://raw.githubusercontent.com/" + \
             "tefirman/FantasySports/master/res/football/name_corrections.csv")
         except:
-#            corrections = [player.split(',') for player in requests.get("https://raw.githubusercontent.com/" + \
-#            "tefirman/FantasySports/master/FantasyFootball_NameCorrections.csv",verify=False).text.split('\r')]
             corrections = [player.split(',') for player in requests.get("https://raw.githubusercontent.com/" + \
             "tefirman/FantasySports/master/res/football/name_corrections.csv",verify=False).text.split('\r')]
             corrections = pd.DataFrame(corrections[1:],columns=corrections[0])
@@ -527,13 +522,14 @@ basaloppqbtime=[1.0,0.0,0.0,0.0],tot=None,war_sim=True):
     
     league_avg = by_player.loc[by_player.name.str.contains('Average_')]
     by_player = pd.merge(left=by_player,right=rosters[['name','position',\
-    'player_id','status','fantasy_team','editorial_team_abbr']].drop_duplicates(),\
+    'player_id','status','fantasy_team','editorial_team_abbr','selected_position']].drop_duplicates(),\
     how='right',on=['name','position']).append(league_avg,ignore_index=True,sort=False)
-    rookies = pd.merge(left=by_player.loc[by_player.WAR.isnull(),['name','player_id','position','current_team','fantasy_team','editorial_team_abbr']],\
+    rookies = pd.merge(left=by_player.loc[by_player.WAR.isnull(),\
+    ['name','player_id','position','current_team','fantasy_team','editorial_team_abbr','selected_position']],\
     right=league_avg[['position','points_avg','points_stdev','WAR']],how='inner',on='position')
     by_player = by_player.loc[~by_player.WAR.isnull()]
     by_player = by_player.append(rookies[['name','player_id','position','current_team',\
-    'points_avg','points_stdev','WAR','fantasy_team','editorial_team_abbr']],ignore_index=True,sort=False)
+    'points_avg','points_stdev','WAR','fantasy_team','editorial_team_abbr','selected_position']],ignore_index=True,sort=False)
     if as_of//100 == latest_season:
         """ First week issues... """
         by_player = pd.merge(left=by_player,right=nfl_teams[['abbrev','yahoo']]\
@@ -560,13 +556,9 @@ def add_injuries(by_player,as_of):
                 by_player.loc[by_player.name == name,'until'] = 17
     if as_of//100 == latest_season:
         try:
-#            inj_proj = pd.read_csv("https://raw.githubusercontent.com/" + \
-#            "tefirman/FantasySports/master/FantasyFootball_InjuredList.csv")
             inj_proj = pd.read_csv("https://raw.githubusercontent.com/" + \
             "tefirman/FantasySports/master/res/football/injured_list.csv")
         except:
-#            inj_proj = [player.split(',') for player in requests.get("https://raw.githubusercontent.com/" + \
-#            "tefirman/FantasySports/master/FantasyFootball_InjuredList.csv",verify=False).text.split('\r')]
             inj_proj = [player.split(',') for player in requests.get("https://raw.githubusercontent.com/" + \
             "tefirman/FantasySports/master/res/football/injured_list.csv",verify=False).text.split('\r')]
             inj_proj = pd.DataFrame(inj_proj[1:],columns=inj_proj[0])
@@ -584,7 +576,7 @@ def add_injuries(by_player,as_of):
             (by_player.until >= lg.current_week()) & (~by_player.fantasy_team.isnull() | (by_player.WAR >= 0))
             if oldInjury.sum() > 0:
                 print('Need to update old injuries... ' + ', '.join(by_player.loc[oldInjury,'name'].tolist()))
-                #by_player.loc[oldInjury,'until'] = lg.current_week()
+                # by_player.loc[oldInjury,'until'] = lg.current_week()
         by_player['until'] = by_player[['until_orig','until']].min(axis=1)
         del by_player['until_orig']
     return by_player
@@ -614,7 +606,7 @@ def add_roster_pcts(players,inc=25):
             full_name = [val['name']['full'] for val in player[0] if 'name' in val]
             pct_owned = [float(val['value'])/100.0 for val in player[1]['percent_owned'] if 'value' in val]
             if len(pct_owned) == 0:
-                #print("Can't find roster percentage for {}...".format(full_name))
+                # print("Can't find roster percentage for {}...".format(full_name))
                 pct_owned = [0.0]
             roster_pcts = roster_pcts.append(pd.DataFrame({'player_id':player_id,\
             'name':full_name,'pct_rostered':pct_owned}),ignore_index=True,sort=False)
@@ -698,27 +690,21 @@ def starters(rosters,week,as_of=None,basaloppqbtime=[1.0,0.0,0.0,0.0]):
     """ WAR is linear with points_avg, but slope/intercept depends on position """
     """ Harder to characterize how WAR varies with points_stdev, ignoring for now... """
     rosters = rosters.sort_values(by='points_avg',ascending=False)
-    #rosters = rosters.sort_values(by='WAR',ascending=False)
+    # rosters = rosters.sort_values(by='WAR',ascending=False)
     rosters['starter'] = False
     rosters['injured'] = rosters.until >= week
     if week == as_of%100 and as_of//100 == latest_season \
     and datetime.datetime.now().month > 8: # Careful when your draft is in September...
-        if datetime.datetime.now().hour < 20:
-            completed = nfl_schedule.loc[(nfl_schedule.season == as_of//100) & (nfl_schedule.week == week) & \
-            (nfl_schedule.date < datetime.datetime.now().date()),'abbrev'].tolist()
-        else:
-            completed = nfl_schedule.loc[(nfl_schedule.season == as_of//100) & (nfl_schedule.week == week) & \
-            (nfl_schedule.date <= datetime.datetime.now().date()),'abbrev'].tolist()
+        cutoff = datetime.datetime.now()
+        if datetime.datetime.now().hour >= 20:
+            cutoff += datetime.timedelta(days=1)
+        completed = nfl_schedule.loc[(nfl_schedule.season == as_of//100) & \
+        (nfl_schedule.week == week) & (nfl_schedule.date < cutoff.date()),'abbrev'].tolist()
         for team in teams:
-            tm = lg.to_team(team['team_key'])
-            players = pd.DataFrame(tm.roster(week))
-            players['fantasy_team'] = team['name']
-            started = players.loc[(players.selected_position != 'BN') & \
-            players.player_id.isin(rosters.loc[(rosters.fantasy_team == team['name']) & \
-            rosters.current_team.isin(completed),'player_id'])]
-            not_available = players.loc[(players.selected_position == 'BN') & \
-            players.player_id.isin(rosters.loc[(rosters.fantasy_team == team['name']) & \
-            rosters.current_team.isin(completed),'player_id'])]
+            started = rosters.loc[(rosters.selected_position != 'BN') & \
+            (rosters.fantasy_team == team['name']) & rosters.current_team.isin(completed)]
+            not_available = rosters.loc[(rosters.selected_position == 'BN') & \
+            (rosters.fantasy_team == team['name']) & rosters.current_team.isin(completed)]
             num_pos = {pos['roster_position']['position']:pos['roster_position']['count'] - \
             sum(started.selected_position == pos['roster_position']['position']) \
             for pos in settings['roster_positions'] if pos['roster_position']['position'] not in ['W/R/T','W/T','BN','IR']}
