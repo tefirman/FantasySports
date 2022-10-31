@@ -26,8 +26,6 @@ import warnings
 warnings.filterwarnings("ignore")
 latest_season = datetime.datetime.now().year - int(datetime.datetime.now().month <= 9)
 
-""" Adding comment #2 """
-
 """ Positions: PG, SG, G, SF, PF, F, C, C, Util, Util, BN, BN, BN, IL, IL """
 """ Categories: FG%, FT%, 3PTM, PTS, REB, AST, ST, BLK, TO """
 
