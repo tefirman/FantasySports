@@ -1,0 +1,4 @@
+sender = "UPDATEEMAILADDRESS"
+password = "UPDATEPASSWORD"
+consumer_key = "UPDATEKEY"
+consumer_secret = "UPDATESECRET"

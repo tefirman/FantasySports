@@ -19,10 +19,11 @@ import yahoo_fantasy_api as yfa
 import json
 import requests
 try:
-    import emailcreds
+    import config
 except:
-    print("Can't find email credentials... Email functionality won't work...")
-    emailcreds = None
+    print("Credentials have not been established...")
+    set_up_config()
+    import config
 import smtplib, ssl
 from email import encoders
 from email.mime.base import MIMEBase
@@ -32,6 +33,23 @@ import traceback
 import warnings
 warnings.filterwarnings("ignore")
 latest_season = datetime.datetime.now().year - int(datetime.datetime.now().month < 7)
+
+def set_up_config():
+    consumer_key = input("Yahoo OAuth Key: ")
+    consumer_secret = input("Yahoo OAuth Secret: ")
+    emailfunc = ""
+    while emailfunc.lower() not in ['y','yes','n','no']:
+        emailfunc = input('Would you like to enable email functionality? ')
+    if emailfunc.lower() in ['y','yes']:
+        sender = '"{}"'.format(input("Sender Email Address: "))
+        password = '"{}"'.format(input("Sender Email Password: "))
+    else:
+        sender = "None"
+        password = "None"
+    tempData = open('config.py','w')
+    tempData.write('sender = "{}"\npassword = "{}"\nconsumer_key = {}\nconsumer_secret = {}'\
+    .format(sender, password, consumer_key, consumer_secret))
+    tempData.close()
 
 def establish_oauth(season=None,name=None,new_login=False):
     global oauth
@@ -47,8 +65,8 @@ def establish_oauth(season=None,name=None,new_login=False):
     if new_login and os.path.exists('oauth2.json'):
         os.remove('oauth2.json')
     if not os.path.exists('oauth2.json'):
-        creds = {'consumer_key': 'dj0yJmk9OFFGQ3dueUt6c0NtJmQ9WVdrOU1XdEdNelpJTnpBbWNHbzlNQS0tJnM9Y29uc3VtZXJzZWNyZXQmc3Y9MCZ4PWZm',\
-                 'consumer_secret': '0828d2a5d40283ff7d3bd9c56abda72e9ea08b34'}
+        creds = {'consumer_key': config.consumer_key,\
+                 'consumer_secret': config.consumer_secret}
         with open('oauth2.json', "w") as f:
             f.write(json.dumps(creds))
     oauth = OAuth2(None, None, from_file='oauth2.json')
@@ -1213,7 +1231,7 @@ def excelAutofit(df,name,writer):
 
 def sendEmail(subject,body,address,filename=None):
     message = MIMEMultipart()
-    message["From"] = emailcreds.sender
+    message["From"] = config.sender
     message["To"] = address
     message["Subject"] = subject
     message.attach(MIMEText(body + '\n\n', "plain"))
@@ -1227,8 +1245,8 @@ def sendEmail(subject,body,address,filename=None):
     text = message.as_string()
     context = ssl.create_default_context()
     with smtplib.SMTP_SSL("smtp.gmail.com",465,context=context) as server:
-        server.login(emailcreds.sender,emailcreds.password)
-        server.sendmail(emailcreds.sender,address,text)
+        server.login(config.sender,config.password)
+        server.sendmail(config.sender,address,text)
 
 def main():
     parser = optparse.OptionParser()
