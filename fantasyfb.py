@@ -18,12 +18,6 @@ from yahoo_oauth import OAuth2
 import yahoo_fantasy_api as yfa
 import json
 import requests
-try:
-    import config
-except:
-    print("Credentials have not been established...")
-    set_up_config()
-    import config
 import smtplib, ssl
 from email import encoders
 from email.mime.base import MIMEBase
@@ -33,8 +27,6 @@ import traceback
 import warnings
 warnings.filterwarnings("ignore")
 latest_season = datetime.datetime.now().year - int(datetime.datetime.now().month < 7)
-
-""" Adding comment #1 """
 
 def set_up_config():
     consumer_key = input("Yahoo OAuth Key: ")
@@ -49,9 +41,16 @@ def set_up_config():
         sender = "None"
         password = "None"
     tempData = open('config.py','w')
-    tempData.write('sender = "{}"\npassword = "{}"\nconsumer_key = {}\nconsumer_secret = {}'\
+    tempData.write('sender = {}\npassword = {}\nconsumer_key = "{}"\nconsumer_secret = "{}"'\
     .format(sender, password, consumer_key, consumer_secret))
     tempData.close()
+
+try:
+    import config
+except:
+    print("Credentials have not been established...")
+    set_up_config()
+    import config
 
 def establish_oauth(season=None,name=None,new_login=False):
     global oauth
