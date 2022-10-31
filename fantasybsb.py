@@ -22,6 +22,8 @@ import optparse
 import requests
 latest_season = datetime.datetime.now().year
 
+""" Adding dummy comment #3 """
+
 def get_schedule(team):
     if os.path.exists('{}_schedule.html'.format(team)):
         created = os.stat('{}_schedule.html'.format(team)).st_ctime
