@@ -114,10 +114,10 @@ def establish_oauth(season=None,name=None,new_login=False):
     'name':teams_info[str(ind)]['team'][0][2]['name']} for ind in range(teams_info['count'])]
     try:
         nfl_teams = pd.read_csv("https://raw.githubusercontent.com/" + \
-        "tefirman/FantasySports/master/res/football/team_abbrevs.csv")
+        "tefirman/FantasySports/main/res/football/team_abbrevs.csv")
     except:
         nfl_teams = [team.split(',') for team in requests.get("https://raw.githubusercontent.com/" + \
-        "tefirman/FantasySports/master/res/football/team_abbrevs.csv",verify=False).text.split('\r')]
+        "tefirman/FantasySports/main/res/football/team_abbrevs.csv",verify=False).text.split('\r')]
         nfl_teams = pd.DataFrame(nfl_teams[1:],columns=nfl_teams[0])
     nfl_schedule = pd.read_csv("https://projects.fivethirtyeight.com/nfl-api/nfl_elo.csv")
     nfl_schedule = nfl_schedule.loc[nfl_schedule.playoff.isnull(),\
@@ -432,10 +432,10 @@ basaloppqbtime=[1.0,0.0,0.0,0.0],tot=None,war_sim=True):
         
         try:
             corrections = pd.read_csv("https://raw.githubusercontent.com/" + \
-            "tefirman/FantasySports/master/res/football/name_corrections.csv")
+            "tefirman/FantasySports/main/res/football/name_corrections.csv")
         except:
             corrections = [player.split(',') for player in requests.get("https://raw.githubusercontent.com/" + \
-            "tefirman/FantasySports/master/res/football/name_corrections.csv",verify=False).text.split('\r')]
+            "tefirman/FantasySports/main/res/football/name_corrections.csv",verify=False).text.split('\r')]
             corrections = pd.DataFrame(corrections[1:],columns=corrections[0])
         rosters = pd.merge(left=rosters,right=corrections,how='left',on='name')
         rosters.loc[~rosters.new_name.isnull(),'name'] = rosters.loc[~rosters.new_name.isnull(),'new_name']
@@ -576,10 +576,10 @@ def add_injuries(by_player,as_of):
     if as_of//100 == latest_season:
         try:
             inj_proj = pd.read_csv("https://raw.githubusercontent.com/" + \
-            "tefirman/FantasySports/master/res/football/injured_list.csv")
+            "tefirman/FantasySports/main/res/football/injured_list.csv")
         except:
             inj_proj = [player.split(',') for player in requests.get("https://raw.githubusercontent.com/" + \
-            "tefirman/FantasySports/master/res/football/injured_list.csv",verify=False).text.split('\r')]
+            "tefirman/FantasySports/main/res/football/injured_list.csv",verify=False).text.split('\r')]
             inj_proj = pd.DataFrame(inj_proj[1:],columns=inj_proj[0])
         inj_proj = inj_proj.loc[inj_proj.until >= lg.current_week()]
         by_player = pd.merge(left=by_player.rename(columns={'until':'until_orig'}),\
