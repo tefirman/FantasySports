@@ -1365,12 +1365,12 @@ def main():
         repeats = by_player.loc[~by_player.name.str.contains('Average_')].groupby('name').size().to_frame('freq').reset_index()
         print(repeats.loc[repeats.freq > 1,'name'].tolist())
     
-#    """ Analyzing multi-player trade """
-#    by_player.loc[by_player.name.isin(["Khalil Herbert",'Dalvin Cook']),'fantasy_team'] = 'The Algorithm'
-#    by_player.loc[by_player.name.isin(["Keenan Allen",'Robert Woods']),'fantasy_team'] = "The Sofa Kings"
-##    by_player.loc[by_player.name.isin(['BAL']),'fantasy_team'] = "The Great Gadsby's"
-##    by_player.loc[by_player.name.isin(['Robert Woods']),'fantasy_team'] = None
-#    """ Analyzing multi-player trade """
+    # """ Analyzing multi-player trade """
+    # # by_player.loc[by_player.name.isin(["Travis Kelce"]),'fantasy_team'] = 'The Algorithm'
+    # # by_player.loc[by_player.name.isin(["Keenan Allen",'David Montgomery']),'fantasy_team'] = "The Sofa Kings"
+    # by_player.loc[by_player.name.isin(['Austin Ekeler','Adam Thielen']),'fantasy_team'] = "Toothless Wonders"
+    # by_player.loc[by_player.name.isin(['Gabriel Davis','Tony Pollard']),'fantasy_team'] = "Orchids of Asia"
+    # """ Analyzing multi-player trade """
     
     rosters = by_player.loc[~by_player.fantasy_team.isnull()].sort_values(by=['fantasy_team','WAR'],ascending=[True,False])
     rosters_weighted = starters(rosters,int(options.as_of)%100,int(options.as_of),options.basaloppqbtime)
