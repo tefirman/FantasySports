@@ -14,7 +14,7 @@ Trey Ragas,RB,LAR,17
 Wayne Gallman,RB,MIN,17
 Antonio Brown,WR,TAM,17
 Brian Johnson,K,WAS,17
-Calvin Ridley,WR,ATL,17
+Calvin Ridley,WR,JAX,17
 Chris Naggar,K,DAL,17
 David Johnson,RB,HOU,17
 DeAndre Hopkins,WR,ARI,6
@@ -76,9 +76,9 @@ Sammis Reyes,TE,WAS,17
 Terry Godwin,WR,TEN,17
 Zane Gonzalez,K,CAR,8
 Dak Prescott,QB,DAL,6
-Elijah Mitchell,RB,SFO,8
+Elijah Mitchell,RB,SFO,10
 Keenan Allen,WR,LAC,9
-Rodrigo Blankenship,K,IND,17
+Rodrigo Blankenship,K,ARI,17
 Harrison Butker,K,KAN,3
 Travis Fulgham,WR,GNB,17
 Trey Lance,QB,SFO,17
@@ -168,7 +168,7 @@ Damien Harris,RB,NWE,6
 Rashaad Penny,RB,SEA,17
 Marquise Brown,WR,ARI,13
 Randall Cobb,WR,GNB,10
-Michael Thomas,WR,NOR,8
+Michael Thomas,WR,NOR,17
 Jarvis Landry,WR,NOR,8
 Carson Wentz,QB,WAS,12
 J.K. Dobbins,RB,BAL,12
@@ -195,10 +195,12 @@ Ronnie Rivers,RB,LAR,17
 Ty Chandler,RB,MIN,17
 Ja'Marr Chase,WR,CIN,12
 Corey Davis,WR,NYJ,8
-Deebo Samuel,WR,SFO,8
+Deebo Samuel,WR,SFO,9
 Josh Palmer,WR,LAC,8
 Mason Kinsey,WR,TEN,17
 Chuba Hubbard,RB,CAR,8
-Ezekiel Elliott,RB,DAL,8
+Ezekiel Elliott,RB,DAL,9
 James Conner,RB,ARI,8
 Mike Davis,RB,BAL,17
+Rashod Bateman,WR,BAL,17
+Mark Ingram,RB,NOR,11
