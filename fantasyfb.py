@@ -8,6 +8,7 @@ Created on Sat Sep  7 19:09:47 2019
 
 import pandas as pd
 import os
+import shutil
 import numpy as np
 from sportsreference.nfl.boxscore import Boxscore, Boxscores
 import time
@@ -23,34 +24,11 @@ from email import encoders
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from dotenv import load_dotenv
 import traceback
 import warnings
 warnings.filterwarnings("ignore")
 latest_season = datetime.datetime.now().year - int(datetime.datetime.now().month < 7)
-
-def set_up_config():
-    consumer_key = input("Yahoo OAuth Key: ")
-    consumer_secret = input("Yahoo OAuth Secret: ")
-    emailfunc = ""
-    while emailfunc.lower() not in ['y','yes','n','no']:
-        emailfunc = input('Would you like to enable email functionality? ')
-    if emailfunc.lower() in ['y','yes']:
-        sender = '"{}"'.format(input("Sender Email Address: "))
-        password = '"{}"'.format(input("Sender Email Password: "))
-    else:
-        sender = "None"
-        password = "None"
-    tempData = open('config.py','w')
-    tempData.write('sender = {}\npassword = {}\nconsumer_key = "{}"\nconsumer_secret = "{}"'\
-    .format(sender, password, consumer_key, consumer_secret))
-    tempData.close()
-
-try:
-    import config
-except:
-    print("Credentials have not been established...")
-    set_up_config()
-    import config
 
 def establish_oauth(season=None,name=None,new_login=False):
     global oauth
@@ -63,11 +41,29 @@ def establish_oauth(season=None,name=None,new_login=False):
     global nfl_schedule
     global nfl_teams
     global current_sched
+
     if new_login and os.path.exists('oauth2.json'):
         os.remove('oauth2.json')
+
+    load_dotenv()
+    if 'CONSUMER_KEY' not in os.environ \
+    or 'CONSUMER_SECRET' not in os.environ:
+        print("No valid .env file present, copying from .env.example")
+        shutil.copyfile(".env.example", ".env")
+    if os.environ['CONSUMER_KEY'] == 'updatekey' \
+    and os.environ['CONSUMER_SECRET'] == 'updatesecret':
+        print("It appears you haven't updated the environment variables...")
+        consumer_key = input("Yahoo OAuth Key: ")
+        os.system("sed -i 's/updatekey/{}/g' .env".format(consumer_key))
+        consumer_secret = input("Yahoo OAuth Secret: ")
+        os.system("sed -i 's/updatesecret/{}/g' .env".format(consumer_secret))
+        load_dotenv()
+        if os.path.exists('oauth2.json'):
+            os.remove('oauth.json')
+
     if not os.path.exists('oauth2.json'):
-        creds = {'consumer_key': config.consumer_key,\
-                 'consumer_secret': config.consumer_secret}
+        creds = {'consumer_key': os.environ['CONSUMER_KEY'],\
+                 'consumer_secret': os.environ['CONSUMER_SECRET']}
         with open('oauth2.json', "w") as f:
             f.write(json.dumps(creds))
     oauth = OAuth2(None, None, from_file='oauth2.json')
@@ -1366,10 +1362,10 @@ def main():
         print(repeats.loc[repeats.freq > 1,'name'].tolist())
     
     # """ Analyzing multi-player trade """
-    # # by_player.loc[by_player.name.isin(["Travis Kelce"]),'fantasy_team'] = 'The Algorithm'
-    # # by_player.loc[by_player.name.isin(["Keenan Allen",'David Montgomery']),'fantasy_team'] = "The Sofa Kings"
-    # by_player.loc[by_player.name.isin(['Austin Ekeler','Adam Thielen']),'fantasy_team'] = "Toothless Wonders"
-    # by_player.loc[by_player.name.isin(['Gabriel Davis','Tony Pollard']),'fantasy_team'] = "Orchids of Asia"
+    # by_player.loc[by_player.name.isin(["Kenyan Drake","J.K. Dobbins"]),'fantasy_team'] = 'The Algorithm'
+    # by_player.loc[by_player.name.isin(["Mike Williams"]),'fantasy_team'] = "Football Cream"
+    # # by_player.loc[by_player.name.isin(['Austin Ekeler','Adam Thielen']),'fantasy_team'] = "Toothless Wonders"
+    # # by_player.loc[by_player.name.isin(['Gabriel Davis','Tony Pollard']),'fantasy_team'] = "Orchids of Asia"
     # """ Analyzing multi-player trade """
     
     rosters = by_player.loc[~by_player.fantasy_team.isnull()].sort_values(by=['fantasy_team','WAR'],ascending=[True,False])
