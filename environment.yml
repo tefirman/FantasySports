@@ -7,3 +7,6 @@ dependencies:
   - pip:
     - sportsipy
     - yahoo_oauth
+    - yahoo_fantasy_api
+    - python-dotenv
+    - XlsxWriter
