@@ -1,277 +1,225 @@
-name,position,current_team,until,,,,,
-Chad Hansen,WR,ATL,17,,,,,
-Chris Blewitt,K,CLE,17,,,,,
-Cole Beasley,WR,TAM,17,,,,,
-Devonta Freeman,RB,BAL,17,,,,,
-Dominik Eberle,K,DET,17,,,,,
-Ethan Wolf,TE,NOR,17,,,,,
-Jared Cook,TE,LAC,17,,,,,
-Jimmy Graham,TE,CHI,17,,,,,
-Justin Jackson,RB,LAC,17,,,,,
-Le'Veon Bell,RB,TAM,17,,,,,
-Mason Crosby,K,GNB,1,,,,,
-Trey Ragas,RB,LAR,17,,,,,
-Wayne Gallman,RB,KAN,17,,,,,
-Antonio Brown,WR,TAM,17,,,,,
-Brian Johnson,K,WAS,17,,,,,
-Calvin Ridley,WR,JAX,17,,,,,
-Chris Naggar,K,DAL,17,,,,,
-David Johnson,RB,HOU,17,,,,,
-DeAndre Hopkins,WR,ARI,6,,,,,
-Emmanuel Sanders,WR,BUF,17,,,,,
-Eric Ebron,TE,PIT,17,,,,,
-Gehrig Dieter,WR,KAN,17,,,,,
-James White,RB,NWE,17,,,,,
-Malcolm Perry,WR,NWE,17,,,,,
-Mike Strachan,WR,IND,6,,,,,
-Odell Beckham Jr.,WR,LAR,17,,,,,
-Rob Gronkowski,TE,TAM,17,,,,,
-Rodney Adams,WR,NYJ,17,,,,,
-Ryan Fitzpatrick,QB,WAS,17,,,,,
-Sam Sloman,K,SFO,17,,,,,
-Scottie Phillips,RB,HOU,17,,,,,
-T.Y. Hilton,WR,IND,17,,,,,
-Tarik Cohen,RB,CHI,17,,,,,
-Tyrell Williams,WR,DET,17,,,,,
-Will Fuller,WR,MIA,17,,,,,
-Brandon Dillon,TE,NOR,17,,,,,
-Chris Carson,RB,SEA,17,,,,,
-Cody Core,WR,MIA,17,,,,,
-DaeSean Hamilton,WR,HOU,17,,,,,
-Damarea Crockett,RB,DEN,17,,,,,
-Davion Davis,WR,HOU,17,,,,,
-Deshaun Watson,QB,CLE,11,,,,,
-Gus Edwards,RB,BAL,10,,,,,
-Jaeden Graham,TE,PHI,17,,,,,
-Jordan Howard,RB,NOR,17,,,,,
-Jordan Veasy,WR,OAK,17,,,,,
-Kawaan Baker,WR,NOR,17,,,,,
-Kurt Benkert,QB,SFO,17,,,,,
-Michael Gallup,WR,DAL,2,,,,,
-Tim Patrick,WR,DEN,17,,,,,
-Trey Edmunds,RB,PIT,17,,,,,
-Chris Herndon,TE,NOR,17,,,,,
-Chris Lacy,WR,OAK,17,,,,,
-Cody Thompson,WR,SEA,17,,,,,
-D.J. Montgomery,WR,IND,17,,,,,
-Dalton Keene,TE,PHI,17,,,,,
-Daniel Helm,TE,ATL,17,,,,,
-Darius Bradwell,RB,CAR,17,,,,,
-David Moore,WR,CHI,17,,,,,
-Derrick Gore,RB,NOR,17,,,,,
-Dominique Dafney,TE,DEN,17,,,,,
-Eddy Pineiro,K,NYJ,17,,,,,
-Elliott Fry,K,JAX,17,,,,,
-J.J. Koski,WR,LAR,17,,,,,
-Jake Luton,QB,JAX,17,,,,,
-Josh Adams,RB,NOR,17,,,,,
-Josh Malone,WR,TEN,17,,,,,
-Kahale Warring,TE,NOR,17,,,,,
-Kelvin Harmon,WR,WAS,17,,,,,
-Lirim Hajrullahu,K,DAL,17,,,,,
-Marcell Ateman,WR,ARI,17,,,,,
-Rashard Davis,WR,NYJ,17,,,,,
-Raymond Calais,RB,LAR,17,,,,,
-Sammis Reyes,TE,CHI,17,,,,,
-Terry Godwin,WR,TEN,17,,,,,
-Zane Gonzalez,K,CAR,13,,,,,
-Dak Prescott,QB,DAL,6,,,,,
-Elijah Mitchell,RB,SFO,9,,,,,
-Keenan Allen,WR,LAC,9,,,,,
-Rodrigo Blankenship,K,ARI,17,,,,,
-Harrison Butker,K,KAN,3,,,,,
-Travis Fulgham,WR,GNB,17,,,,,
-Trey Lance,QB,SFO,17,,,,,
-Mike Evans,WR,TAM,3,,,,,
-Hunter Renfrow,WR,OAK,13,,,,,
-Chris Godwin,WR,TAM,3,,,,,
-Antoine Wesley,WR,ARI,17,,,,,
-Godwin Igwebuike,RB,SEA,17,,,,,
-Jacques Patrick,RB,CIN,17,,,,,
-Kristian Wilkerson,WR,NWE,17,,,,,
-Ricky Seals-Jones,TE,NYG,17,,,,,
-Seth Williams,WR,JAX,17,,,,,
-Ty'Son Williams,RB,ARI,17,,,,,
-Tyrion Davis-Price,RB,SFO,6,,,,,
-Alex Bachman,WR,NYG,17,,,,,
-Antonio Gandy-Golden,WR,WAS,17,,,,,
-Antony Auclair,TE,HOU,17,,,,,
-Austin Mack,WR,SFO,17,,,,,
-Austin Walter,RB,OAK,17,,,,,
-Brycen Hopkins,TE,LAR,17,,,,,
-Chester Rogers,WR,CLE,17,,,,,
-Colin Thompson,TE,CAR,17,,,,,
-Damien Williams,RB,ATL,6,,,,,
-Darrynton Evans,RB,CHI,17,,,,,
-Darwin Thompson,RB,SEA,17,,,,,
-Daurice Fountain,WR,KAN,17,,,,,
-Davis Webb,QB,NYG,17,,,,,
-Dazz Newsome,WR,KAN,17,,,,,
-Dennis Houston,WR,DAL,17,,,,,
-Deon Cain,WR,PHI,17,,,,,
-Dez Fitzpatrick,WR,TEN,17,,,,,
-Dillon Stoner,WR,OAK,17,,,,,
-Duke Johnson,RB,BUF,17,,,,,
-Easop Winston,WR,CLE,17,,,,,
-Garrett Gilbert,QB,NWE,17,,,,,
-Giovani Bernard,RB,TAM,8,,,,,
-Greg Ward,WR,PHI,17,,,,,
-Isaiah Zuber,WR,OAK,17,,,,,
-Ishmael Hyman,WR,GNB,17,,,,,
-Ja'Marcus Bradley,WR,CLE,17,,,,,
-Jace Sternberger,TE,PIT,17,,,,,
-Jacob Eason,QB,CAR,17,,,,,
-Jakeem Grant,WR,CLE,17,,,,,
-Jeff Driskel,QB,HOU,17,,,,,
-Jermar Jefferson,RB,DET,17,,,,,
-Keelan Doss,WR,NYG,17,,,,,
-Kenny Yeboah,TE,NYJ,17,,,,,
-Kirk Merritt,WR,NOR,17,,,,,
-Kyle Philips,WR,TEN,3,,,,,
-Marquez Stevenson,WR,BUF,17,,,,,
-Marvin Hall,WR,JAX,17,,,,,
-Mason Schreck,TE,HOU,17,,,,,
-Maurice Ffrench,WR,LAC,17,,,,,
-Mekhi Sargent,RB,JAX,17,,,,,
-Michael Bandy,WR,LAC,9,,,,,
-Racey McMath,WR,TEN,17,,,,,
-Raleigh Webb,WR,BAL,17,,,,,
-Reggie Bonnafon,RB,WAS,17,,,,,
-Rico Gafford,WR,GNB,17,,,,,
-Robert Foster,WR,NYG,17,,,,,
-Rondale Moore,WR,ARI,3,,,,,
-Ryan Izzo,TE,CAR,17,,,,,
-Ryquell Armstead,RB,JAX,17,,,,,
-Steven Sims,WR,PIT,17,,,,,
-Trenton Irwin,WR,CIN,17,,,,,
-Trey Quinn,WR,DEN,17,,,,,
-Tristan Vizcaino,K,NWE,17,,,,,
-Andre Baccellia,WR,ARI,17,,,,,
-Antonio Williams,RB,NYG,17,,,,,
-Jacob Harris,TE,LAR,17,,,,,
-Jamison Crowder,WR,BUF,17,,,,,
-Jason Huntley,RB,PIT,17,,,,,
-Javonte Williams,RB,DEN,17,,,,,
-Landen Akers,WR,LAR,17,,,,,
-Lynn Bowden Jr.,WR,NWE,17,,,,,
-Matt Cole,WR,WAS,17,,,,,
-Michael Badgley,K,DET,9,,,,,
-Nick Bawden,RB,NYJ,17,,,,,
-Sean Mannion,QB,SEA,17,,,,,
-Sterling Shepard,WR,NYG,17,,,,,
-Treylon Burks,WR,TEN,9,,,,,
-Tua Tagovailoa,QB,MIA,6,,,,,
-Van Jefferson,WR,LAR,7,,,,,
-Cordarrelle Patterson,RB,ATL,8,,,,,
-Jonathan Taylor,RB,IND,5,,,,,
-Damien Harris,RB,NWE,10,,,,,
-Rashaad Penny,RB,SEA,17,,,,,
-Marquise Brown,WR,ARI,13,,,,,
-Randall Cobb,WR,GNB,10,,,,,
-Michael Thomas,WR,NOR,17,,,,,
-Jarvis Landry,WR,NOR,8,,,,,
-Carson Wentz,QB,WAS,12,,,,,
-J.K. Dobbins,RB,BAL,12,,,,,
-Breece Hall,RB,NYJ,17,,,,,
-D.K. Metcalf,WR,SEA,7,,,,,
-Mike Williams,WR,LAC,11,,,,,
-DJ Chark,WR,DET,11,,,,,
-Russell Gage,WR,TAM,8,,,,,
-David Blough,QB,MIN,17,,,,,
-Matt Ryan,QB,IND,9,,,,,
-Cam Akers,RB,LAR,8,,,,,
-Devontae Booker,RB,NYG,17,,,,,
-Daniel Bellinger,TE,NYG,17,,,,,
-David Njoku,TE,CLE,9,,,,,
-Maxx Williams,TE,ARI,17,,,,,
-Cameron Dicker,K,LAC,17,,,,,
-Dustin Hopkins,K,LAC,9,,,,,
-Taylor Bertolet,K,LAC,17,,,,,
-Allen Lazard,WR,GNB,8,,,,,
-Darrius Shepherd,WR,DEN,17,,,,,
-DeSean Jackson,WR,BAL,17,,,,,
-Mike Boone,RB,DEN,11,,,,,
-Ronnie Rivers,RB,LAR,17,,,,,
-Ty Chandler,RB,MIN,17,,,,,
-Ja'Marr Chase,WR,CIN,12,,,,,
-Corey Davis,WR,NYJ,10,,,,,
-Deebo Samuel,WR,SFO,9,,,,,
-Josh Palmer,WR,LAC,8,,,,,
-Mason Kinsey,WR,TEN,17,,,,,
-Chuba Hubbard,RB,CAR,9,,,,,
-Ezekiel Elliott,RB,DAL,9,,,,,
-James Conner,RB,ARI,8,,,,,
-Mike Davis,RB,BAL,17,,,,,
-Rashod Bateman,WR,BAL,17,,,,,
-Mark Ingram,RB,NOR,11,,,,,
-Brandin Cooks,WR,HOU,9,,,,,
-Darren Waller,TE,OAK,13,,,,,
-Romeo Doubs,WR,GNB,14,,,,,
-DeVante Parker,WR,NWE,10,,,,,
-Geronimo Allison,WR,ATL,17,,,,,
-Darrel Williams,RB,ARI,12,,,,,
-Vyncint Smith,WR,IND,17,,,,,
-Cameron Batson,WR,ATL,17,,,,,
-Malik Turner,WR,OAK,17,,,,,
-Deonte Harty,WR,NOR,17,,,,,
-La'Mical Perine,RB,MIA,17,,,,,
-Isaiah Coulter,WR,BUF,17,,,,,
-Noah Togiai,TE,PHI,17,,,,,
-Binjimen Victor,WR,BAL,17,,,,,
-Simi Fehoko,WR,DAL,17,,,,,
-Jalen Camp,WR,HOU,17,,,,,
-Spencer Brown,RB,CAR,17,,,,,
-Maurice Alexander,WR,DET,17,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
+name,position,current_team,until
+Chad Hansen,WR,ATL,17
+Chris Blewitt,K,CLE,17
+Cole Beasley,WR,TAM,17
+Devonta Freeman,RB,BAL,17
+Dominik Eberle,K,DET,17
+Ethan Wolf,TE,NOR,17
+Jared Cook,TE,LAC,17
+Jimmy Graham,TE,CHI,17
+Justin Jackson,RB,LAC,17
+Le'Veon Bell,RB,TAM,17
+Mason Crosby,K,GNB,1
+Trey Ragas,RB,LAR,17
+Wayne Gallman,RB,KAN,17
+Antonio Brown,WR,TAM,17
+Brian Johnson,K,WAS,17
+Calvin Ridley,WR,JAX,17
+Chris Naggar,K,DAL,17
+David Johnson,RB,HOU,17
+DeAndre Hopkins,WR,ARI,6
+Emmanuel Sanders,WR,BUF,17
+Eric Ebron,TE,PIT,17
+Gehrig Dieter,WR,KAN,17
+James White,RB,NWE,17
+Malcolm Perry,WR,NWE,17
+Mike Strachan,WR,IND,6
+Odell Beckham Jr.,WR,LAR,17
+Rob Gronkowski,TE,TAM,17
+Rodney Adams,WR,NYJ,17
+Ryan Fitzpatrick,QB,WAS,17
+Sam Sloman,K,SFO,17
+Scottie Phillips,RB,HOU,17
+T.Y. Hilton,WR,IND,17
+Tarik Cohen,RB,CHI,17
+Tyrell Williams,WR,DET,17
+Will Fuller,WR,MIA,17
+Brandon Dillon,TE,NOR,17
+Chris Carson,RB,SEA,17
+Cody Core,WR,MIA,17
+DaeSean Hamilton,WR,HOU,17
+Damarea Crockett,RB,DEN,17
+Davion Davis,WR,HOU,17
+Deshaun Watson,QB,CLE,11
+Gus Edwards,RB,BAL,10
+Jaeden Graham,TE,PHI,17
+Jordan Howard,RB,NOR,17
+Jordan Veasy,WR,OAK,17
+Kawaan Baker,WR,NOR,17
+Kurt Benkert,QB,SFO,17
+Michael Gallup,WR,DAL,2
+Tim Patrick,WR,DEN,17
+Trey Edmunds,RB,PIT,17
+Chris Herndon,TE,NOR,17
+Chris Lacy,WR,OAK,17
+Cody Thompson,WR,SEA,17
+D.J. Montgomery,WR,IND,17
+Dalton Keene,TE,PHI,17
+Daniel Helm,TE,ATL,17
+Darius Bradwell,RB,CAR,17
+David Moore,WR,CHI,17
+Derrick Gore,RB,NOR,17
+Dominique Dafney,TE,DEN,17
+Eddy Pineiro,K,NYJ,17
+Elliott Fry,K,JAX,17
+J.J. Koski,WR,LAR,17
+Jake Luton,QB,JAX,17
+Josh Adams,RB,NOR,17
+Josh Malone,WR,TEN,17
+Kahale Warring,TE,NOR,17
+Kelvin Harmon,WR,WAS,17
+Lirim Hajrullahu,K,DAL,17
+Marcell Ateman,WR,ARI,17
+Rashard Davis,WR,NYJ,17
+Raymond Calais,RB,LAR,17
+Sammis Reyes,TE,CHI,17
+Terry Godwin,WR,TEN,17
+Zane Gonzalez,K,CAR,13
+Dak Prescott,QB,DAL,6
+Elijah Mitchell,RB,SFO,9
+Keenan Allen,WR,LAC,9
+Rodrigo Blankenship,K,ARI,17
+Harrison Butker,K,KAN,3
+Travis Fulgham,WR,GNB,17
+Trey Lance,QB,SFO,17
+Mike Evans,WR,TAM,3
+Hunter Renfrow,WR,OAK,13
+Chris Godwin,WR,TAM,3
+Antoine Wesley,WR,ARI,17
+Godwin Igwebuike,RB,SEA,17
+Jacques Patrick,RB,CIN,17
+Kristian Wilkerson,WR,NWE,17
+Ricky Seals-Jones,TE,NYG,17
+Seth Williams,WR,JAX,17
+Ty'Son Williams,RB,ARI,17
+Tyrion Davis-Price,RB,SFO,6
+Alex Bachman,WR,NYG,17
+Antonio Gandy-Golden,WR,WAS,17
+Antony Auclair,TE,HOU,17
+Austin Mack,WR,SFO,17
+Austin Walter,RB,OAK,17
+Brycen Hopkins,TE,LAR,17
+Chester Rogers,WR,CLE,17
+Colin Thompson,TE,CAR,17
+Damien Williams,RB,ATL,6
+Darrynton Evans,RB,CHI,17
+Darwin Thompson,RB,SEA,17
+Daurice Fountain,WR,KAN,17
+Davis Webb,QB,NYG,17
+Dazz Newsome,WR,KAN,17
+Dennis Houston,WR,DAL,17
+Deon Cain,WR,PHI,17
+Dez Fitzpatrick,WR,TEN,17
+Dillon Stoner,WR,OAK,17
+Duke Johnson,RB,BUF,17
+Easop Winston,WR,CLE,17
+Garrett Gilbert,QB,NWE,17
+Giovani Bernard,RB,TAM,8
+Greg Ward,WR,PHI,17
+Isaiah Zuber,WR,OAK,17
+Ishmael Hyman,WR,GNB,17
+Ja'Marcus Bradley,WR,CLE,17
+Jace Sternberger,TE,PIT,17
+Jacob Eason,QB,CAR,17
+Jakeem Grant,WR,CLE,17
+Jeff Driskel,QB,HOU,17
+Jermar Jefferson,RB,DET,17
+Keelan Doss,WR,NYG,17
+Kenny Yeboah,TE,NYJ,17
+Kirk Merritt,WR,NOR,17
+Kyle Philips,WR,TEN,3
+Marquez Stevenson,WR,BUF,17
+Marvin Hall,WR,JAX,17
+Mason Schreck,TE,HOU,17
+Maurice Ffrench,WR,LAC,17
+Mekhi Sargent,RB,JAX,17
+Michael Bandy,WR,LAC,9
+Racey McMath,WR,TEN,17
+Raleigh Webb,WR,BAL,17
+Reggie Bonnafon,RB,WAS,17
+Rico Gafford,WR,GNB,17
+Robert Foster,WR,NYG,17
+Rondale Moore,WR,ARI,3
+Ryan Izzo,TE,CAR,17
+Ryquell Armstead,RB,JAX,17
+Steven Sims,WR,PIT,17
+Trenton Irwin,WR,CIN,17
+Trey Quinn,WR,DEN,17
+Tristan Vizcaino,K,NWE,17
+Andre Baccellia,WR,ARI,17
+Antonio Williams,RB,NYG,17
+Jacob Harris,TE,LAR,17
+Jamison Crowder,WR,BUF,17
+Jason Huntley,RB,PIT,17
+Javonte Williams,RB,DEN,17
+Landen Akers,WR,LAR,17
+Lynn Bowden Jr.,WR,NWE,17
+Matt Cole,WR,WAS,17
+Michael Badgley,K,DET,9
+Nick Bawden,RB,NYJ,17
+Sean Mannion,QB,SEA,17
+Sterling Shepard,WR,NYG,17
+Treylon Burks,WR,TEN,9
+Tua Tagovailoa,QB,MIA,6
+Van Jefferson,WR,LAR,7
+Cordarrelle Patterson,RB,ATL,8
+Jonathan Taylor,RB,IND,5
+Damien Harris,RB,NWE,10
+Rashaad Penny,RB,SEA,17
+Marquise Brown,WR,ARI,13
+Randall Cobb,WR,GNB,10
+Michael Thomas,WR,NOR,17
+Jarvis Landry,WR,NOR,8
+Carson Wentz,QB,WAS,12
+J.K. Dobbins,RB,BAL,12
+Breece Hall,RB,NYJ,17
+D.K. Metcalf,WR,SEA,7
+Mike Williams,WR,LAC,11
+DJ Chark,WR,DET,11
+Russell Gage,WR,TAM,8
+David Blough,QB,MIN,17
+Matt Ryan,QB,IND,9
+Cam Akers,RB,LAR,8
+Devontae Booker,RB,NYG,17
+Daniel Bellinger,TE,NYG,17
+David Njoku,TE,CLE,9
+Maxx Williams,TE,ARI,17
+Cameron Dicker,K,LAC,17
+Dustin Hopkins,K,LAC,9
+Taylor Bertolet,K,LAC,17
+Allen Lazard,WR,GNB,8
+Darrius Shepherd,WR,DEN,17
+DeSean Jackson,WR,BAL,17
+Mike Boone,RB,DEN,11
+Ronnie Rivers,RB,LAR,17
+Ty Chandler,RB,MIN,17
+Ja'Marr Chase,WR,CIN,12
+Corey Davis,WR,NYJ,10
+Deebo Samuel,WR,SFO,9
+Josh Palmer,WR,LAC,8
+Mason Kinsey,WR,TEN,17
+Chuba Hubbard,RB,CAR,9
+Ezekiel Elliott,RB,DAL,9
+James Conner,RB,ARI,8
+Mike Davis,RB,BAL,17
+Rashod Bateman,WR,BAL,17
+Mark Ingram,RB,NOR,11
+Brandin Cooks,WR,HOU,9
+Darren Waller,TE,OAK,13
+Romeo Doubs,WR,GNB,14
+DeVante Parker,WR,NWE,10
+Geronimo Allison,WR,ATL,17
+Darrel Williams,RB,ARI,12
+Vyncint Smith,WR,IND,17
+Cameron Batson,WR,ATL,17
+Malik Turner,WR,OAK,17
+Deonte Harty,WR,NOR,17
+La'Mical Perine,RB,MIA,17
+Isaiah Coulter,WR,BUF,17
+Noah Togiai,TE,PHI,17
+Binjimen Victor,WR,BAL,17
+Simi Fehoko,WR,DAL,17
+Jalen Camp,WR,HOU,17
+Spencer Brown,RB,CAR,17
+Maurice Alexander,WR,DET,17
+Josh Allen,QB,BUF,10
