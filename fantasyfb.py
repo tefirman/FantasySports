@@ -10,7 +10,7 @@ import pandas as pd
 import os
 import shutil
 import numpy as np
-from sportsreference.nfl.boxscore import Boxscore, Boxscores
+from sportsipy.nfl.boxscore import Boxscore, Boxscores
 import time
 import datetime
 from pytz import timezone
@@ -540,10 +540,10 @@ basaloppqbtime=[1.0,0.0,0.0,0.0],tot=None,war_sim=True):
     'player_id','status','fantasy_team','editorial_team_abbr','selected_position']].drop_duplicates(),\
     how='right',on=['name','position']).append(league_avg,ignore_index=True,sort=False)
     rookies = pd.merge(left=by_player.loc[by_player.WAR.isnull(),\
-    ['name','player_id','position','current_team','fantasy_team','editorial_team_abbr','selected_position']],\
+    ['name','player_id','position','fantasy_team','editorial_team_abbr','selected_position']],\
     right=league_avg[['position','points_avg','points_stdev','WAR']],how='inner',on='position')
     by_player = by_player.loc[~by_player.WAR.isnull()]
-    by_player = by_player.append(rookies[['name','player_id','position','current_team',\
+    by_player = by_player.append(rookies[['name','player_id','position',\
     'points_avg','points_stdev','WAR','fantasy_team','editorial_team_abbr','selected_position']],ignore_index=True,sort=False)
     if as_of//100 == latest_season:
         """ First week issues... """
@@ -714,7 +714,7 @@ def starters(rosters,week,as_of=None,basaloppqbtime=[1.0,0.0,0.0,0.0]):
         if datetime.datetime.now().hour >= 20:
             cutoff += datetime.timedelta(days=1)
         completed = nfl_schedule.loc[(nfl_schedule.season == as_of//100) & \
-        (nfl_schedule.week == week) & (nfl_schedule.date < cutoff.date()),'abbrev'].tolist()
+        (nfl_schedule.week == week) & (nfl_schedule.date < cutoff),'abbrev'].tolist()
         for team in teams:
             started = rosters.loc[(rosters.selected_position != 'BN') & \
             (rosters.fantasy_team == team['name']) & rosters.current_team.isin(completed)]
@@ -1362,8 +1362,8 @@ def main():
         print(repeats.loc[repeats.freq > 1,'name'].tolist())
     
     # """ Analyzing multi-player trade """
-    # by_player.loc[by_player.name.isin(["Kenyan Drake","J.K. Dobbins"]),'fantasy_team'] = 'The Algorithm'
-    # by_player.loc[by_player.name.isin(["Mike Williams"]),'fantasy_team'] = "Football Cream"
+    # by_player.loc[by_player.name.isin(["Deebo Samuel"]),'fantasy_team'] = "The Algorithm"
+    # by_player.loc[by_player.name.isin(["Terry McLaurin","Devin Singletary"]),'fantasy_team'] = "Football Cream"
     # # by_player.loc[by_player.name.isin(['Austin Ekeler','Adam Thielen']),'fantasy_team'] = "Toothless Wonders"
     # # by_player.loc[by_player.name.isin(['Gabriel Davis','Tony Pollard']),'fantasy_team'] = "Orchids of Asia"
     # """ Analyzing multi-player trade """
