@@ -26,21 +26,292 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from dotenv import load_dotenv
 import traceback
-import warnings
-warnings.filterwarnings("ignore")
-latest_season = datetime.datetime.now().year - int(datetime.datetime.now().month < 7)
+
+class League:
+    def __init__(self, season=None, name=None, week=None):
+        # Defining season of interest
+        latest_season = datetime.datetime.now().year - int(datetime.datetime.now().month < 7)
+        self.season = season if type(season) == int else latest_season
+        self.load_credentials()
+        self.load_oauth()
+        self.load_league(name)
+        self.load_settings()
+        self.load_fantasy_teams()
+        self.load_nfl_abbrevs()
+        self.load_nfl_sched()
+        self.get_yahoo_players()
+        self.get_fantasy_rosters(week)
+
+    def load_credentials(self):
+        # Loading Yahoo OAuth credentials from environment variables
+        load_dotenv()
+        if 'CONSUMER_KEY' not in os.environ \
+        or 'CONSUMER_SECRET' not in os.environ:
+            print("No valid .env file present, copying from .env.example")
+            shutil.copyfile(".env.example", ".env")
+        # Updating .env file if default values are still present
+        if os.environ['CONSUMER_KEY'] == 'updatekey' \
+        and os.environ['CONSUMER_SECRET'] == 'updatesecret':
+            # Only have to do this once since we're storing them in environment variables
+            print("It appears you haven't updated your Yahoo OAuth credentials...")
+            print("To get credentials: https://developer.yahoo.com/apps/create/")
+            consumer_key = input("Yahoo OAuth Key: ")
+            os.system("sed -i 's/updatekey/{}/g' .env".format(consumer_key))
+            consumer_secret = input("Yahoo OAuth Secret: ")
+            os.system("sed -i 's/updatesecret/{}/g' .env".format(consumer_secret))
+            load_dotenv()
+            # Previous oauth file is probably bad if it exists, deleting it just in case
+            if os.path.exists('oauth2.json'):
+                os.remove('oauth.json')
+    
+    def load_oauth(self):
+        # Creating oauth file from credentials provided
+        if not os.path.exists('oauth2.json'):
+            creds = {'consumer_key': os.environ['CONSUMER_KEY'],\
+                    'consumer_secret': os.environ['CONSUMER_SECRET']}
+            with open('oauth2.json', "w") as f:
+                f.write(json.dumps(creds))
+        self.oauth = OAuth2(None, None, from_file='oauth2.json')
+
+    def load_league(self, name=None):
+        # Pulling user's Yahoo fantasy games
+        self.gm = yfa.Game(self.oauth,'nfl')
+        while True:
+            try:
+                leagues = self.gm.yhandler.get_teams_raw()['fantasy_content']['users']['0']['user'][1]['games']
+                break
+            except:
+                print('Teams query crapped out... Waiting 30 seconds and trying again...')
+                time.sleep(30)
+        # Identifying user's NFL Yahoo fantasy games
+        for ind in range(leagues['count'] - 1,-1,-1):
+            if type(leagues[str(ind)]['game']) == dict:
+                continue
+            if leagues[str(ind)]['game'][0]['code'] == 'nfl' and leagues[str(ind)]['game'][0]['season'] == str(self.season):
+                teams = leagues[str(ind)]['game'][1]['teams']
+                details = [teams[str(ind)]['team'][0] for ind in range(teams['count'])]
+                names = [[val['name'] for val in team if 'name' in val][0] for team in details]
+                if teams['count'] > 1:
+                    # If user has more than one team, use the name input or prompt them to pick one
+                    while name not in names:
+                        print('Found multiple fantasy teams: ' + ', '.join(names))
+                        name = input("Which team would you like to analyze? ")
+                    team = teams[str(names.index(name))]['team'][0]
+                else:
+                    # If user has only one team, use that one and override whatever name was given
+                    team = teams['0']['team'][0]
+                    name = names[0]
+                self.name = name
+                self.lg_id = '.'.join([val['team_key'] for val in team if 'team_key' in val][0].split('.')[:3])
+                break
+        # Creating league object
+        self.lg = self.gm.to_league(self.lg_id)
+
+    def load_settings(self):
+        # Pulling league settings
+        self.settings = self.lg.yhandler.get_settings_raw(self.lg_id)['fantasy_content']['league'][1]['settings'][0]
+        self.scoring = pd.merge(left=pd.DataFrame([stat['stat'] for stat in self.settings['stat_categories']['stats']]),\
+        right=pd.DataFrame([stat['stat'] for stat in self.settings['stat_modifiers']['stats']]),\
+        how='inner',on='stat_id')[['display_name','value']].astype({'value':float})
+        self.scoring.loc[(self.scoring.display_name == 'Int') & (self.scoring.value <= 0),'display_name'] = 'Int Thrown'
+        self.scoring = self.scoring.drop_duplicates(subset=['display_name']).set_index('display_name')
+        if 'FG 0-19' not in self.scoring.index:
+            self.scoring.loc['FG 0-19','value'] = 3
+        if 'Rec' not in self.scoring.index:
+            self.scoring.loc['Rec','value'] = 0
+    
+    def load_fantasy_teams(self):
+        # Pulling list of teams in the fantasy league
+        league_info = self.lg.yhandler.get_standings_raw(self.lg_id)['fantasy_content']['league']
+        teams_info = league_info[1]['standings'][0]['teams']
+        self.teams = [{'team_key':teams_info[str(ind)]['team'][0][0]['team_key'],\
+        'name':teams_info[str(ind)]['team'][0][2]['name']} for ind in range(teams_info['count'])]
+    
+    def load_nfl_abbrevs(self):
+        try:
+            self.nfl_teams = pd.read_csv("https://raw.githubusercontent.com/" + \
+            "tefirman/FantasySports/main/res/football/team_abbrevs.csv")
+        except:
+            raw_teams = [team.split(',') for team in requests.get("https://raw.githubusercontent.com/" + \
+            "tefirman/FantasySports/main/res/football/team_abbrevs.csv",verify=False).text.split('\r')]
+            self.nfl_teams = pd.DataFrame(raw_teams[1:],columns=raw_teams[0])
+    
+    def load_nfl_sched_538(self):
+        nfl_schedule = pd.read_csv("https://projects.fivethirtyeight.com/nfl-api/nfl_elo.csv")
+        nfl_schedule = nfl_schedule.loc[nfl_schedule.playoff.isnull(),\
+        ['season','date','team1','team2','elo1_pre','elo2_pre','qb1_value_pre','qb2_value_pre']]\
+        .rename(index=str,columns={'team1':'home_team','team2':'away_team','elo1_pre':'home_elo',\
+        'elo2_pre':'away_elo','qb1_value_pre':'home_qb','qb2_value_pre':'away_qb'})
+        nfl_schedule.date = pd.to_datetime(nfl_schedule.date,infer_datetime_format=True)
+        nfl_schedule = pd.merge(left=nfl_schedule,right=nfl_schedule.groupby('season').date.min()\
+        .reset_index().rename(columns={'date':'first_game'}),how='inner',on='season')
+        nfl_schedule['week'] = (nfl_schedule.date - nfl_schedule.first_game).dt.days//7 + 1
+        del nfl_schedule['first_game']
+        self.nfl_schedule_538 = nfl_schedule
+
+    def load_nfl_sched_sportsref(self):
+        if self.nfl_schedule_538.season.max() < self.season:
+            current_sched = pd.DataFrame()
+            games = Boxscores(1,self.season,17).games
+            for week in games.keys():
+                week_games = pd.DataFrame(games[week])
+                week_games['week'] = int(week.split('-')[0])
+                current_sched = current_sched.append(week_games.drop_duplicates(),ignore_index=True,sort=False)
+            current_sched['season'] = self.season
+            current_sched['date'] = pd.to_datetime(current_sched.boxscore.str[:8],infer_datetime_format=True)
+            current_sched['home_abbr'] = current_sched['home_abbr'].str.upper()
+            current_sched['away_abbr'] = current_sched['away_abbr'].str.upper()
+            current_sched = pd.merge(left=current_sched,right=self.nfl_teams.rename(columns={'real_abbrev':'home_abbr',\
+            'fivethirtyeight':'home_team'}),how='inner',on='home_abbr')
+            current_sched = pd.merge(left=current_sched,right=self.nfl_teams.rename(columns={'real_abbrev':'away_abbr',\
+            'fivethirtyeight':'away_team'}),how='inner',on='away_abbr')
+            """ Regress last seasons final team elos to the mean??? Merge in best QB from last season??? """
+            prev_elos = self.nfl_schedule_538.loc[(self.nfl_schedule_538.season == self.season - 1) & \
+            (self.nfl_schedule_538.week == 17),['home_team','home_elo']].rename(columns={'home_team':'team','home_elo':'elo'})\
+            .append(self.nfl_schedule_538.loc[(self.nfl_schedule_538.season == self.season - 1) & \
+            (self.nfl_schedule_538.week == 17),['away_team','away_elo']]\
+            .rename(columns={'away_team':'team','away_elo':'elo'}),ignore_index=True,sort=False)
+            prev_elos['elo'] += (1500 - prev_elos['elo'])*0.333 # Regression FiveThirtyEight uses...
+            current_sched = pd.merge(left=current_sched,right=prev_elos[['team','elo']]\
+            .rename(columns={'team':'home_team','elo':'home_elo'}),how='inner',on=['home_team'])
+            current_sched = pd.merge(left=current_sched,right=prev_elos[['team','elo']]\
+            .rename(columns={'team':'away_team','elo':'away_elo'}),how='inner',on=['away_team'])
+            qb_elos = self.nfl_schedule_538.loc[self.nfl_schedule_538.season == self.season - 1,\
+            ['home_team','home_qb']].rename(columns={'home_team':'team','home_qb':'qb_elo'})\
+            .append(self.nfl_schedule_538.loc[(self.nfl_schedule_538.season == self.season - 1) & \
+            (self.nfl_schedule_538.week == 17),['away_team','away_qb']]\
+            .rename(columns={'away_team':'team','away_qb':'qb_elo'}),ignore_index=True,sort=False)
+            qb_elos = qb_elos.groupby('team').qb_elo.max().reset_index()
+            current_sched = pd.merge(left=current_sched,right=qb_elos[['team','qb_elo']]\
+            .rename(columns={'team':'home_team','qb_elo':'home_qb'}),how='inner',on=['home_team'])
+            current_sched = pd.merge(left=current_sched,right=qb_elos[['team','qb_elo']]\
+            .rename(columns={'team':'away_team','qb_elo':'away_qb'}),how='inner',on=['away_team'])
+            self.nfl_schedule_sportsref = current_sched[['season','week','date',\
+            'home_team','away_team','home_elo','away_elo','home_qb','away_qb']]
+        else:
+            self.nfl_schedule_sportsref = pd.DataFrame(columns=['season','week','date',\
+            'home_team','away_team','home_elo','away_elo','home_qb','away_qb'])
+
+    def load_nfl_schedule(self):
+        self._load_nfl_sched_538()
+        self._load_nfl_sched_sportsref()
+        nfl_schedule = self.nfl_schedule_538.append(self.nfl_schedule_sportsref,ignore_index=True,sort=False)
+        nfl_schedule = pd.merge(left=nfl_schedule,right=self.nfl_teams[['fivethirtyeight','abbrev']],\
+        left_on='home_team',right_on='fivethirtyeight',how='inner')
+        nfl_schedule.loc[nfl_schedule.home_team != nfl_schedule.abbrev,'home_team'] = \
+        nfl_schedule.loc[nfl_schedule.home_team != nfl_schedule.abbrev,'abbrev']
+        del nfl_schedule['fivethirtyeight'], nfl_schedule['abbrev']
+        nfl_schedule = pd.merge(left=nfl_schedule,right=self.nfl_teams[['fivethirtyeight','abbrev']],\
+        left_on='away_team',right_on='fivethirtyeight',how='inner')
+        nfl_schedule.loc[nfl_schedule.away_team != nfl_schedule.abbrev,'away_team'] = \
+        nfl_schedule.loc[nfl_schedule.away_team != nfl_schedule.abbrev,'abbrev']
+        del nfl_schedule['fivethirtyeight'], nfl_schedule['abbrev']
+        home = nfl_schedule[['season','week','date','home_team','away_elo','home_qb']]\
+        .rename(columns={'home_team':'abbrev','away_elo':'opp_elo','home_qb':'qb_elo'})
+        home['home_away'] = 'Home'
+        away = nfl_schedule[['season','week','date','away_team','home_elo','away_qb']]\
+        .rename(columns={'away_team':'abbrev','home_elo':'opp_elo','away_qb':'qb_elo'})
+        away['home_away'] = 'Away'
+        nfl_schedule = home.append(away,ignore_index=True)
+        nfl_schedule.opp_elo = 1500/nfl_schedule.opp_elo
+        nfl_schedule.qb_elo = nfl_schedule.qb_elo/157.5
+        self.nfl_schedule = nfl_schedule.sort_values(by=['season','week']).reset_index(drop=True)
+
+    def refresh_oauth(self, threshold=59):
+        diff = (datetime.datetime.now(timezone('GMT')) - datetime.datetime(1970,1,1,0,0,0,0,\
+        timezone('GMT'))).total_seconds() - self.oauth.token_time
+        if diff >= threshold*60:
+            time.sleep(max(3600 - diff + 5,0))
+            self.oauth = OAuth2(None, None, from_file='oauth2.json')
+            self.gm = yfa.Game(self.oauth,'nfl')
+            self.lg = self.gm.to_league(self.lg_id)
+
+    def get_yahoo_players(self):
+        self.refresh_oauth()
+        players = []
+        # Rostered Players
+        for page_ind in range(100):
+            page = self.lg.yhandler.get("league/{}/players;start={};count=25;status=T/"\
+            .format(self.lg_id,page_ind*25))['fantasy_content']['league'][1]['players']
+            if page == []:
+                break
+            for player_ind in range(page['count']):
+                player = [field for field in page[str(player_ind)]['player'][0] if type(field) == dict]
+                vals = {}
+                for field in player:
+                    vals.update(field)
+                vals['name'] = vals['name']['full']
+                vals['eligible_positions'] = [pos['position'] for pos in vals['eligible_positions']]
+                vals['bye_weeks'] = vals['bye_weeks']['week']
+                players.append(vals)
+        # Available Players
+        for page_ind in range(100):
+            """ Accounting for a weird player_id deletion in 2015... """
+            page = self.lg.yhandler.get_players_raw(self.lg_id,page_ind*25,'A')['fantasy_content']['league'][1]['players']
+            if page == []:
+                break
+            for player_ind in range(page['count']):
+                player = [field for field in page[str(player_ind)]['player'][0] if type(field) == dict]
+                vals = {}
+                for field in player:
+                    vals.update(field)
+                vals['name'] = vals['name']['full']
+                vals['eligible_positions'] = [pos['position'] for pos in vals['eligible_positions']]
+                vals['bye_weeks'] = vals['bye_weeks']['week']
+                players.append(vals)
+        self.players = pd.DataFrame(players)
+        self.players.player_id = self.players.player_id.astype(int)
+
+    def get_fantasy_rosters(self, week=None):
+        self.refresh_oauth()
+        if not week:
+            week = self.lg.current_week()
+        selected = pd.DataFrame(columns=['player_id','selected_position','fantasy_team'])
+        for team in self.teams:
+            tm = self.lg.to_team(team['team_key'])
+            players = pd.DataFrame(tm.roster(week))
+            if players.shape[0] == 0:
+                continue
+            if (~players.player_id.isin(self.players.player_id)).any():
+                print('Some players are missing... ' + ', '.join(players.loc[~players.player_id.isin(rosters.player_id),'name']))
+            players['fantasy_team'] = team['name']
+            selected = selected.append(players[['player_id','selected_position','fantasy_team']],ignore_index=True,sort=False)
+        rosters = pd.merge(left=self.players,right=selected,how='left',on='player_id')
+        if 'fantasy_team' not in rosters.columns:
+            rosters['fantasy_team'] = None
+        rosters.loc[rosters.player_id == 100014,'name'] += ' Rams'
+        rosters.loc[rosters.player_id == 100024,'name'] += ' Chargers'
+        rosters.loc[rosters.player_id == 100020,'name'] += ' Jets'
+        rosters.loc[rosters.player_id == 100019,'name'] += ' Giants'
+        rosters = pd.merge(left=rosters,right=self.nfl_teams[['abbrev','name']],how='left',on='name')
+        rosters.loc[~rosters.abbrev.isnull(),'name'] = rosters.loc[~rosters.abbrev.isnull(),'abbrev']
+        """ CONVERT THIS LATER TO USE W/R/T ITSELF!!! """
+        rosters['position'] = rosters.eligible_positions.apply(lambda x: [pos for pos in x if pos not in ['W/R/T','W/T']])
+        inds = rosters.position.apply(len) == 0
+        rosters.loc[inds,'position'] = 'TE'
+        rosters.loc[~inds,'position'] = rosters.loc[~inds,'position'].apply(lambda x: x[0])
+        self.players = rosters[['name','eligible_positions','selected_position','status',
+        'player_id','editorial_team_abbr','fantasy_team','position']]
+
+
+        """ FINISH FROM HERE!!! """
+        """ FINISH FROM HERE!!! """
+        """ FINISH FROM HERE!!! """
+
+
+
 
 def establish_oauth(season=None,name=None,new_login=False):
-    global oauth
-    global gm
-    global lg
-    global lg_id
-    global scoring
-    global settings
-    global teams
-    global nfl_schedule
-    global nfl_teams
-    global current_sched
+    # global oauth
+    # global gm
+    # global lg
+    # global lg_id
+    # global scoring
+    # global settings
+    # global teams
+    # global nfl_schedule
+    # global nfl_teams
+    # global current_sched
 
     if new_login and os.path.exists('oauth2.json'):
         os.remove('oauth2.json')
@@ -184,10 +455,10 @@ def establish_oauth(season=None,name=None,new_login=False):
     nfl_schedule = nfl_schedule.sort_values(by=['season','week']).reset_index(drop=True)
 
 def refresh_oauth(threshold=59):
-    global oauth
-    global gm
-    global lg_id
-    global lg
+    # global oauth
+    # global gm
+    # global lg_id
+    # global lg
     diff = (datetime.datetime.now(timezone('GMT')) - datetime.datetime(1970,1,1,0,0,0,0,\
     timezone('GMT'))).total_seconds() - oauth.token_time
     if diff >= threshold*60:
@@ -197,7 +468,7 @@ def refresh_oauth(threshold=59):
         lg = gm.to_league(lg_id)
 
 def get_players(week=None):
-    global lg
+    # global lg
     refresh_oauth()
     rosters = []
     for page_ind in range(100):
@@ -630,8 +901,8 @@ def add_roster_pcts(players,inc=25):
     return players
 
 def get_schedule(as_of=None):
-    global lg
-    global settings
+    # global lg
+    # global settings
     refresh_oauth()
     schedule = pd.DataFrame()
     for team in teams:
@@ -692,7 +963,7 @@ def bye_weeks(season):
     return byes
 
 def starters(rosters,week,as_of=None,basaloppqbtime=[1.0,0.0,0.0,0.0]):
-    global lg
+    # global lg
     refresh_oauth()
     if not as_of:
         as_of = latest_season*100 + lg.current_week()
@@ -957,7 +1228,7 @@ postseason=True,basaloppqbtime=[1.0,0.0,0.0,0.0],payouts=[800,300,100],fixed_win
 def possible_pickups(rosters,available,schedule,as_of=None,num_sims=1000,\
 focus_on=[],exclude=[],limit_per=10,team_name=None,postseason=True,\
 verbose=True,basaloppqbtime=[1.0,0.0,0.0,0.0],payouts=[800,300,100]):
-    global lg
+    # global lg
     refresh_oauth()
     orig_standings = season_sims(rosters,schedule,num_sims,False,as_of,\
     postseason=postseason,basaloppqbtime=basaloppqbtime,payouts=payouts)[1]
@@ -1015,7 +1286,7 @@ verbose=True,basaloppqbtime=[1.0,0.0,0.0,0.0],payouts=[800,300,100]):
 def possible_adds(rosters,available,schedule,as_of=None,num_sims=1000,\
 focus_on=[],exclude=[],limit_per=10,team_name=None,postseason=True,\
 verbose=True,basaloppqbtime=[1.0,0.0,0.0,0.0],payouts=[800,300,100]):
-    global lg
+    # global lg
     refresh_oauth()
     orig_standings = season_sims(rosters,schedule,num_sims,False,as_of,\
     postseason=postseason,basaloppqbtime=basaloppqbtime,payouts=payouts)[1]
@@ -1054,7 +1325,7 @@ verbose=True,basaloppqbtime=[1.0,0.0,0.0,0.0],payouts=[800,300,100]):
 
 def possible_drops(rosters,schedule,as_of=None,num_sims=1000,focus_on=[],\
 exclude=[],team_name=None,postseason=True,verbose=True,basaloppqbtime=[1.0,0.0,0.0,0.0],payouts=[800,300,100]):
-    global lg
+    # global lg
     refresh_oauth()
     orig_standings = season_sims(rosters,schedule,num_sims,False,as_of,\
     postseason=postseason,basaloppqbtime=basaloppqbtime,payouts=payouts)[1]
@@ -1090,7 +1361,7 @@ exclude=[],team_name=None,postseason=True,verbose=True,basaloppqbtime=[1.0,0.0,0
 def possible_trades(rosters,schedule,as_of=None,num_sims=1000,focus_on=[],\
 exclude=[],given=[],limit_per=10,team_name=None,postseason=True,verbose=True,\
 basaloppqbtime=[1.0,0.0,0.0,0.0],payouts=[800,300,100]):
-    global lg
+    # global lg
     refresh_oauth()
     if not team_name:
         team_name = [team['name'] for team in teams if team['team_key'] == lg.team_key()][0]
@@ -1182,7 +1453,7 @@ basaloppqbtime=[1.0,0.0,0.0,0.0],payouts=[800,300,100]):
 
 def perGameDelta(rosters,schedule,as_of=None,num_sims=1000,team_name=None,\
 postseason=True,basaloppqbtime=[1.0,0.0,0.0,0.0],payouts=[800,300,100]):
-    global lg
+    # global lg
     refresh_oauth()
     if not team_name:
         team_name = [team['name'] for team in teams if team['team_key'] == lg.team_key()][0]
