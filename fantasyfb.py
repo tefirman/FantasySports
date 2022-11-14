@@ -559,6 +559,7 @@ def get_games(start,finish):
             print(week)
             for game in uris[week]:
                 box = Boxscore(game['boxscore'])
+                time.sleep(10) # Gating SportsReference requests (limit is 20/minute, jail for an hour penalty)
                 """ Blank rosters due to weird team name changes """
                 if len(box.home_players) == 0 or len(box.away_players) == 0:
                     print('BLANK ROSTER FOR ' + game['boxscore'] + '!!!')
@@ -578,55 +579,58 @@ def get_games(start,finish):
     stats = stats.reset_index().rename(index=str,columns={'index':'player_id'}).fillna(0.0)
     stats.team = stats.team.str.upper()
     stats.opponent = stats.opponent.str.upper()
-    for player_id in stats.player_id.unique():
-        if stats.player_id.unique().tolist().index(player_id)%100 == 0:
-            print('Player #' + str(stats.player_id.unique().tolist().index(player_id)) + \
-            ' out of ' + str(stats.player_id.unique().shape[0]))
-        response = requests.get('https://www.pro-football-reference.com/players/' + player_id[0].upper() + '/' + player_id + '.htm',verify=False)
-        if response.text == '':
-            print(player_id + ' has a blank html page... Skipping...')
-        else:
-            if '<script type="application/ld+json">' in response.text:
-                info = json.loads(response.text.split('<script type="application/ld+json">')[-1].split('</script>')[0])
-                stats.loc[stats.player_id == player_id,'name'] = info['name']
-            else:
-                print(player_id + " doesn't have name on personal page...")
-            bad_pos = {'SnelBe00':'RB','WillQu01':'LB','GreeVi00':'TE',\
-            'HowaTy00':'DT','SmitTr04':'CB','DaviMi03':'CB','ThomJa04':'S',\
-            'BealSa00':'CB','AlexAd00':'DB','CrowTa00':'LB','BrowVi00':'WR',\
-            'MintAn00':'LB'}
-            if '<strong>Position</strong>: ' in response.text:
-                stats.loc[stats.player_id == player_id,'position'] = response.text.split('<strong>Position</strong>: ')[1].split('\n')[0]
-                if response.text.split('<strong>Position</strong>: ')[1].split('\n')[0] == 'WR/RB':
-                    print('Changing ' + stats.loc[stats.player_id == player_id,'name'].values[0] + ' from WR/RB to RB...')
-                    stats.loc[stats.player_id == player_id,'position'] = 'RB'
-                elif response.text.split('<strong>Position</strong>: ')[1].split('\n')[0] == 'QB/TE':
-                    print('Changing ' + stats.loc[stats.player_id == player_id,'name'].values[0] + ' from QB/TE to TE...')
-                    stats.loc[stats.player_id == player_id,'position'] = 'TE'
-                elif response.text.split('<strong>Position</strong>: ')[1].split('\n')[0] == 'WR/CB':
-                    print('Changing ' + stats.loc[stats.player_id == player_id,'name'].values[0] + ' from WR/CB to WR...')
-                    stats.loc[stats.player_id == player_id,'position'] = 'WR'
-                elif ('QB' in response.text.split('<strong>Position</strong>: ')[1].split('\n')[0] \
-                or 'RB' in response.text.split('<strong>Position</strong>: ')[1].split('\n')[0] \
-                or 'WR' in response.text.split('<strong>Position</strong>: ')[1].split('\n')[0] \
-                or 'TE' in response.text.split('<strong>Position</strong>: ')[1].split('\n')[0]) \
-                and '/' in response.text.split('<strong>Position</strong>: ')[1].split('\n')[0]:
-                    print('Weird combo position for ' + stats.loc[stats.player_id == player_id,'name'].values[0] + ': ' + \
-                    response.text.split('<strong>Position</strong>: ')[1].split('\n')[0])
-            elif player_id in bad_pos:
-                stats.loc[stats.player_id == player_id,'position'] = bad_pos[player_id]
-            else:
-                print(player_id + " doesn't have position on personal page...")
-            if '<strong>Team</strong>: <span itemprop="affiliation"><a href="/teams/' in response.text:
-                stats.loc[stats.player_id == player_id,'real_abbrev'] = response.text.split('<strong>Team</strong>: ' + \
-                '<span itemprop="affiliation"><a href="/teams/')[1].split('/')[0].upper()
-            else:
-                stats.loc[stats.player_id == player_id,'real_abbrev'] = \
-                stats.loc[stats.player_id == player_id].sort_values(by=['season','week'],ascending=False)\
-                .drop_duplicates(subset='player_id',keep='first').team.values[0]
+
+    names = []
+    for letter in range(65,91):
+        response = requests.get('https://www.pro-football-reference.com/players/' + chr(letter),verify=False)
+        names.extend(response.text.split('<div class="section_content" id="div_players">\n\t    <p>')[-1].split('</p>\n\t\t\n')[0].split('</p><p>'))
+        time.sleep(10)
+    names = pd.DataFrame({'raw':names})
+    names['player_id'] = names.raw.str.split('href="').str[-1].str.split('">')\
+    .str[0].str.split('/').str[-1].str.split('.htm').str[0]
+    names['name'] = names.raw.str.split('.htm">').str[-1].str.split('</a>').str[0]
+    names['position'] = names.raw.str.split('\(').str[-1].str.split('\)').str[0]
+    names.loc[names.name == 'Logan Thomas','position'] = 'TE'
+    del names['raw']
+
+    stats = pd.merge(left=stats,right=names,how='left',on='player_id')
+
+    rosters = pd.DataFrame(columns=['raw','real_abbrev'])
+    for team in nfl_teams.real_abbrev.unique():
+        response = requests.get('https://www.pro-football-reference.com/teams/{}/{}_roster.htm'.format(team.lower(),finish//100),verify=False)
+        rosters = rosters.append(pd.DataFrame({'raw':response.text.split('</thead>\n<tbody><tr >')[-1]\
+        .split('</tr>\n</tbody><tfoot>')[0].split('</tr>\n<tr >')}),ignore_index=True,sort=False)
+        rosters.real_abbrev = rosters.real_abbrev.fillna(team)
+        time.sleep(10)
+    rosters['player_id'] = rosters.raw.str.split('</td>').str[0].str.split('.htm">').str[0].str.split('/').str[-1]
+    rosters['name'] = rosters.raw.str.split('</td>').str[0].str.split('.htm">').str[-1].str.split('</a>').str[0]
+    rosters['age'] = rosters.raw.str.split('</td>').str[1].str.split('>').str[-1]
+    rosters['position'] = rosters.raw.str.split('</td>').str[2].str.split('>').str[-1]
+    rosters['games'] = rosters.raw.str.split('</td>').str[3].str.split('>').str[-1]
+    rosters['games_started'] = rosters.raw.str.split('</td>').str[4].str.split('>').str[-1]
+    rosters['weight'] = rosters.raw.str.split('</td>').str[5].str.split('>').str[-1]
+    rosters['height'] = rosters.raw.str.split('</td>').str[6].str.split('>').str[-1]
+    rosters['birthdate'] = rosters.raw.str.split('</td>').str[8].str.split('>').str[-1]
+    rosters['years'] = rosters.raw.str.split('</td>').str[9].str.split('>').str[-1]
+    rosters['drafted'] = rosters.raw.str.split('</td>').str[11].str.split('data-stat="draft_info" >')\
+    .str[-1].str.split(' / <a href="https://www.pro-football-reference.com/years/').str[0]
+    del rosters['raw']
+
+    stats = pd.merge(left=stats,right=rosters,how='left',on=['player_id','name','position'])
+
     stats = pd.merge(left=stats,right=nfl_teams[['abbrev','real_abbrev']]\
     .rename(columns={'abbrev':'current_team'}),how='inner',on='real_abbrev')
     del stats['real_abbrev']
+
+    to_fix = ~stats.position.isin(['QB','RB','WR','TE','K']) & \
+    (stats.position.str.contains('QB') | \
+    stats.position.str.contains('WR') | \
+    stats.position.str.contains('RB') | \
+    stats.position.str.contains('TE') | \
+    stats.position.str.contains('K'))
+    if to_fix.any():
+        print(stats.loc[to_fix,['player_id','name','position']])
+
     """ Modified the sportsreference boxscore source code to account for weird team abbreviations... """
     defenses = stats.loc[~stats.position.isin(['QB','RB','WR','TE','K'])]\
     .groupby(['boxscore','season','week','team','opponent','points_allowed']).sum().reset_index()
@@ -636,7 +640,7 @@ def get_games(start,finish):
     del defenses['abbrev'], defenses['real_abbrev']
     defenses['position'] = 'DEF'
     defenses['current_team'] = defenses['name']
-    defenses = defenses[stats.columns.tolist()]
+    defenses = defenses[[col for col in stats.columns if col in defenses.columns]]
     stats = stats.loc[stats.position.isin(['QB','RB','WR','TE','K'])]
     stats = stats.append(defenses,ignore_index=True)
     return stats
