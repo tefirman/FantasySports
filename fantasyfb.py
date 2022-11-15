@@ -293,10 +293,109 @@ class League:
         self.players = rosters[['name','eligible_positions','selected_position','status',
         'player_id','editorial_team_abbr','fantasy_team','position']]
 
+    def get_games_sportsref(start:int,finish:int):
+        stats = pd.DataFrame(columns=['boxscore','season','week','team','opponent','points_allowed'])
+        for season in range(start//100,finish//100 + 1):
+            start_week = start%100 if season == start//100 else 1
+            end_week = finish%100 if season == finish//100 else 17
+            uris = Boxscores(start_week,season,end_week).games
+            for week in uris:
+                print(week)
+                for game in uris[week]:
+                    box = Boxscore(game['boxscore'])
+                    time.sleep(10) # Gating SportsReference requests (limit is 20/minute, jail for an hour penalty)
+                    """ Blank rosters due to weird team name changes """
+                    if len(box.home_players) == 0 or len(box.away_players) == 0:
+                        print('BLANK ROSTER FOR ' + game['boxscore'] + '!!!')
+                    for player in box.home_players:
+                        stats = stats.append(player.dataframe,sort=False)
+                    stats.loc[stats.team.isnull(),'team'] = box.home_abbreviation
+                    stats.loc[stats.opponent.isnull(),'opponent'] = box.away_abbreviation
+                    stats.loc[stats.points_allowed.isnull(),'points_allowed'] = box.away_points
+                    for player in box.away_players:
+                        stats = stats.append(player.dataframe,sort=False)
+                    stats.loc[stats.team.isnull(),'team'] = box.away_abbreviation
+                    stats.loc[stats.opponent.isnull(),'opponent'] = box.home_abbreviation
+                    stats.loc[stats.points_allowed.isnull(),'points_allowed'] = box.home_points
+                    stats.loc[stats.season.isnull(),'season'] = season
+                    stats.loc[stats.week.isnull(),'week'] = int(week.split('-')[0])
+                    stats.loc[stats.boxscore.isnull(),'boxscore'] = game['boxscore']
+        stats = stats.reset_index().rename(index=str,columns={'index':'player_id'}).fillna(0.0)
+        stats.team = stats.team.str.upper()
+        stats.opponent = stats.opponent.str.upper()
+        return stats
 
-        """ FINISH FROM HERE!!! """
-        """ FINISH FROM HERE!!! """
-        """ FINISH FROM HERE!!! """
+    def get_names_sportsref():
+        names = []
+        for letter in range(65,91):
+            response = requests.get('https://www.pro-football-reference.com/players/' + chr(letter),verify=False)
+            names.extend(response.text.split('<div class="section_content" id="div_players">\n\t    <p>')[-1].split('</p>\n\t\t\n')[0].split('</p><p>'))
+            time.sleep(10)
+        names = pd.DataFrame({'raw':names})
+        names['player_id'] = names.raw.str.split('href="').str[-1].str.split('">')\
+        .str[0].str.split('/').str[-1].str.split('.htm').str[0]
+        names['name'] = names.raw.str.split('.htm">').str[-1].str.split('</a>').str[0]
+        names['position'] = names.raw.str.split('\(').str[-1].str.split('\)').str[0]
+        names.loc[names.name == 'Logan Thomas','position'] = 'TE'
+        del names['raw']
+        return names
+
+    def get_rosters_sportsref(self):
+        rosters = pd.DataFrame(columns=['raw','real_abbrev'])
+        for team in self.nfl_teams.real_abbrev.unique():
+            response = requests.get('https://www.pro-football-reference.com/teams/{}/{}_roster.htm'.format(team.lower(),finish//100),verify=False)
+            rosters = rosters.append(pd.DataFrame({'raw':response.text.split('</thead>\n<tbody><tr >')[-1]\
+            .split('</tr>\n</tbody><tfoot>')[0].split('</tr>\n<tr >')}),ignore_index=True,sort=False)
+            rosters.real_abbrev = rosters.real_abbrev.fillna(team)
+            time.sleep(10)
+        rosters['player_id'] = rosters.raw.str.split('</td>').str[0].str.split('.htm">').str[0].str.split('/').str[-1]
+        rosters['name'] = rosters.raw.str.split('</td>').str[0].str.split('.htm">').str[-1].str.split('</a>').str[0]
+        rosters['age'] = rosters.raw.str.split('</td>').str[1].str.split('>').str[-1]
+        rosters['position'] = rosters.raw.str.split('</td>').str[2].str.split('>').str[-1]
+        rosters['games'] = rosters.raw.str.split('</td>').str[3].str.split('>').str[-1]
+        rosters['games_started'] = rosters.raw.str.split('</td>').str[4].str.split('>').str[-1]
+        rosters['weight'] = rosters.raw.str.split('</td>').str[5].str.split('>').str[-1]
+        rosters['height'] = rosters.raw.str.split('</td>').str[6].str.split('>').str[-1]
+        rosters['birthdate'] = rosters.raw.str.split('</td>').str[8].str.split('>').str[-1]
+        rosters['years'] = rosters.raw.str.split('</td>').str[9].str.split('>').str[-1]
+        rosters['drafted'] = rosters.raw.str.split('</td>').str[11].str.split('data-stat="draft_info" >')\
+        .str[-1].str.split(' / <a href="https://www.pro-football-reference.com/years/').str[0]
+        del rosters['raw']
+    
+    def get_stats_sportsref(self,start:int,finish:int):
+        stats = self.get_games_sportsref(start,finish)
+        names = self.get_names_sportsref()
+        stats = pd.merge(left=stats,right=names,how='left',on='player_id')
+        rosters = self.get_rosters_sportsref()
+        stats = pd.merge(left=stats,right=rosters,how='left',on=['player_id','name','position'])
+        stats = pd.merge(left=stats,right=self.nfl_teams[['abbrev','real_abbrev']]\
+        .rename(columns={'abbrev':'current_team'}),how='inner',on='real_abbrev')
+        del stats['real_abbrev']
+        to_fix = ~stats.position.isin(['QB','RB','WR','TE','K']) & \
+        (stats.position.str.contains('QB') | \
+        stats.position.str.contains('WR') | \
+        stats.position.str.contains('RB') | \
+        stats.position.str.contains('TE') | \
+        stats.position.str.contains('K'))
+        if to_fix.any():
+            print(stats.loc[to_fix,['player_id','name','position']])
+        defenses = stats.loc[~stats.position.isin(['QB','RB','WR','TE','K'])]\
+        .groupby(['boxscore','season','week','team','opponent','points_allowed']).sum().reset_index()
+        defenses = pd.merge(left=defenses,right=nfl_teams[['abbrev','real_abbrev']],how='inner',left_on='team',right_on='real_abbrev')
+        defenses['name'] = defenses['abbrev']
+        defenses['player_id'] = defenses['name']
+        del defenses['abbrev'], defenses['real_abbrev']
+        defenses['position'] = 'DEF'
+        defenses['current_team'] = defenses['name']
+        defenses = defenses[[col for col in stats.columns if col in defenses.columns]]
+        stats = stats.loc[stats.position.isin(['QB','RB','WR','TE','K'])]
+        stats = stats.append(defenses,ignore_index=True)
+        return stats
+
+
+    """ FINISH FROM HERE!!! """
+    """ FINISH FROM HERE!!! """
+    """ FINISH FROM HERE!!! """
 
 
 
