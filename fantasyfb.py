@@ -391,7 +391,86 @@ class League:
         stats = stats.loc[stats.position.isin(['QB','RB','WR','TE','K'])]
         stats = stats.append(defenses,ignore_index=True)
         return stats
+    
+    def load_stats(self,start,finish):
+        if os.path.exists('GameByGameFantasyFootballStats.csv'):
+            tot = pd.read_csv('GameByGameFantasyFootballStats.csv')
+            if (tot.season*100 + tot.week).min() > start:
+                last = (tot.season*100 + tot.week).min() - 1
+                if last%100 == 0:
+                    last -= 83
+                tot = tot.append(get_games(start,last))
+                tot.to_csv('GameByGameFantasyFootballStats.csv',index=False)
+            if (tot.season*100 + tot.week).max() < finish:
+                first = (tot.season*100 + tot.week).max() + 1
+                if first%100 == 18:
+                    first += 83
+                tot = tot.append(get_games(first,finish))
+                tot.to_csv('GameByGameFantasyFootballStats.csv',index=False)
+        else:
+            tot = get_games(start,finish)
+            tot.to_csv('GameByGameFantasyFootballStats.csv',index=False)
+        self.stats = tot
 
+    def calc_points(self):
+        defenses = self.stats.position == 'DEF'
+        self.stats.loc[~defenses,'points'] = self.stats.loc[~defenses,'rush_yards']*self.scoring.loc['Rush Yds','value'] + \
+        self.stats.loc[~defenses,'rush_touchdowns']*self.scoring.loc['Rush TD','value'] + \
+        self.stats.loc[~defenses,'receptions']*self.scoring.loc['Rec','value'] + \
+        self.stats.loc[~defenses,'receiving_yards']*self.scoring.loc['Rec Yds','value'] + \
+        self.stats.loc[~defenses,'receiving_touchdowns']*self.scoring.loc['Rec TD','value'] + \
+        self.stats.loc[~defenses,'passing_yards']*self.scoring.loc['Pass Yds','value'] + \
+        self.stats.loc[~defenses,'passing_touchdowns']*self.scoring.loc['Pass TD','value'] + \
+        self.stats.loc[~defenses,'interceptions_thrown']*self.scoring.loc['Int Thrown','value'] + \
+        self.stats.loc[~defenses,'fumbles_lost']*self.scoring.loc['Fum Lost','value'] + \
+        (self.stats.loc[~defenses,'kickoff_return_yards'] + self.stats.loc[~defenses,'punt_return_yards'])*\
+        (self.scoring.loc['Ret Yds','value'] if 'Ret Yds' in self.scoring.index else 0) + \
+        (self.stats.loc[~defenses,'kickoff_return_touchdown'] + self.stats.loc[~defenses,'punt_return_touchdown'])*scoring.loc['Ret TD','value'] + \
+        self.stats.loc[~defenses,'extra_points_made']*self.scoring.loc['PAT Made','value'] + \
+        self.stats.loc[~defenses,'field_goals_made']*self.scoring.loc['FG 0-19','value']
+        self.stats.loc[defenses,'points'] = self.stats.loc[defenses,'sacks']*scoring.loc['Sack','value'] + \
+        self.stats.loc[defenses,'interceptions']*self.scoring.loc['Int','value'] + \
+        self.stats.loc[defenses,'fumbles_recovered']*self.scoring.loc['Fum Rec','value'] + \
+        self.stats.loc[defenses,'interceptions_returned_for_touchdown']*self.scoring.loc['Ret TD','value'] + \
+        self.stats.loc[defenses,'kickoff_return_touchdown']*self.scoring.loc['Ret TD','value'] + \
+        self.stats.loc[defenses,'punt_return_touchdown']*self.scoring.loc['Ret TD','value']
+        self.stats.loc[defenses & (self.stats.points_allowed == 0),'points'] += self.scoring.loc['Pts Allow 0','value']
+        self.stats.loc[defenses & (self.stats.points_allowed >= 1) & (self.stats.points_allowed <= 6),'points'] += self.scoring.loc['Pts Allow 1-6','value']
+        self.stats.loc[defenses & (self.stats.points_allowed >= 7) & (self.stats.points_allowed <= 13),'points'] += self.scoring.loc['Pts Allow 7-13','value']
+        self.stats.loc[defenses & (self.stats.points_allowed >= 14) & (self.stats.points_allowed <= 20),'points'] += self.scoring.loc['Pts Allow 14-20','value']
+        self.stats.loc[defenses & (self.stats.points_allowed >= 21) & (self.stats.points_allowed <= 27),'points'] += self.scoring.loc['Pts Allow 21-27','value']
+        self.stats.loc[defenses & (self.stats.points_allowed >= 28) & (self.stats.points_allowed <= 34),'points'] += self.scoring.loc['Pts Allow 28-34','value']
+        self.stats.loc[defenses & (self.stats.points_allowed >= 35),'points'] += self.scoring.loc['Pts Allow 35+','value']
+        self.stats['weeks_ago'] = (datetime.datetime.now() - pd.to_datetime(self.stats.boxscore.str[:8],infer_datetime_format=True)).dt.days/7.0
+
+    def name_corrections(self):
+        try:
+            corrections = pd.read_csv("https://raw.githubusercontent.com/" + \
+            "tefirman/FantasySports/main/res/football/name_corrections.csv")
+        except:
+            corrections = [player.split(',') for player in requests.get("https://raw.githubusercontent.com/" + \
+            "tefirman/FantasySports/main/res/football/name_corrections.csv",verify=False).text.split('\r')]
+            corrections = pd.DataFrame(corrections[1:],columns=corrections[0])
+        self.players = pd.merge(left=self.players,right=corrections,how='left',on='name')
+        to_fix = ~self.players.new_name.isnull()
+        self.players.loc[to_fix,'name'] = self.players.loc[to_fix,'new_name']
+        not_found = ~self.players.name.isin(self.stats.name.unique()) & ~self.players.fantasy_team.isnull()
+        if self.players.loc[not_found].shape[0] > 0:
+            print('Need to reconcile player names... ' + ', '.join(self.players.loc[not_found,'name']))
+
+    def get_current_team(self,as_of):
+        if (self.stats.season*100 + self.stats.week).max() >= as_of:
+            teams_as_of = self.stats.loc[self.stats.season*100 + self.stats.week >= as_of].sort_values(by='week')\
+            .drop_duplicates(subset='player_id',keep='first')[['player_id','team']].rename(columns={'team':'real_abbrev'})
+            teams_as_of = pd.merge(left=teams_as_of,right=self.nfl_teams[['abbrev','real_abbrev']]\
+            .rename(columns={'abbrev':'current_team'}),how='inner',on='real_abbrev')
+            del teams_as_of['real_abbrev']
+        else:
+            teams_as_of = self.stats.sort_values(by='week').drop_duplicates(subset='player_id',keep='last')[['player_id','current_team']]
+        if 'current_team' in self.stats.columns:
+            del self.stats['current_team']
+        self.stats = pd.merge(left=self.stats.loc[self.stats.season*100 + tot.week < as_of],right=teams_as_of,how='left',on='player_id')
+        self.stats.loc[self.stats.current_team.isnull(),'current_team'] = 'UNK'
 
     """ FINISH FROM HERE!!! """
     """ FINISH FROM HERE!!! """
