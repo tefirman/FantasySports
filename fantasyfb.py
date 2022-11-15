@@ -904,11 +904,11 @@ postseason=True,basaloppqbtime=[1.0,0.0,0.0,0.0],payouts=[800,300,100],fixed_win
             many_mile = many_mile.sort_values(by=['num_sim','sim'],ascending=True)\
             .drop_duplicates(subset=['num_sim'],keep='first')
         final_probs = pd.merge(left=pd.merge(left=winner.groupby('team').size().to_frame('winner').reset_index(),\
-        right=runner_up.groupby('team').size().to_frame('runner_up').reset_index(),how='left',on='team'),\
-        right=third.groupby('team').size().to_frame('third').reset_index(),how='left',on='team')
+        right=runner_up.groupby('team').size().to_frame('runner_up').reset_index(),how='outer',on='team'),\
+        right=third.groupby('team').size().to_frame('third').reset_index(),how='outer',on='team')
         if algorithm:
             final_probs = pd.merge(left=final_probs,right=many_mile.groupby('team')\
-            .size().to_frame('many_mile').reset_index(),how='left',on='team')
+            .size().to_frame('many_mile').reset_index(),how='outer',on='team')
             final_probs['many_mile'] /= many_mile.shape[0]
             final_probs['many_mile'] = final_probs['many_mile'].fillna(0.0)
         final_probs['winner'] /= winner.shape[0]
