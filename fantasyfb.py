@@ -986,8 +986,8 @@ def starters(rosters,week,as_of=None,basaloppqbtime=[1.0,0.0,0.0,0.0]):
     if week == as_of%100 and as_of//100 == latest_season \
     and datetime.datetime.now().month > 8: # Careful when your draft is in September...
         cutoff = datetime.datetime.now()
-        if datetime.datetime.now().hour >= 20:
-            cutoff += datetime.timedelta(days=1)
+        if datetime.datetime.now().hour < 20:
+            cutoff -= datetime.timedelta(days=1)
         completed = nfl_schedule.loc[(nfl_schedule.season == as_of//100) & \
         (nfl_schedule.week == week) & (nfl_schedule.date < cutoff),'abbrev'].tolist()
         for team in teams:
