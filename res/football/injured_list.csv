@@ -93,7 +93,7 @@ Ricky Seals-Jones,TE,NYG,17
 Seth Williams,WR,JAX,17
 Ty'Son Williams,RB,ARI,17
 Tyrion Davis-Price,RB,SFO,6
-Alex Bachman,WR,NYG,17
+Alex Bachman,WR,HOU,17
 Antonio Gandy-Golden,WR,WAS,17
 Antony Auclair,TE,HOU,17
 Austin Mack,WR,SFO,17
@@ -166,7 +166,7 @@ Cordarrelle Patterson,RB,ATL,8
 Jonathan Taylor,RB,IND,5
 Damien Harris,RB,NWE,10
 Rashaad Penny,RB,SEA,17
-Marquise Brown,WR,ARI,13
+Marquise Brown,WR,ARI,10
 Randall Cobb,WR,GNB,10
 Michael Thomas,WR,NOR,17
 Jarvis Landry,WR,NOR,8
@@ -174,14 +174,14 @@ Carson Wentz,QB,WAS,12
 J.K. Dobbins,RB,BAL,12
 Breece Hall,RB,NYJ,17
 D.K. Metcalf,WR,SEA,7
-Mike Williams,WR,LAC,11
-DJ Chark,WR,DET,11
+Mike Williams,WR,LAC,10
+DJ Chark,WR,DET,10
 Russell Gage,WR,TAM,11
 David Blough,QB,MIN,17
 Matt Ryan,QB,IND,9
 Cam Akers,RB,LAR,8
 Devontae Booker,RB,NYG,17
-Daniel Bellinger,TE,NYG,17
+Daniel Bellinger,TE,NYG,10
 David Njoku,TE,CLE,9
 Maxx Williams,TE,ARI,17
 Cameron Dicker,K,LAC,17
@@ -237,6 +237,4 @@ Cooper Kupp,WR,LAR,14
 Dallas Goedert,TE,PHI,14
 Khalil Herbert,RB,CHI,14
 Kylin Hill,RB,GNB,17
-,,,
-,,,
-,,,
+Irv Smith Jr.,TE,MIN,16
