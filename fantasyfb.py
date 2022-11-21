@@ -28,7 +28,7 @@ from dotenv import load_dotenv
 import traceback
 
 class League:
-    def __init__(self, name=None, season=None, week=None):
+    def __init__(self, name=None, season=None, week=None, roster_pcts=False):
         # Defining season of interest
         self.latest_season = datetime.datetime.now().year - int(datetime.datetime.now().month < 7)
         self.season = season if type(season) == int else self.latest_season
@@ -45,6 +45,11 @@ class League:
         self.name_corrections()
         self.get_rates()
         self.add_injuries()
+        self.add_bye_weeks()
+        if roster_pcts:
+            self.add_roster_pcts()
+        self.get_schedule()
+        self.starters(self.week)
 
     def load_credentials(self):
         # Loading Yahoo OAuth credentials from environment variables
@@ -517,6 +522,47 @@ class League:
             self.players['until'] = self.players[['until_orig','until']].min(axis=1)
             del self.players['until_orig']
 
+    def add_bye_weeks(self):
+        byes = pd.DataFrame(columns=['current_team','bye_week'])
+        for team in self.nfl_schedule.abbrev.unique():
+            bye_week = 1
+            while ((self.nfl_schedule.abbrev == team) & (self.nfl_schedule.season == self.season) & (self.nfl_schedule.week == bye_week)).any():
+                bye_week += 1
+            byes = byes.append({'current_team':team,'bye_week':bye_week},ignore_index=True)
+        self.players = pd.merge(left=self.players,right=byes,how='left',on='current_team')
+
+    def add_roster_pcts(self, inc=25):
+        self.refresh_oauth()
+        roster_pcts = pd.DataFrame()
+        for ind in range(self.players.shape[0]//inc + 1):
+            while True:
+                try:
+                    self.refresh_oauth()
+                    if self.players.iloc[inc*ind:inc*(ind + 1)].shape[0] == 0:
+                        break
+                    player_ids = self.players.iloc[inc*ind:inc*(ind + 1)].player_id.astype(str).tolist()
+                    player_ids = [val.split('.')[0] for val in player_ids if val != 'nan']
+                    pcts = self.lg.yhandler.get("league/{}/players;player_keys=414.p.{}/percent_owned"\
+                    .format(self.lg_id,',414.p.'.join(player_ids)))['fantasy_content']['league'][1]['players']
+                    break
+                except:
+                    err_message = traceback.format_exc()
+                    print(err_message)
+                    print('Roster percentage query crapped out... Waiting 30 seconds and trying again...')
+                    time.sleep(30)
+            for player_ind in range(pcts['count']):
+                player = pcts[str(player_ind)]['player']
+                player_id = [int(val['player_id']) for val in player[0] if 'player_id' in val]
+                full_name = [val['name']['full'] for val in player[0] if 'name' in val]
+                pct_owned = [float(val['value'])/100.0 for val in player[1]['percent_owned'] if 'value' in val]
+                if len(pct_owned) == 0:
+                    # print("Can't find roster percentage for {}...".format(full_name))
+                    pct_owned = [0.0]
+                roster_pcts = roster_pcts.append(pd.DataFrame({'player_id':player_id,\
+                'name':full_name,'pct_rostered':pct_owned}),ignore_index=True,sort=False)
+        self.players = pd.merge(left=self.players,right=roster_pcts,how='left',on=['player_id','name'])
+        self.players.pct_rostered = self.players.pct_rostered.fillna(0.0)
+
     def get_rates(self,earliest=None,num_sims=10000,reference_games=16,basaloppqbtime=[1.0,0.0,0.0,0.0]):
         as_of = self.season*100 + self.week
         if not earliest:
@@ -579,6 +625,119 @@ class League:
             del by_player['abbrev']
             """ First week issues... """
         self.players = by_player
+
+        """ STILL NEED TO ADD WAR SIM!!! """
+        """ STILL NEED TO ADD WAR SIM!!! """
+        """ STILL NEED TO ADD WAR SIM!!! """
+
+    def get_schedule(self):
+        as_of = self.season*100 + self.week
+        self.refresh_oauth()
+        schedule = pd.DataFrame()
+        for team in self.teams:
+            tm = self.lg.to_team(team['team_key'])
+            limit = max(int(self.settings['playoff_start_week']),as_of%100 + 1) if as_of else int(self.settings['playoff_start_week'])
+            for week in range(1,limit):
+                while True:
+                    try:
+                        matchup = tm.yhandler.get_matchup_raw(tm.team_key,week)['fantasy_content']['team'][1]['matchups']
+                        break
+                    except:
+                        print('Matchup query crapped out... Waiting 30 seconds and trying again...')
+                        time.sleep(30)
+                if '0' in matchup.keys():
+                    schedule = schedule.append(pd.DataFrame({'week':[week],\
+                    'team_1':[matchup['0']['matchup']['0']['teams']['0']['team'][0][2]['name']],\
+                    'team_2':[matchup['0']['matchup']['0']['teams']['1']['team'][0][2]['name']],\
+                    'score_1':[matchup['0']['matchup']['0']['teams']['0']['team'][1]['team_points']['total']],\
+                    'score_2':[matchup['0']['matchup']['0']['teams']['1']['team'][1]['team_points']['total']]}),ignore_index=True)
+        
+    #    """ MANY MILE POSTSEASON """
+    #    if as_of//100 == 2021 and as_of%100 >= 15 and (schedule.team_1.isin(['The Algorithm']).any() or schedule.team_2.isin(['The Algorithm']).any()):
+    #        schedule = schedule.loc[~schedule.week.isin([15,16,17]) | ~schedule.team_1.isin(['The Algorithm',\
+    #        '69ers','Football Cream','Wankstas',"The Adam's Family",'Sunday ShNoz'])].reset_index(drop=True)
+    #        schedule = schedule.append(pd.DataFrame({'week':[15,15,16,16,17],\
+    #        'team_1':["The Adam's Family",'Football Cream','Wankstas',"The Adam's Family",'Sunday ShNoz'],\
+    #        'team_2':['The Algorithm','Sunday ShNoz','Sunday ShNoz','69ers','69ers'],\
+    #        'score_1':[54.28,115.80,126.16,119.60,0.00],'score_2':[119.45,101.46,65.86,98.24,0.00]}),ignore_index=True,sort=False)
+    #    """ MANY MILE POSTSEASON """
+        
+        switch = schedule.team_1 > schedule.team_2
+        schedule.loc[switch,'temp'] = schedule.loc[switch,'team_1']
+        schedule.loc[switch,'team_1'] = schedule.loc[switch,'team_2']
+        schedule.loc[switch,'team_2'] = schedule.loc[switch,'temp']
+        schedule.loc[switch,'temp'] = schedule.loc[switch,'score_1']
+        schedule.loc[switch,'score_1'] = schedule.loc[switch,'score_2']
+        schedule.loc[switch,'score_2'] = schedule.loc[switch,'temp']
+        schedule = schedule[['week','team_1','team_2','score_1','score_2']]\
+        .drop_duplicates().sort_values(by=['week','team_1','team_2']).reset_index(drop=True)
+        schedule[['score_1','score_2']] = schedule[['score_1','score_2']].astype(float)
+        team_name = [team['name'] for team in self.teams if team['team_key'] == self.lg.team_key()][0]
+        schedule['me'] = (schedule['team_1'] == team_name) | (schedule['team_2'] == team_name)
+        if as_of:
+            schedule.loc[schedule.week > as_of%100,'score_1'] = 0.0
+            schedule.loc[schedule.week > as_of%100,'score_2'] = 0.0
+            if self.latest_season > as_of//100 or as_of%100 < self.lg.current_week():
+                schedule.loc[schedule.week == as_of%100,'score_1'] = 0.0
+                schedule.loc[schedule.week == as_of%100,'score_2'] = 0.0
+        self.schedule = schedule
+
+    def starters(self, week, basaloppqbtime=[1.0,0.0,0.0,0.0]):
+        as_of = self.season*100 + self.week
+        self.refresh_oauth()
+        self.players = pd.merge(left=self.players,right=self.nfl_schedule.loc[(self.nfl_schedule.season == as_of//100) & \
+        (self.nfl_schedule.week == week)],how='left',left_on='current_team',right_on='abbrev')
+        self.players['opp_factor'] = basaloppqbtime[1]*(self.players['opp_elo'] - 1)
+        self.players['qb_factor'] = basaloppqbtime[2]*(self.players['qb_elo'] - 1)
+        self.players['game_factor'] = basaloppqbtime[0] + self.players['opp_factor'] + self.players['qb_factor']
+        self.players['points_avg'] *= self.players['game_factor'].fillna(1.0)
+        """ WAR is linear with points_avg, but slope/intercept depends on position """
+        """ Harder to characterize how WAR varies with points_stdev, ignoring for now... """
+        self.players = self.players.sort_values(by='points_avg',ascending=False)
+        # self.players = self.players.sort_values(by='WAR',ascending=False)
+        self.players['starter'] = False
+        self.players['injured'] = self.players.until >= week
+        if week == as_of%100 and as_of//100 == self.latest_season \
+        and datetime.datetime.now().month > 8: # Careful when your draft is in September...
+            cutoff = datetime.datetime.now()
+            if datetime.datetime.now().hour < 20:
+                cutoff -= datetime.timedelta(days=1)
+            completed = self.nfl_schedule.loc[(self.nfl_schedule.season == as_of//100) & \
+            (self.nfl_schedule.week == week) & (self.nfl_schedule.date < cutoff),'abbrev'].tolist()
+            for team in self.teams:
+                started = self.players.loc[(self.players.selected_position != 'BN') & \
+                (self.players.fantasy_team == team['name']) & self.players.current_team.isin(completed)]
+                not_available = self.players.loc[(self.players.selected_position == 'BN') & \
+                (self.players.fantasy_team == team['name']) & self.players.current_team.isin(completed)]
+                num_pos = {pos['roster_position']['position']:pos['roster_position']['count'] - \
+                sum(started.selected_position == pos['roster_position']['position']) \
+                for pos in self.settings['roster_positions'] if pos['roster_position']['position'] not in ['W/R/T','W/T','BN','IR']}
+                for pos in num_pos:
+                    for num in range(num_pos[pos]):
+                        self.players.loc[self.players.loc[(self.players.fantasy_team == team['name']) & \
+                        ~self.players.starter & ~self.players.injured & (self.players.bye_week != week) & \
+                        (self.players.position == pos) & ~self.players.player_id.isin(started.player_id) & \
+                        ~self.players.player_id.isin(not_available.player_id)].iloc[:1].index,'starter'] = True
+                flex = [pos['roster_position']['count'] - sum(started.selected_position == pos['roster_position']['position']) \
+                for pos in self.settings['roster_positions'] if pos['roster_position']['position'] in ['W/R/T','W/T']]
+                for flex in range(sum(flex)):
+                    self.players.loc[self.players.loc[(self.players.fantasy_team == team['name']) & \
+                    ~self.players.starter & ~self.players.injured & (self.players.bye_week != week) & \
+                    self.players.position.isin(['WR','RB','TE']) & ~self.players.player_id.isin(started.player_id) & \
+                    ~self.players.player_id.isin(not_available.player_id)].iloc[:1].index,'starter'] = True
+        elif week >= as_of%100:
+            num_pos = {pos['roster_position']['position']:pos['roster_position']['count'] \
+            for pos in self.settings['roster_positions'] if pos['roster_position']['position'] not in ['W/R/T','W/T','BN','IR']}
+            for pos in num_pos:
+                for num in range(num_pos[pos]):
+                    self.players.loc[self.players.loc[~self.players.starter & ~self.players.injured & \
+                    (self.players.bye_week != week) & (self.players.position == pos)]\
+                    .drop_duplicates(subset=['fantasy_team'],keep='first').index,'starter'] = True
+            flex = [pos['roster_position']['count'] for pos in self.settings['roster_positions'] if pos['roster_position']['position'] in ['W/R/T','W/T']]
+            for flex in range(sum(flex)):
+                self.players.loc[self.players.loc[~self.players.starter & ~self.players.injured & \
+                (self.players.bye_week != week) & self.players.position.isin(['WR','RB','TE'])]\
+                .drop_duplicates(subset=['fantasy_team'],keep='first').index,'starter'] = True
 
         """ FINISH FROM HERE!!! """
         """ FINISH FROM HERE!!! """
