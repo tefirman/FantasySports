@@ -656,15 +656,22 @@ def get_schedule(as_of=None):
                 'score_1':[matchup['0']['matchup']['0']['teams']['0']['team'][1]['team_points']['total']],\
                 'score_2':[matchup['0']['matchup']['0']['teams']['1']['team'][1]['team_points']['total']]}),ignore_index=True)
     
-#    """ MANY MILE POSTSEASON """
-#    if as_of//100 == 2021 and as_of%100 >= 15 and (schedule.team_1.isin(['The Algorithm']).any() or schedule.team_2.isin(['The Algorithm']).any()):
-#        schedule = schedule.loc[~schedule.week.isin([15,16,17]) | ~schedule.team_1.isin(['The Algorithm',\
-#        '69ers','Football Cream','Wankstas',"The Adam's Family",'Sunday ShNoz'])].reset_index(drop=True)
-#        schedule = schedule.append(pd.DataFrame({'week':[15,15,16,16,17],\
-#        'team_1':["The Adam's Family",'Football Cream','Wankstas',"The Adam's Family",'Sunday ShNoz'],\
-#        'team_2':['The Algorithm','Sunday ShNoz','Sunday ShNoz','69ers','69ers'],\
-#        'score_1':[54.28,115.80,126.16,119.60,0.00],'score_2':[119.45,101.46,65.86,98.24,0.00]}),ignore_index=True,sort=False)
-#    """ MANY MILE POSTSEASON """
+    """ MANY MILE POSTSEASON """
+    if as_of//100 == 2021 and as_of%100 >= 15 and (schedule.team_1.isin(['The Algorithm']).any() or schedule.team_2.isin(['The Algorithm']).any()):
+        schedule = schedule.loc[~schedule.week.isin([15,16,17]) | ~schedule.team_1.isin(['The Algorithm',\
+        '69ers','Football Cream','Wankstas',"The Adam's Family",'Sunday ShNoz'])].reset_index(drop=True)
+        schedule = schedule.append(pd.DataFrame({'week':[15,15,16,16,17],\
+        'team_1':["The Adam's Family",'Football Cream','Wankstas',"The Adam's Family",'Sunday ShNoz'],\
+        'team_2':['The Algorithm','Sunday ShNoz','Sunday ShNoz','69ers','69ers'],\
+        'score_1':[54.28,115.80,126.16,119.60,0.00],'score_2':[119.45,101.46,65.86,98.24,0.00]}),ignore_index=True,sort=False)
+    elif as_of//100 == 2022 and as_of%100 >= 15 and (schedule.team_1.isin(['The Algorithm']).any() or schedule.team_2.isin(['The Algorithm']).any()):
+        schedule = schedule.loc[~schedule.week.isin([15,16,17]) | ~schedule.team_1.isin(['69ers',\
+        'Chase-ing a Dream','Crotch de Fuego','Christian Murder Force','All About the D','The Sofa Kings'])].reset_index(drop=True)
+        schedule = schedule.append(pd.DataFrame({'week':[15,15],\
+        'team_1':['Crotch de Fuego','Christian Murder Force'],\
+        'team_2':['Chase-ing a Dream','69ers'],\
+        'score_1':[0.0,0.0],'score_2':[0.0,0.0]}),ignore_index=True,sort=False)
+    """ MANY MILE POSTSEASON """
     
     switch = schedule.team_1 > schedule.team_2
     schedule.loc[switch,'temp'] = schedule.loc[switch,'team_1']
@@ -1366,10 +1373,11 @@ def main():
         print(repeats.loc[repeats.freq > 1,'name'].tolist())
     
     # """ Analyzing multi-player trade """
-    # by_player.loc[by_player.name.isin(["Deebo Samuel"]),'fantasy_team'] = "The Algorithm"
-    # by_player.loc[by_player.name.isin(["Terry McLaurin","Devin Singletary"]),'fantasy_team'] = "Football Cream"
+    # # by_player.loc[by_player.name.isin(["Deebo Samuel"]),'fantasy_team'] = "The Algorithm"
+    # # by_player.loc[by_player.name.isin(["Terry McLaurin","Devin Singletary"]),'fantasy_team'] = "Football Cream"
     # # by_player.loc[by_player.name.isin(['Austin Ekeler','Adam Thielen']),'fantasy_team'] = "Toothless Wonders"
     # # by_player.loc[by_player.name.isin(['Gabriel Davis','Tony Pollard']),'fantasy_team'] = "Orchids of Asia"
+    # by_player.loc[by_player.name.isin(['Tom Brady']),'fantasy_team'] = "Sunday ShNoz"
     # """ Analyzing multi-player trade """
     
     rosters = by_player.loc[~by_player.fantasy_team.isnull()].sort_values(by=['fantasy_team','WAR'],ascending=[True,False])
@@ -1417,7 +1425,9 @@ def main():
     'playoffs','playoff_bye','winner','runner_up','third','earnings'] + \
     (['many_mile'] if options.name == 'The Algorithm' else [])],'Standings',writer)
     writer.sheets['Standings'].freeze_panes(1,1)
-    writer.sheets['Standings'].conditional_format('I2:M' + str(standings_sim.shape[0] + 1),\
+    writer.sheets['Standings'].conditional_format('I2:J' + str(standings_sim.shape[0] + 1),\
+    {'type':'3_color_scale','min_color':'#FF6347','mid_color':'#FFD700','max_color':'#3CB371'})
+    writer.sheets['Standings'].conditional_format('K2:M' + str(standings_sim.shape[0] + 1),\
     {'type':'3_color_scale','min_color':'#FF6347','mid_color':'#FFD700','max_color':'#3CB371'})
     writer.sheets['Standings'].conditional_format('N2:N' + str(standings_sim.shape[0] + 1),\
     {'type':'3_color_scale','min_color':'#FF6347','mid_color':'#FFD700','max_color':'#3CB371'})
