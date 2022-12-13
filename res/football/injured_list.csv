@@ -83,7 +83,7 @@ Harrison Butker,K,KAN,3
 Travis Fulgham,WR,GNB,17
 Trey Lance,QB,SFO,17
 Mike Evans,WR,TAM,3
-Hunter Renfrow,WR,OAK,14
+Hunter Renfrow,WR,OAK,15
 Chris Godwin,WR,TAM,3
 Antoine Wesley,WR,ARI,17
 Godwin Igwebuike,RB,SEA,17
@@ -193,7 +193,7 @@ Ronnie Rivers,RB,LAR,17
 Ty Chandler,RB,MIN,17
 Ja'Marr Chase,WR,CIN,11
 Corey Davis,WR,NYJ,11
-Deebo Samuel,WR,SFO,9
+Deebo Samuel,WR,SFO,17
 Josh Palmer,WR,LAC,8
 Mason Kinsey,WR,TEN,17
 Chuba Hubbard,RB,CAR,9
@@ -233,19 +233,19 @@ Nick Sciba,K,PIT,17
 Zach Ertz,TE,ARI,17
 Cooper Kupp,WR,LAR,17
 Dallas Goedert,TE,PHI,14
-Khalil Herbert,RB,CHI,14
+Khalil Herbert,RB,CHI,15
 Kylin Hill,RB,GNB,17
 Irv Smith Jr.,TE,MIN,16
 JuJu Smith-Schuster,WR,KAN,11
-Mecole Hardman,WR,KAN,14
+Mecole Hardman,WR,KAN,15
 Kyle Pitts,TE,ATL,17
 Chase Edmonds,RB,DEN,14
-Kyler Murray,QB,ARI,11
+Kyler Murray,QB,ARI,17
 Jerry Jeudy,WR,DEN,11
 Wan'Dale Robinson,WR,NYG,17
 J.D. McKissic,RB,WAS,17
 Qadree Ollison,RB,DAL,17
-Darrell Henderson,RB,LAR,17
+Darrell Henderson,RB,JAX,17
 Clyde Edwards-Helaire,RB,KAN,15
 Darnell Mooney,WR,CHI,17
 Allen Robinson,WR,LAR,17
@@ -264,3 +264,5 @@ Jimmy Garoppolo,QB,SFO,17
 Lamar Jackson,QB,BAL,15
 Courtland Sutton,WR,DEN,14
 Hayden Hurst,TE,CIN,14
+Dontrell Hilliard,RB,TEN,15
+Eno Benjamin,RB,HOU,17
