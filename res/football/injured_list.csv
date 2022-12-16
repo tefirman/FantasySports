@@ -1,7 +1,7 @@
 name,position,current_team,until
 Chad Hansen,WR,ATL,17
 Chris Blewitt,K,CLE,17
-Cole Beasley,WR,TAM,17
+Cole Beasley,WR,BUF,17
 Devonta Freeman,RB,BAL,17
 Dominik Eberle,K,DET,17
 Ethan Wolf,TE,NOR,17
@@ -138,7 +138,7 @@ Raleigh Webb,WR,BAL,17
 Reggie Bonnafon,RB,WAS,17
 Rico Gafford,WR,GNB,17
 Robert Foster,WR,NYG,17
-Rondale Moore,WR,ARI,13
+Rondale Moore,WR,ARI,17
 Ryan Izzo,TE,CAR,17
 Ryquell Armstead,RB,JAX,17
 Trenton Irwin,WR,CIN,17
@@ -192,7 +192,7 @@ Mike Boone,RB,DEN,11
 Ronnie Rivers,RB,LAR,17
 Ty Chandler,RB,MIN,17
 Ja'Marr Chase,WR,CIN,11
-Corey Davis,WR,NYJ,11
+Corey Davis,WR,NYJ,15
 Deebo Samuel,WR,SFO,17
 Josh Palmer,WR,LAC,8
 Mason Kinsey,WR,TEN,17
@@ -269,3 +269,4 @@ Eno Benjamin,RB,ARI,17
 Dameon Pierce,RB,HOU,15
 Tyler Lockett,WR,SEA,17
 Mike White,QB,NYJ,15
+DeeJay Dallas,RB,SEA,15
