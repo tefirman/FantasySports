@@ -667,10 +667,10 @@ def get_schedule(as_of=None):
     elif as_of//100 == 2022 and as_of%100 >= 15 and (schedule.team_1.isin(['The Algorithm']).any() or schedule.team_2.isin(['The Algorithm']).any()):
         schedule = schedule.loc[~schedule.week.isin([15,16,17]) | ~schedule.team_1.isin(['69ers',\
         'Chase-ing a Dream','Crotch de Fuego','Christian Murder Force','All About the D','The Sofa Kings'])].reset_index(drop=True)
-        schedule = schedule.append(pd.DataFrame({'week':[15,15],\
-        'team_1':['Crotch de Fuego','Christian Murder Force'],\
-        'team_2':['Chase-ing a Dream','69ers'],\
-        'score_1':[0.0,0.0],'score_2':[0.0,0.0]}),ignore_index=True,sort=False)
+        schedule = schedule.append(pd.DataFrame({'week':[15,15,16,16,16,16],\
+        'team_1':['Crotch de Fuego','Christian Murder Force','Crotch de Fuego','Christian Murder Force'],\
+        'team_2':['Chase-ing a Dream','69ers','The Sofa Kings','All About the D'],\
+        'score_1':[90.44,103.46,0.0,0.0],'score_2':[92.30,117.74,0.0,0.0]}),ignore_index=True,sort=False)
     """ MANY MILE POSTSEASON """
     
     switch = schedule.team_1 > schedule.team_2
@@ -828,7 +828,9 @@ postseason=True,basaloppqbtime=[1.0,0.0,0.0,0.0],payouts=[800,300,100],fixed_win
             playoffs = pd.merge(left=playoffs,right=scores.loc[scores.week == int(settings['playoff_start_week']),['team','score']],how='left',on='team')
             playoffs.score = playoffs.score.fillna(0.0)
             playoffs = pd.merge(left=playoffs,right=projections.loc[projections.week == int(settings['playoff_start_week']),\
-            ['fantasy_team','points_avg','points_stdev']].rename(columns={'fantasy_team':'team'}),how='inner',on='team')
+            ['fantasy_team','points_avg','points_stdev']].rename(columns={'fantasy_team':'team'}),how='left',on='team')
+            playoffs.points_avg = playoffs.points_avg.fillna(0.0)
+            playoffs.points_stdev = playoffs.points_stdev.fillna(0.0)
             playoffs.loc[playoffs.seed == 0,'matchup'] = 0
             playoffs.loc[playoffs.seed == 1,'matchup'] = 1
             playoffs.loc[playoffs.seed.isin([2,5]),'matchup'] = 2
@@ -843,7 +845,9 @@ postseason=True,basaloppqbtime=[1.0,0.0,0.0,0.0],payouts=[800,300,100],fixed_win
                 many_mile = pd.merge(left=many_mile,right=scores.loc[scores.week == int(settings['playoff_start_week']),['team','score']],how='left',on='team')
                 many_mile.score = many_mile.score.fillna(0.0)
                 many_mile = pd.merge(left=many_mile,right=projections.loc[projections.week == int(settings['playoff_start_week']),\
-                ['fantasy_team','points_avg','points_stdev']].rename(columns={'fantasy_team':'team'}),how='inner',on='team')
+                ['fantasy_team','points_avg','points_stdev']].rename(columns={'fantasy_team':'team'}),how='left',on='team')
+                many_mile.points_avg = many_mile.points_avg.fillna(0.0)
+                many_mile.points_stdev = many_mile.points_stdev.fillna(0.0)
                 many_mile.loc[many_mile.seed == 11,'matchup'] = 0
                 many_mile.loc[many_mile.seed == 10,'matchup'] = 1
                 many_mile.loc[many_mile.seed.isin([6,9]),'matchup'] = 2
@@ -856,7 +860,9 @@ postseason=True,basaloppqbtime=[1.0,0.0,0.0,0.0],payouts=[800,300,100],fixed_win
         playoffs.score = playoffs.score.fillna(0.0)
         playoffs = pd.merge(left=playoffs,right=projections.loc[projections.week == int(settings['playoff_start_week']) + \
         int(settings['num_playoff_teams'] == '6'),['fantasy_team','points_avg','points_stdev']]\
-        .rename(columns={'fantasy_team':'team'}),how='inner',on='team')
+        .rename(columns={'fantasy_team':'team'}),how='left',on='team')
+        playoffs.points_avg = playoffs.points_avg.fillna(0.0)
+        playoffs.points_stdev = playoffs.points_stdev.fillna(0.0)
         playoffs['seed'] = playoffs.index%4
         playoffs.loc[playoffs.seed.isin([0,3]),'matchup'] = 0
         playoffs.loc[playoffs.seed.isin([1,2]),'matchup'] = 1
@@ -873,7 +879,9 @@ postseason=True,basaloppqbtime=[1.0,0.0,0.0,0.0],payouts=[800,300,100],fixed_win
             many_mile.score = many_mile.score.fillna(0.0)
             many_mile = pd.merge(left=many_mile,right=projections.loc[projections.week == int(settings['playoff_start_week']) + \
             int(settings['num_playoff_teams'] == '6'),['fantasy_team','points_avg','points_stdev']]\
-            .rename(columns={'fantasy_team':'team'}),how='inner',on='team')
+            .rename(columns={'fantasy_team':'team'}),how='left',on='team')
+            many_mile.points_avg = many_mile.points_avg.fillna(0.0)
+            many_mile.points_stdev = many_mile.points_stdev.fillna(0.0)
             many_mile['seed'] = many_mile.index%4
             many_mile.loc[many_mile.seed.isin([0,3]),'matchup'] = 0
             many_mile.loc[many_mile.seed.isin([1,2]),'matchup'] = 1
@@ -885,7 +893,9 @@ postseason=True,basaloppqbtime=[1.0,0.0,0.0,0.0],payouts=[800,300,100],fixed_win
         playoffs.score = playoffs.score.fillna(0.0)
         playoffs = pd.merge(left=playoffs,right=projections.loc[projections.week == int(settings['playoff_start_week']) + \
         1 + int(settings['num_playoff_teams'] == '6'),['fantasy_team','points_avg','points_stdev']]\
-        .rename(columns={'fantasy_team':'team'}),how='inner',on='team')
+        .rename(columns={'fantasy_team':'team'}),how='left',on='team')
+        playoffs.points_avg = playoffs.points_avg.fillna(0.0)
+        playoffs.points_stdev = playoffs.points_stdev.fillna(0.0)
         playoffs['sim'] = np.random.normal(loc=0,scale=1,size=playoffs.shape[0])*playoffs.points_stdev + playoffs.points_avg + playoffs.score
         runner_up = playoffs.sort_values(by=['num_sim','sim'],ascending=True)\
         .drop_duplicates(subset=['num_sim'],keep='first')
@@ -906,7 +916,9 @@ postseason=True,basaloppqbtime=[1.0,0.0,0.0,0.0],payouts=[800,300,100],fixed_win
             many_mile.score = many_mile.score.fillna(0.0)
             many_mile = pd.merge(left=many_mile,right=projections.loc[projections.week == int(settings['playoff_start_week']) + \
             1 + int(settings['num_playoff_teams'] == '6'),['fantasy_team','points_avg','points_stdev']]\
-            .rename(columns={'fantasy_team':'team'}),how='inner',on='team')
+            .rename(columns={'fantasy_team':'team'}),how='left',on='team')
+            many_mile.points_avg = many_mile.points_avg.fillna(0.0)
+            many_mile.points_stdev = many_mile.points_stdev.fillna(0.0)
             many_mile['sim'] = np.random.normal(loc=0,scale=1,size=many_mile.shape[0])*many_mile.points_stdev + many_mile.points_avg + many_mile.score
             many_mile = many_mile.sort_values(by=['num_sim','sim'],ascending=True)\
             .drop_duplicates(subset=['num_sim'],keep='first')
