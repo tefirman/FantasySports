@@ -320,6 +320,7 @@ def get_games(start,finish):
     names['name'] = names.raw.str.split('.htm">').str[-1].str.split('</a>').str[0]
     names['position'] = names.raw.str.split('\(').str[-1].str.split('\)').str[0]
     names.loc[names.name == 'Logan Thomas','position'] = 'TE'
+    names.loc[names.name == 'Cordarrelle Patterson','position'] = 'RB'
     del names['raw']
 
     stats = pd.merge(left=stats,right=names,how='left',on='player_id')
@@ -667,7 +668,7 @@ def get_schedule(as_of=None):
     elif as_of//100 == 2022 and as_of%100 >= 15 and (schedule.team_1.isin(['The Algorithm']).any() or schedule.team_2.isin(['The Algorithm']).any()):
         schedule = schedule.loc[~schedule.week.isin([15,16,17]) | ~schedule.team_1.isin(['69ers',\
         'Chase-ing a Dream','Crotch de Fuego','Christian Murder Force','All About the D','The Sofa Kings'])].reset_index(drop=True)
-        schedule = schedule.append(pd.DataFrame({'week':[15,15,16,16,16,16],\
+        schedule = schedule.append(pd.DataFrame({'week':[15,15,16,16],\
         'team_1':['Crotch de Fuego','Christian Murder Force','Crotch de Fuego','Christian Murder Force'],\
         'team_2':['Chase-ing a Dream','69ers','The Sofa Kings','All About the D'],\
         'score_1':[90.44,103.46,0.0,0.0],'score_2':[92.30,117.74,0.0,0.0]}),ignore_index=True,sort=False)
