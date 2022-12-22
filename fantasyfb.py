@@ -344,6 +344,7 @@ class League:
         names['name'] = names.raw.str.split('.htm">').str[-1].str.split('</a>').str[0]
         names['position'] = names.raw.str.split('\(').str[-1].str.split('\)').str[0]
         names.loc[names.name == 'Logan Thomas','position'] = 'TE'
+        names.loc[names.name == 'Cordarrelle Patterson','position'] = 'RB'
         del names['raw']
         return names
 
@@ -652,15 +653,22 @@ class League:
                     'score_1':[matchup['0']['matchup']['0']['teams']['0']['team'][1]['team_points']['total']],\
                     'score_2':[matchup['0']['matchup']['0']['teams']['1']['team'][1]['team_points']['total']]}),ignore_index=True)
         
-    #    """ MANY MILE POSTSEASON """
-    #    if as_of//100 == 2021 and as_of%100 >= 15 and (schedule.team_1.isin(['The Algorithm']).any() or schedule.team_2.isin(['The Algorithm']).any()):
-    #        schedule = schedule.loc[~schedule.week.isin([15,16,17]) | ~schedule.team_1.isin(['The Algorithm',\
-    #        '69ers','Football Cream','Wankstas',"The Adam's Family",'Sunday ShNoz'])].reset_index(drop=True)
-    #        schedule = schedule.append(pd.DataFrame({'week':[15,15,16,16,17],\
-    #        'team_1':["The Adam's Family",'Football Cream','Wankstas',"The Adam's Family",'Sunday ShNoz'],\
-    #        'team_2':['The Algorithm','Sunday ShNoz','Sunday ShNoz','69ers','69ers'],\
-    #        'score_1':[54.28,115.80,126.16,119.60,0.00],'score_2':[119.45,101.46,65.86,98.24,0.00]}),ignore_index=True,sort=False)
-    #    """ MANY MILE POSTSEASON """
+        """ MANY MILE POSTSEASON """
+        if as_of//100 == 2021 and as_of%100 >= 15 and (schedule.team_1.isin(['The Algorithm']).any() or schedule.team_2.isin(['The Algorithm']).any()):
+            schedule = schedule.loc[~schedule.week.isin([15,16,17]) | ~schedule.team_1.isin(['The Algorithm',\
+            '69ers','Football Cream','Wankstas',"The Adam's Family",'Sunday ShNoz'])].reset_index(drop=True)
+            schedule = schedule.append(pd.DataFrame({'week':[15,15,16,16,17],\
+            'team_1':["The Adam's Family",'Football Cream','Wankstas',"The Adam's Family",'Sunday ShNoz'],\
+            'team_2':['The Algorithm','Sunday ShNoz','Sunday ShNoz','69ers','69ers'],\
+            'score_1':[54.28,115.80,126.16,119.60,0.00],'score_2':[119.45,101.46,65.86,98.24,0.00]}),ignore_index=True,sort=False)
+        elif as_of//100 == 2022 and as_of%100 >= 15 and (schedule.team_1.isin(['The Algorithm']).any() or schedule.team_2.isin(['The Algorithm']).any()):
+            schedule = schedule.loc[~schedule.week.isin([15,16,17]) | ~schedule.team_1.isin(['69ers',\
+            'Chase-ing a Dream','Crotch de Fuego','Christian Murder Force','All About the D','The Sofa Kings'])].reset_index(drop=True)
+            schedule = schedule.append(pd.DataFrame({'week':[15,15,16,16],\
+            'team_1':['Crotch de Fuego','Christian Murder Force','Crotch de Fuego','Christian Murder Force'],\
+            'team_2':['Chase-ing a Dream','69ers','The Sofa Kings','All About the D'],\
+            'score_1':[90.44,103.46,0.0,0.0],'score_2':[92.30,117.74,0.0,0.0]}),ignore_index=True,sort=False)
+        """ MANY MILE POSTSEASON """
         
         switch = schedule.team_1 > schedule.team_2
         schedule.loc[switch,'temp'] = schedule.loc[switch,'team_1']
@@ -685,12 +693,18 @@ class League:
     def starters(self, week, basaloppqbtime=[1.0,0.0,0.0,0.0]):
         as_of = self.season*100 + self.week
         self.refresh_oauth()
-        self.players = pd.merge(left=self.players,right=self.nfl_schedule.loc[(self.nfl_schedule.season == as_of//100) & \
-        (self.nfl_schedule.week == week)],how='left',left_on='current_team',right_on='abbrev')
+        self.players = pd.merge(left=self.players,\
+        right=self.nfl_schedule.loc[(self.nfl_schedule.season == as_of//100) & \
+        (self.nfl_schedule.week == week),['abbrev','opp_elo','qb_elo','home_away']],\
+        how='left',left_on='current_team',right_on='abbrev')
         self.players['opp_factor'] = basaloppqbtime[1]*(self.players['opp_elo'] - 1)
         self.players['qb_factor'] = basaloppqbtime[2]*(self.players['qb_elo'] - 1)
         self.players['game_factor'] = basaloppqbtime[0] + self.players['opp_factor'] + self.players['qb_factor']
         self.players['points_avg'] *= self.players['game_factor'].fillna(1.0)
+        del self.players['opp_elo'], self.players['qb_elo'], self.players['home_away'], self.players['abbrev']
+
+        print(self.players.columns)
+
         """ WAR is linear with points_avg, but slope/intercept depends on position """
         """ Harder to characterize how WAR varies with points_stdev, ignoring for now... """
         self.players = self.players.sort_values(by='points_avg',ascending=False)
@@ -738,6 +752,222 @@ class League:
                 self.players.loc[self.players.loc[~self.players.starter & ~self.players.injured & \
                 (self.players.bye_week != week) & self.players.position.isin(['WR','RB','TE'])]\
                 .drop_duplicates(subset=['fantasy_team'],keep='first').index,'starter'] = True
+
+    def season_sims(self,num_sims=10000,verbose=False,postseason=True,\
+    basaloppqbtime=[1.0,0.0,0.0,0.0],payouts=[800,300,100],fixed_winner=None):
+        as_of = self.season*100 + self.week
+        self.refresh_oauth()
+        self.players['points_var'] = self.players.points_stdev**2
+        projections = pd.DataFrame(columns=['fantasy_team','week','points_avg','points_var'])
+        for week in range(17):
+            self.starters(week + 1,basaloppqbtime)
+            projections = projections.append(self.players.loc[self.players.starter].groupby('fantasy_team')\
+            [['points_avg','points_var']].sum().reset_index(),ignore_index=True,sort=False)
+            projections.loc[projections.week.isnull(),'week'] = week + 1
+        projections['points_stdev'] = projections['points_var']**0.5
+        del self.players['points_var']
+        schedule = pd.merge(left=self.schedule.copy(),right=projections.rename(index=str,\
+        columns={'fantasy_team':'team_1','points_avg':'points_avg_1',\
+        'points_stdev':'points_stdev_1'}),how='left',on=['week','team_1'])
+        schedule = pd.merge(left=schedule,right=projections.rename(index=str,\
+        columns={'fantasy_team':'team_2','points_avg':'points_avg_2',\
+        'points_stdev':'points_stdev_2'}),how='left',on=['week','team_2'])
+        schedule['points_avg_1'] = schedule['points_avg_1'].fillna(0.0)
+        schedule['points_avg_2'] = schedule['points_avg_2'].fillna(0.0)
+        schedule['points_stdev_1'] = schedule['points_stdev_1'].fillna(0.0)
+        schedule['points_stdev_2'] = schedule['points_stdev_2'].fillna(0.0)
+        schedule['points_avg_1'] += schedule['score_1']
+        schedule['points_avg_2'] += schedule['score_2']
+        if fixed_winner:
+            if ((schedule.week == fixed_winner[0]) & (schedule.team_1 == fixed_winner[1])).any():
+                winner,loser = '1','2'
+            else:
+                winner,loser = '2','1'
+            schedule.loc[(schedule.week == fixed_winner[0]) & (schedule['team_' + winner] == fixed_winner[1]),'points_avg_' + winner] = 100.1
+            schedule.loc[(schedule.week == fixed_winner[0]) & (schedule['team_' + winner] == fixed_winner[1]),'points_avg_' + loser] = 100.0
+            schedule.loc[(schedule.week == fixed_winner[0]) & (schedule['team_' + winner] == fixed_winner[1]),'points_stdev_' + winner] = 0.0
+            schedule.loc[(schedule.week == fixed_winner[0]) & (schedule['team_' + winner] == fixed_winner[1]),'points_stdev_' + loser] = 0.0
+        schedule_sims = pd.DataFrame().append([schedule]*num_sims,ignore_index=True)
+        schedule_sims['num_sim'] = schedule_sims.index//schedule.shape[0]
+        schedule_sims['sim_1'] = np.random.normal(loc=0,scale=1,size=schedule_sims.shape[0])*schedule_sims['points_stdev_1'] + schedule_sims['points_avg_1']
+        schedule_sims['sim_2'] = np.random.normal(loc=0,scale=1,size=schedule_sims.shape[0])*schedule_sims['points_stdev_2'] + schedule_sims['points_avg_2']
+        schedule_sims['win_1'] = (schedule_sims.sim_1 > schedule_sims.sim_2).astype(int)
+        schedule_sims['win_2'] = 1 - schedule_sims['win_1']
+        standings = schedule_sims[['num_sim','week','team_1','sim_1','win_1']].reset_index()\
+        .rename(index=str,columns={'team_1':'team','win_1':'wins','sim_1':'points'})\
+        .append(schedule_sims[['num_sim','week','team_2','sim_2','win_2']].reset_index()\
+        .rename(index=str,columns={'team_2':'team','win_2':'wins','sim_2':'points'}),ignore_index=True)
+        standings = standings.loc[standings.week < int(self.settings['playoff_start_week'])]\
+        .groupby(['num_sim','team']).sum().sort_values(by=['num_sim','wins','points'],ascending=False).reset_index()
+        standings.loc[standings.index%len(self.teams) < int(self.settings['num_playoff_teams']),'playoffs'] = 1
+        standings.loc[standings.index%len(self.teams) >= int(self.settings['num_playoff_teams']),'playoffs'] = 0
+        standings['playoff_bye'] = 0
+        if self.settings['num_playoff_teams'] == '6':
+            standings.loc[standings.index%len(self.teams) < 2,'playoff_bye'] = 1
+        if postseason:
+            algorithm = schedule.team_1.isin(['The Algorithm']).any() \
+            or schedule.team_2.isin(['The Algorithm']).any()
+            standings['seed'] = standings.index%len(self.teams)
+            scores = schedule.loc[schedule.week >= int(self.settings['playoff_start_week']),\
+            ['week','team_1','score_1']].rename(columns={'team_1':'team','score_1':'score'})\
+            .append(schedule.loc[schedule.week >= int(self.settings['playoff_start_week']),\
+            ['week','team_2','score_2']].rename(columns={'team_2':'team','score_2':'score'}),\
+            ignore_index=True,sort=False).groupby(['week','team']).score.sum().reset_index()
+            playoffs = standings.loc[standings.seed < int(self.settings['num_playoff_teams'])].copy().reset_index()
+            if algorithm:
+                many_mile = standings.loc[standings.seed >= int(self.settings['num_playoff_teams'])].copy().reset_index()
+            if self.settings['num_playoff_teams'] == '6':
+                playoffs = pd.merge(left=playoffs,right=scores.loc[scores.week == int(self.settings['playoff_start_week']),['team','score']],how='left',on='team')
+                playoffs.score = playoffs.score.fillna(0.0)
+                playoffs = pd.merge(left=playoffs,right=projections.loc[projections.week == int(self.settings['playoff_start_week']),\
+                ['fantasy_team','points_avg','points_stdev']].rename(columns={'fantasy_team':'team'}),how='left',on='team')
+                playoffs.points_avg = playoffs.points_avg.fillna(0.0)
+                playoffs.points_stdev = playoffs.points_stdev.fillna(0.0)
+                playoffs.loc[playoffs.seed == 0,'matchup'] = 0
+                playoffs.loc[playoffs.seed == 1,'matchup'] = 1
+                playoffs.loc[playoffs.seed.isin([2,5]),'matchup'] = 2
+                playoffs.loc[playoffs.seed.isin([3,4]),'matchup'] = 3
+                playoffs['sim'] = np.random.normal(loc=0,scale=1,size=playoffs.shape[0])*playoffs.points_stdev + playoffs.points_avg + playoffs.score
+                playoffs = playoffs.sort_values(by=['num_sim','matchup','sim'],ascending=[True,True,False])\
+                .drop_duplicates(subset=['num_sim','matchup'],keep='first').reset_index(drop=True)
+                del playoffs['matchup'], playoffs['sim'], playoffs['score'], playoffs['points_avg'], playoffs['points_stdev']
+                if self.settings['uses_playoff_reseeding']:
+                    playoffs = playoffs.sort_values(by=['num_sim','seed'],ascending=True).reset_index(drop=True)
+                if algorithm:
+                    many_mile = pd.merge(left=many_mile,right=scores.loc[scores.week == int(self.settings['playoff_start_week']),['team','score']],how='left',on='team')
+                    many_mile.score = many_mile.score.fillna(0.0)
+                    many_mile = pd.merge(left=many_mile,right=projections.loc[projections.week == int(self.settings['playoff_start_week']),\
+                    ['fantasy_team','points_avg','points_stdev']].rename(columns={'fantasy_team':'team'}),how='left',on='team')
+                    many_mile.points_avg = many_mile.points_avg.fillna(0.0)
+                    many_mile.points_stdev = many_mile.points_stdev.fillna(0.0)
+                    many_mile.loc[many_mile.seed == 11,'matchup'] = 0
+                    many_mile.loc[many_mile.seed == 10,'matchup'] = 1
+                    many_mile.loc[many_mile.seed.isin([6,9]),'matchup'] = 2
+                    many_mile.loc[many_mile.seed.isin([7,8]),'matchup'] = 3
+                    many_mile['sim'] = np.random.normal(loc=0,scale=1,size=many_mile.shape[0])*many_mile.points_stdev + many_mile.points_avg + many_mile.score
+                    many_mile = many_mile.sort_values(by=['num_sim','matchup','sim'],ascending=True).drop_duplicates(subset=['num_sim','matchup'],keep='first')
+                    del many_mile['matchup'], many_mile['sim'], many_mile['score'], many_mile['points_avg'], many_mile['points_stdev']
+            playoffs = pd.merge(left=playoffs,right=scores.loc[scores.week == int(self.settings['playoff_start_week']) + \
+            int(self.settings['num_playoff_teams'] == '6'),['team','score']],how='left',on='team')
+            playoffs.score = playoffs.score.fillna(0.0)
+            playoffs = pd.merge(left=playoffs,right=projections.loc[projections.week == int(self.settings['playoff_start_week']) + \
+            int(self.settings['num_playoff_teams'] == '6'),['fantasy_team','points_avg','points_stdev']]\
+            .rename(columns={'fantasy_team':'team'}),how='left',on='team')
+            playoffs.points_avg = playoffs.points_avg.fillna(0.0)
+            playoffs.points_stdev = playoffs.points_stdev.fillna(0.0)
+            playoffs['seed'] = playoffs.index%4
+            playoffs.loc[playoffs.seed.isin([0,3]),'matchup'] = 0
+            playoffs.loc[playoffs.seed.isin([1,2]),'matchup'] = 1
+            playoffs['sim'] = np.random.normal(loc=0,scale=1,size=playoffs.shape[0])*playoffs.points_stdev + playoffs.points_avg + playoffs.score
+            consolation = playoffs.sort_values(by=['num_sim','matchup','sim'],ascending=True)\
+            .drop_duplicates(subset=['num_sim','matchup'],keep='first').reset_index(drop=True)
+            playoffs = playoffs.sort_values(by=['num_sim','matchup','sim'],ascending=[True,True,False])\
+            .drop_duplicates(subset=['num_sim','matchup'],keep='first').reset_index(drop=True)
+            del playoffs['matchup'], playoffs['sim'], playoffs['score'], playoffs['points_avg'], playoffs['points_stdev'], \
+            consolation['matchup'], consolation['sim'], consolation['score'], consolation['points_avg'], consolation['points_stdev']
+            if algorithm:
+                many_mile = pd.merge(left=many_mile,right=scores.loc[scores.week == int(self.settings['playoff_start_week']) + \
+                int(self.settings['num_playoff_teams'] == '6'),['team','score']],how='left',on='team')
+                many_mile.score = many_mile.score.fillna(0.0)
+                many_mile = pd.merge(left=many_mile,right=projections.loc[projections.week == int(self.settings['playoff_start_week']) + \
+                int(self.settings['num_playoff_teams'] == '6'),['fantasy_team','points_avg','points_stdev']]\
+                .rename(columns={'fantasy_team':'team'}),how='left',on='team')
+                many_mile.points_avg = many_mile.points_avg.fillna(0.0)
+                many_mile.points_stdev = many_mile.points_stdev.fillna(0.0)
+                many_mile['seed'] = many_mile.index%4
+                many_mile.loc[many_mile.seed.isin([0,3]),'matchup'] = 0
+                many_mile.loc[many_mile.seed.isin([1,2]),'matchup'] = 1
+                many_mile['sim'] = np.random.normal(loc=0,scale=1,size=many_mile.shape[0])*many_mile.points_stdev + many_mile.points_avg + many_mile.score
+                many_mile = many_mile.sort_values(by=['num_sim','matchup','sim'],ascending=True).drop_duplicates(subset=['num_sim','matchup'],keep='first')
+                del many_mile['matchup'], many_mile['sim'], many_mile['score'], many_mile['points_avg'], many_mile['points_stdev']
+            playoffs = pd.merge(left=playoffs,right=scores.loc[scores.week == int(self.settings['playoff_start_week']) + \
+            1 + int(self.settings['num_playoff_teams'] == '6'),['team','score']],how='left',on='team')
+            playoffs.score = playoffs.score.fillna(0.0)
+            playoffs = pd.merge(left=playoffs,right=projections.loc[projections.week == int(self.settings['playoff_start_week']) + \
+            1 + int(self.settings['num_playoff_teams'] == '6'),['fantasy_team','points_avg','points_stdev']]\
+            .rename(columns={'fantasy_team':'team'}),how='left',on='team')
+            playoffs.points_avg = playoffs.points_avg.fillna(0.0)
+            playoffs.points_stdev = playoffs.points_stdev.fillna(0.0)
+            playoffs['sim'] = np.random.normal(loc=0,scale=1,size=playoffs.shape[0])*playoffs.points_stdev + playoffs.points_avg + playoffs.score
+            runner_up = playoffs.sort_values(by=['num_sim','sim'],ascending=True)\
+            .drop_duplicates(subset=['num_sim'],keep='first')
+            winner = playoffs.sort_values(by=['num_sim','sim'],ascending=[True,False])\
+            .drop_duplicates(subset=['num_sim'],keep='first')
+            consolation = pd.merge(left=consolation,right=scores.loc[scores.week == int(self.settings['playoff_start_week']) + \
+            1 + int(self.settings['num_playoff_teams'] == '6'),['team','score']],how='left',on='team')
+            consolation.score = consolation.score.fillna(0.0)
+            consolation = pd.merge(left=consolation,right=projections.loc[projections.week == int(self.settings['playoff_start_week']) + \
+            1 + int(self.settings['num_playoff_teams'] == '6'),['fantasy_team','points_avg','points_stdev']]\
+            .rename(columns={'fantasy_team':'team'}),how='inner',on='team')
+            consolation['sim'] = np.random.normal(loc=0,scale=1,size=consolation.shape[0])*consolation.points_stdev + consolation.points_avg + consolation.score
+            third = consolation.sort_values(by=['num_sim','sim'],ascending=[True,False])\
+            .drop_duplicates(subset=['num_sim'],keep='first')
+            if algorithm:
+                many_mile = pd.merge(left=many_mile,right=scores.loc[scores.week == int(self.settings['playoff_start_week']) + \
+                1 + int(self.settings['num_playoff_teams'] == '6'),['team','score']],how='left',on='team')
+                many_mile.score = many_mile.score.fillna(0.0)
+                many_mile = pd.merge(left=many_mile,right=projections.loc[projections.week == int(self.settings['playoff_start_week']) + \
+                1 + int(self.settings['num_playoff_teams'] == '6'),['fantasy_team','points_avg','points_stdev']]\
+                .rename(columns={'fantasy_team':'team'}),how='left',on='team')
+                many_mile.points_avg = many_mile.points_avg.fillna(0.0)
+                many_mile.points_stdev = many_mile.points_stdev.fillna(0.0)
+                many_mile['sim'] = np.random.normal(loc=0,scale=1,size=many_mile.shape[0])*many_mile.points_stdev + many_mile.points_avg + many_mile.score
+                many_mile = many_mile.sort_values(by=['num_sim','sim'],ascending=True)\
+                .drop_duplicates(subset=['num_sim'],keep='first')
+            final_probs = pd.merge(left=pd.merge(left=winner.groupby('team').size().to_frame('winner').reset_index(),\
+            right=runner_up.groupby('team').size().to_frame('runner_up').reset_index(),how='outer',on='team'),\
+            right=third.groupby('team').size().to_frame('third').reset_index(),how='outer',on='team')
+            if algorithm:
+                final_probs = pd.merge(left=final_probs,right=many_mile.groupby('team')\
+                .size().to_frame('many_mile').reset_index(),how='outer',on='team')
+                final_probs['many_mile'] /= many_mile.shape[0]
+                final_probs['many_mile'] = final_probs['many_mile'].fillna(0.0)
+            final_probs['winner'] /= winner.shape[0]
+            final_probs['runner_up'] /= runner_up.shape[0]
+            final_probs['third'] /= third.shape[0]
+            final_probs['winner'] = final_probs['winner'].fillna(0.0)
+            final_probs['runner_up'] = final_probs['runner_up'].fillna(0.0)
+            final_probs['third'] = final_probs['third'].fillna(0.0)
+        else:
+            final_probs = pd.DataFrame(columns=['team','winner','runner_up','third','many_mile'])
+        schedule = schedule_sims.groupby(['week','team_1','team_2']).mean().reset_index()
+        schedule['points_avg_1'] = round(schedule['points_avg_1'],1)
+        schedule['points_stdev_1'] = round(schedule['points_stdev_1'],1)
+        schedule['points_avg_2'] = round(schedule['points_avg_2'],1)
+        schedule['points_stdev_2'] = round(schedule['points_stdev_2'],1)
+        standings = pd.merge(left=standings.groupby('team').mean().reset_index()\
+        .rename(index=str,columns={'wins':'wins_avg','points':'points_avg'}),\
+        right=standings[['team','wins','points']].groupby('team').std().reset_index()\
+        .rename(index=str,columns={'wins':'wins_stdev','points':'points_stdev'}),\
+        how='inner',on='team')
+        standings = pd.merge(left=standings,right=final_probs,how='left',on='team')
+        standings['winner'] = standings['winner'].fillna(0.0)
+        standings['runner_up'] = standings['runner_up'].fillna(0.0)
+        standings['third'] = standings['third'].fillna(0.0)
+        if algorithm:
+            standings['many_mile'] = standings['many_mile'].fillna(0.0)
+        scores = schedule_sims[['team_1','sim_1']].rename(index=str,columns={'team_1':'team','sim_1':'sim'})\
+        .append(schedule_sims[['team_2','sim_2']].rename(index=str,columns={'team_2':'team','sim_2':'sim'}),\
+        ignore_index=True).groupby('team')
+        standings = pd.merge(left=standings,right=scores.sim.mean().reset_index()\
+        .rename(columns={'sim':'per_game_avg'}),how='inner',on='team')
+        standings = pd.merge(left=standings,right=scores.sim.std().reset_index()\
+        .rename(columns={'sim':'per_game_stdev'}),how='inner',on='team')
+        standings['per_game_fano'] = standings['per_game_stdev']/standings['per_game_avg']
+        standings = standings.sort_values(by=['winner' if postseason else 'playoffs'] + \
+        (['many_mile'] if 'many_mile' in standings.columns.tolist() else []),\
+        ascending=[False] + ([True] if 'many_mile' in standings.columns.tolist() else []))
+        if postseason:
+            standings['earnings'] = round(standings['winner']*payouts[0] + \
+            standings['runner_up']*payouts[1] + standings['third']*payouts[2],2)
+        standings['wins_avg'] = round(standings['wins_avg'],3)
+        standings['wins_stdev'] = round(standings['wins_stdev'],3)
+        standings['points_avg'] = round(standings['points_avg'],1)
+        standings['points_stdev'] = round(standings['points_stdev'],1)
+        standings['per_game_avg'] = round(standings['per_game_avg'],1)
+        standings['per_game_stdev'] = round(standings['per_game_stdev'],1)
+        standings['per_game_fano'] = round(standings['per_game_fano'],3)
+        return schedule, standings
 
         """ FINISH FROM HERE!!! """
         """ FINISH FROM HERE!!! """
