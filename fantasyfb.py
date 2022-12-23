@@ -44,6 +44,7 @@ class League:
         self.get_fantasy_rosters()
         self.name_corrections()
         self.get_rates()
+        self.war_sim()
         self.add_injuries()
         self.add_bye_weeks()
         if roster_pcts:
@@ -627,10 +628,6 @@ class League:
             """ First week issues... """
         self.players = by_player
 
-        """ STILL NEED TO ADD WAR SIM!!! """
-        """ STILL NEED TO ADD WAR SIM!!! """
-        """ STILL NEED TO ADD WAR SIM!!! """
-
     def get_schedule(self):
         as_of = self.season*100 + self.week
         self.refresh_oauth()
@@ -702,9 +699,6 @@ class League:
         self.players['game_factor'] = basaloppqbtime[0] + self.players['opp_factor'] + self.players['qb_factor']
         self.players['points_avg'] *= self.players['game_factor'].fillna(1.0)
         del self.players['opp_elo'], self.players['qb_elo'], self.players['home_away'], self.players['abbrev']
-
-        print(self.players.columns)
-
         """ WAR is linear with points_avg, but slope/intercept depends on position """
         """ Harder to characterize how WAR varies with points_stdev, ignoring for now... """
         self.players = self.players.sort_values(by='points_avg',ascending=False)
@@ -968,6 +962,104 @@ class League:
         standings['per_game_stdev'] = round(standings['per_game_stdev'],1)
         standings['per_game_fano'] = round(standings['per_game_fano'],3)
         return schedule, standings
+
+    def war_sim(self,num_sims=10000):
+        as_of = self.season*100 + self.week
+        self.load_stats(as_of - 100,as_of - 1)
+        """ Creating histograms across all players in each position """
+        pos_hists = {'points':np.arange(-10,50.1,0.1)}
+        for pos in self.stats.position.unique():
+            pos_hists[pos] = np.histogram(self.stats.loc[self.stats.position == pos,'points'],bins=pos_hists['points'])[0]
+            pos_hists[pos] = pos_hists[pos]/sum(pos_hists[pos])
+        pos_hists['FLEX'] = np.histogram(self.stats.loc[self.stats.position.isin(['RB','WR','TE']),'points'],bins=pos_hists['points'])[0]
+        pos_hists['FLEX'] = pos_hists['FLEX']/sum(pos_hists['FLEX'])
+        """ Simulating an entire team using average players """
+        sim_scores = pd.DataFrame({'QB':np.random.choice(pos_hists['points'][:-1],p=pos_hists['QB'],size=num_sims),\
+        'RB1':np.random.choice(pos_hists['points'][:-1],p=pos_hists['RB'],size=num_sims),\
+        'RB2':np.random.choice(pos_hists['points'][:-1],p=pos_hists['RB'],size=num_sims),\
+        'WR1':np.random.choice(pos_hists['points'][:-1],p=pos_hists['WR'],size=num_sims),\
+        'WR2':np.random.choice(pos_hists['points'][:-1],p=pos_hists['WR'],size=num_sims),\
+        'TE':np.random.choice(pos_hists['points'][:-1],p=pos_hists['TE'],size=num_sims),\
+        'FLEX':np.random.choice(pos_hists['points'][:-1],p=pos_hists['FLEX'],size=num_sims),\
+        'K':np.random.choice(pos_hists['points'][:-1],p=pos_hists['K'],size=num_sims),\
+        'DEF':np.random.choice(pos_hists['points'][:-1],p=pos_hists['DEF'],size=num_sims)})
+        sim_scores['Total'] = sim_scores.QB + sim_scores.RB1 + sim_scores.RB2 + \
+        sim_scores.WR1 + sim_scores.WR2 + sim_scores.TE + sim_scores.FLEX + \
+        sim_scores.K + sim_scores.DEF
+        player_sims = pd.DataFrame({self.players.loc[ind,'name']:np.round(np.random.normal(loc=self.players.loc[ind,'points_avg'],\
+        scale=self.players.loc[ind,'points_stdev'],size=sim_scores.shape[0])) for ind in range(self.players.shape[0])})
+        sim_scores = pd.merge(left=sim_scores,right=player_sims,left_index=True,right_index=True)
+        """ Calculating the number of wins above replacement for each player """
+        for player in sim_scores.columns[10:]:
+            cols = sim_scores.columns[:9].tolist()
+            pos = self.players.loc[self.players.name == player,'position'].values[0]
+            if pos in ['RB','WR']:
+                pos += '1'
+            cols.pop(cols.index(pos))
+            cols.append(player)
+            sim_scores['Alt_Total'] = sim_scores[cols].sum(axis=1)
+            self.players.loc[self.players.name == player,'WAR'] = (sum(sim_scores.loc[:sim_scores.shape[0]//2 - 1,'Alt_Total'].values > \
+            sim_scores.loc[sim_scores.shape[0]//2:,'Total'].values)/(sim_scores.shape[0]//2) - 0.5)*14
+            del sim_scores['Alt_Total']
+
+    def possible_pickups(self,num_sims=1000,focus_on=[],exclude=[],limit_per=10,\
+    team_name=None,postseason=True,verbose=True,basaloppqbtime=[1.0,0.0,0.0,0.0],payouts=[800,300,100]):
+        as_of = self.season*100 + self.week
+        self.refresh_oauth()
+        orig_standings = self.season_sims(num_sims,False,\
+        postseason=postseason,basaloppqbtime=basaloppqbtime,payouts=payouts)[1]
+        added_value = pd.DataFrame(columns=['player_to_drop','player_to_add','wins_avg',\
+        'wins_stdev','points_avg','points_stdev','per_game_avg','per_game_stdev',\
+        'per_game_fano','playoffs','playoff_bye'] + (['winner','runner_up','third','earnings'] + \
+        (['many_mile'] if self.schedule.team_1.isin(['The Algorithm']).any() \
+        or self.schedule.team_2.isin(['The Algorithm']).any() else []) if postseason else []))
+        if not team_name:
+            team_name = [team['name'] for team in self.teams if team['team_key'] == self.lg.team_key()][0]
+        players_to_drop = self.players.loc[self.players.fantasy_team == team_name]
+        if players_to_drop.name.isin(focus_on).sum() > 0:
+            players_to_drop = players_to_drop.loc[players_to_drop.name.isin(focus_on)]
+        if players_to_drop.name.isin(exclude).sum() > 0:
+            players_to_drop = players_to_drop.loc[~players_to_drop.name.isin(exclude)]
+        available = self.players.loc[self.players.fantasy_team.isnull()].reset_index(drop=True)
+        for my_player in players_to_drop.name:
+            self.refresh_oauth(55)
+            if players_to_drop.loc[players_to_drop.name == my_player,'until'].values[0] >= as_of%100:
+                possible = available.loc[~available.name.str.contains('Average_')]
+            else:
+                possible = available.loc[~available.name.str.contains('Average_') & \
+                (available.WAR >= self.players.loc[self.players.name == my_player,'WAR'].values[0] - 0.5)]
+            if available.name.isin(focus_on).sum() > 0:
+                possible = possible.loc[possible.name.isin(focus_on)]
+            if possible.name.isin(exclude).sum() > 0:
+                possible = possible.loc[~possible.name.isin(exclude)]
+            if verbose:
+                print(my_player + ': ' + str(possible.shape[0]) + ' better players')
+                print(datetime.datetime.now())
+            possible = possible.groupby('position').head(limit_per)
+            for free_agent in possible.name:
+                self.players.loc[self.players.name == my_player,'fantasy_team'] = None
+                self.players.loc[self.players.name == free_agent,'fantasy_team'] = team_name
+                new_standings = self.season_sims(num_sims,verbose,postseason,basaloppqbtime,payouts)[1]
+                added_value = added_value.append(new_standings.loc[new_standings.team == team_name],ignore_index=True,sort=False)
+                added_value.loc[added_value.shape[0] - 1,'player_to_drop'] = my_player
+                added_value.loc[added_value.shape[0] - 1,'player_to_add'] = free_agent
+                self.players.loc[self.players.name == my_player,'fantasy_team'] = team_name
+                self.players.loc[self.players.name == free_agent,'fantasy_team'] = None
+            if verbose:
+                temp = added_value.iloc[-1*possible.shape[0]:][['player_to_drop','player_to_add','earnings']]
+                temp['earnings'] -= orig_standings.loc[orig_standings.team == team_name,'earnings'].values[0]
+                if temp.shape[0] > 0:
+                    print(temp.sort_values(by='earnings',ascending=False).to_string(index=False))
+                del temp
+        if added_value.shape[0] > 0:
+            for col in ['wins_avg','wins_stdev','points_avg','points_stdev',\
+            'playoffs','playoff_bye'] + (['winner','runner_up','third','earnings'] + \
+            (['many_mile'] if self.schedule.team_1.isin(['The Algorithm']).any() \
+            or self.schedule.team_2.isin(['The Algorithm']).any() else []) if postseason else[]):
+                added_value[col] -= orig_standings.loc[orig_standings.team == team_name,col].values[0]
+                added_value[col] = round(added_value[col],4)
+            added_value = added_value.sort_values(by='winner' if postseason else 'playoffs',ascending=False)
+        return added_value
 
         """ FINISH FROM HERE!!! """
         """ FINISH FROM HERE!!! """
