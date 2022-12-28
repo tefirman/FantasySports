@@ -668,10 +668,10 @@ def get_schedule(as_of=None):
     elif as_of//100 == 2022 and as_of%100 >= 15 and (schedule.team_1.isin(['The Algorithm']).any() or schedule.team_2.isin(['The Algorithm']).any()):
         schedule = schedule.loc[~schedule.week.isin([15,16,17]) | ~schedule.team_1.isin(['69ers',\
         'Chase-ing a Dream','Crotch de Fuego','Christian Murder Force','All About the D','The Sofa Kings'])].reset_index(drop=True)
-        schedule = schedule.append(pd.DataFrame({'week':[15,15,16,16],\
-        'team_1':['Crotch de Fuego','Christian Murder Force','Crotch de Fuego','Christian Murder Force'],\
-        'team_2':['Chase-ing a Dream','69ers','The Sofa Kings','All About the D'],\
-        'score_1':[90.44,103.46,0.0,0.0],'score_2':[92.30,117.74,0.0,0.0]}),ignore_index=True,sort=False)
+        schedule = schedule.append(pd.DataFrame({'week':[15,15,16,16,17],\
+        'team_1':['Crotch de Fuego','Christian Murder Force','Crotch de Fuego','Christian Murder Force','Crotch de Fuego'],\
+        'team_2':['Chase-ing a Dream','69ers','The Sofa Kings','All About the D','Christian Murder Force'],\
+        'score_1':[90.44,103.46,85.60,82.80,0.00],'score_2':[92.30,117.74,90.80,114.08,0.00]}),ignore_index=True,sort=False)
     """ MANY MILE POSTSEASON """
     
     switch = schedule.team_1 > schedule.team_2
@@ -963,12 +963,12 @@ postseason=True,basaloppqbtime=[1.0,0.0,0.0,0.0],payouts=[800,300,100],fixed_win
     standings = pd.merge(left=standings,right=scores.sim.std().reset_index()\
     .rename(columns={'sim':'per_game_stdev'}),how='inner',on='team')
     standings['per_game_fano'] = standings['per_game_stdev']/standings['per_game_avg']
-    standings = standings.sort_values(by=['winner' if postseason else 'playoffs'] + \
-    (['many_mile'] if 'many_mile' in standings.columns.tolist() else []),\
-    ascending=[False] + ([True] if 'many_mile' in standings.columns.tolist() else []))
     if postseason:
         standings['earnings'] = round(standings['winner']*payouts[0] + \
         standings['runner_up']*payouts[1] + standings['third']*payouts[2],2)
+    standings = standings.sort_values(by=['earnings' if postseason else 'playoffs'] + \
+    (['many_mile'] if 'many_mile' in standings.columns.tolist() else []),\
+    ascending=[False] + ([True] if 'many_mile' in standings.columns.tolist() else []))
     standings['wins_avg'] = round(standings['wins_avg'],3)
     standings['wins_stdev'] = round(standings['wins_stdev'],3)
     standings['points_avg'] = round(standings['points_avg'],1)
@@ -1297,20 +1297,20 @@ def main():
     if not options.name:
         options.name = [team['name'] for team in teams if team['team_key'] == lg.team_key()][0]
     if not options.earliest:
-        prior_list = [40, 40, 39, 39, 28, 29, 31, 32, 33, 34, 35, 25, 26, 27, 28, 29]
+        prior_list = [40, 40, 39, 39, 28, 29, 31, 32, 33, 34, 35, 25, 26, 27, 28, 29, 29] # Need to optimize week 17 still!!!
         prior = prior_list[int(options.as_of)%100 - 1]
         options.earliest = int(options.as_of) - prior//17*100 - prior%17
         if (options.earliest%100 == 0) | (options.earliest%100 > 50):
             options.earliest -= 83
     if not options.games:
-        games_list = [51, 51, 50, 50, 39, 40, 40, 41, 41, 42, 42, 34, 36, 39, 42, 44]
+        games_list = [51, 51, 50, 50, 39, 40, 40, 41, 41, 42, 42, 34, 36, 39, 42, 44, 44] # Need to optimize week 17 still!!!
         options.games = games_list[int(options.as_of)%100 - 1]
     if options.basaloppqbtime:
         options.basaloppqbtime = [float(val) for val in options.basaloppqbtime]
     else:
-        opp_list = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.15, 0.3, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4]
-        qb_list = [0.0, 0.015, 0.03, 0.045, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.08, 0.115, 0.15, 0.185]
-        time_list = [0.004, 0.005, 0.006, 0.007, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009]
+        opp_list = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.15, 0.3, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4] # Need to optimize week 17 still!!!
+        qb_list = [0.0, 0.015, 0.03, 0.045, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.08, 0.115, 0.15, 0.185, 0.185]
+        time_list = [0.004, 0.005, 0.006, 0.007, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009]
         options.basaloppqbtime = [1.0,opp_list[int(options.as_of)%100 - 1],\
         qb_list[int(options.as_of)%100 - 1],time_list[int(options.as_of)%100 - 1]]
     if not options.sims:
