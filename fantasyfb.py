@@ -661,10 +661,10 @@ class League:
         elif as_of//100 == 2022 and as_of%100 >= 15 and (schedule.team_1.isin(['The Algorithm']).any() or schedule.team_2.isin(['The Algorithm']).any()):
             schedule = schedule.loc[~schedule.week.isin([15,16,17]) | ~schedule.team_1.isin(['69ers',\
             'Chase-ing a Dream','Crotch de Fuego','Christian Murder Force','All About the D','The Sofa Kings'])].reset_index(drop=True)
-            schedule = schedule.append(pd.DataFrame({'week':[15,15,16,16],\
-            'team_1':['Crotch de Fuego','Christian Murder Force','Crotch de Fuego','Christian Murder Force'],\
-            'team_2':['Chase-ing a Dream','69ers','The Sofa Kings','All About the D'],\
-            'score_1':[90.44,103.46,0.0,0.0],'score_2':[92.30,117.74,0.0,0.0]}),ignore_index=True,sort=False)
+            schedule = schedule.append(pd.DataFrame({'week':[15,15,16,16,17],\
+            'team_1':['Crotch de Fuego','Christian Murder Force','Crotch de Fuego','Christian Murder Force','Crotch de Fuego'],\
+            'team_2':['Chase-ing a Dream','69ers','The Sofa Kings','All About the D','Christian Murder Force'],\
+            'score_1':[90.44,103.46,85.60,82.80,0.00],'score_2':[92.30,117.74,90.80,114.08,10.00]}),ignore_index=True,sort=False)
         """ MANY MILE POSTSEASON """
         
         switch = schedule.team_1 > schedule.team_2
@@ -1060,6 +1060,157 @@ class League:
                 added_value[col] = round(added_value[col],4)
             added_value = added_value.sort_values(by='winner' if postseason else 'playoffs',ascending=False)
         return added_value
+
+    def possible_drops(self,num_sims=1000,focus_on=[],exclude=[],team_name=None,\
+    postseason=True,verbose=True,basaloppqbtime=[1.0,0.0,0.0,0.0],payouts=[800,300,100]):
+        self.refresh_oauth()
+        orig_standings = self.season_sims(num_sims,False,\
+        postseason=postseason,basaloppqbtime=basaloppqbtime,payouts=payouts)[1]
+        reduced_value = pd.DataFrame(columns=['player_to_drop','wins_avg','wins_stdev',\
+        'points_avg','points_stdev','per_game_avg','per_game_stdev','per_game_fano',\
+        'playoffs','playoff_bye'] + (['winner','runner_up','third','earnings'] + \
+        (['many_mile'] if self.schedule.team_1.isin(['The Algorithm']).any() \
+        or self.schedule.team_2.isin(['The Algorithm']).any() else []) if postseason else []))
+        if not team_name:
+            team_name = [team['name'] for team in self.teams if team['team_key'] == self.lg.team_key()][0]
+        players_to_drop = self.players.loc[self.players.fantasy_team == team_name]
+        if players_to_drop.name.isin(focus_on).sum() > 0:
+            players_to_drop = players_to_drop.loc[players_to_drop.name.isin(focus_on)]
+        if players_to_drop.name.isin(exclude).sum() > 0:
+            players_to_drop = players_to_drop.loc[~players_to_drop.name.isin(exclude)]
+        for my_player in players_to_drop.name:
+            self.players.loc[self.players.name == my_player,'fantasy_team'] = None
+            new_standings = self.season_sims(num_sims,verbose,postseason,basaloppqbtime,payouts)[1]
+            reduced_value = reduced_value.append(new_standings.loc[new_standings.team == team_name],ignore_index=True,sort=False)
+            reduced_value.loc[reduced_value.shape[0] - 1,'player_to_drop'] = my_player
+            self.players.loc[self.players.name == my_player,'fantasy_team'] = team_name
+        if reduced_value.shape[0] > 0:
+            for col in ['wins_avg','wins_stdev','points_avg','points_stdev',\
+            'playoffs','playoff_bye'] + (['winner','runner_up','third','earnings'] + \
+            (['many_mile'] if self.schedule.team_1.isin(['The Algorithm']).any() \
+            or self.schedule.team_2.isin(['The Algorithm']).any() else []) if postseason else []):
+                reduced_value[col] -= orig_standings.loc[orig_standings.team == team_name,col].values[0]
+                reduced_value[col] = round(reduced_value[col],4)
+            reduced_value = reduced_value.sort_values(by='winner' if postseason else 'playoffs',ascending=False)
+            if verbose:
+                print(reduced_value[['player_to_drop','earnings']].sort_values(by='earnings').to_string(index=False))
+        return reduced_value
+
+    def possible_trades(self,num_sims=1000,focus_on=[],exclude=[],given=[],limit_per=10,\
+    team_name=None,postseason=True,verbose=True,basaloppqbtime=[1.0,0.0,0.0,0.0],payouts=[800,300,100]):
+        self.refresh_oauth()
+        if not team_name:
+            team_name = [team['name'] for team in self.teams if team['team_key'] == lg.team_key()][0]
+        my_players = self.players.loc[(self.players.fantasy_team == team_name) & ~self.players.position.isin(['K','DEF'])]
+        if my_players.name.isin(focus_on).sum() > 0:
+            my_players = my_players.loc[my_players.name.isin(focus_on)]
+        if my_players.name.isin(exclude).sum() > 0:
+            my_players = my_players.loc[~my_players.name.isin(exclude)]
+        their_players = self.players.loc[(self.players.fantasy_team != team_name) & ~self.players.position.isin(['K','DEF'])]
+        if their_players.name.isin(focus_on).sum() > 0:
+            their_players = their_players.loc[their_players.name.isin(focus_on)]
+        if their_players.name.isin(exclude).sum() > 0:
+            their_players = their_players.loc[~their_players.name.isin(exclude)]
+        orig_standings = self.season_sims(num_sims,False,\
+        postseason=postseason,basaloppqbtime=basaloppqbtime,payouts=payouts)[1]
+        
+        """ Make sure there are two teams and narrow down to that team!!! """
+        given_check = type(given) == list and my_players.name.isin(given).any() \
+        and their_players.loc[their_players.name.isin(given),'fantasy_team'].unique().shape[0] == 1
+        if given_check:
+            mine = [player for player in given if my_players.name.isin([player]).any()]
+            theirs = [player for player in given if their_players.name.isin([player]).any()]
+            their_team = self.players.loc[self.players.name.isin(theirs),'fantasy_team'].values[0]
+            self.players.loc[self.players.name.isin(mine),'fantasy_team'] = their_team
+            self.players.loc[self.players.name.isin(theirs),'fantasy_team'] = team_name
+            my_players = my_players.loc[~my_players.name.isin(given)]
+            their_players = their_players.loc[(their_players.fantasy_team == their_team) & ~their_players.name.isin(given)]
+            my_players['WAR'] = 0.0
+            their_players['WAR'] = 0.0
+        """ Make sure there are two teams and narrow down to that teams!!! """
+        
+        my_added_value = pd.DataFrame()
+        their_added_value = pd.DataFrame()
+        for my_player in my_players.name:
+            self.refresh_oauth(55)
+            if their_players.name.isin(focus_on).any():
+                possible = their_players.copy()
+            else:
+                possible = their_players.loc[abs(their_players.WAR - my_players.loc[my_players.name == my_player,'WAR'].values[0]) <= 0.5]
+            # possible = their_players.loc[their_players.WAR - my_players.loc[my_players.name == my_player,'WAR'].values[0] > -1.0]
+            if verbose:
+                print(my_player + ': ' + str(possible.shape[0]) + ' comparable players')
+                print(datetime.datetime.now())
+            possible = possible.groupby('position').head(limit_per)
+            for their_player in possible.name:
+                their_team = self.players.loc[self.players.name == their_player,'fantasy_team'].values[0]
+                self.players.loc[self.players.name == my_player,'fantasy_team'] = their_team
+                self.players.loc[self.players.name == their_player,'fantasy_team'] = team_name
+                new_standings = self.season_sims(num_sims,verbose,postseason,basaloppqbtime,payouts)[1]
+                self.players.loc[self.players.name == my_player,'fantasy_team'] = team_name
+                self.players.loc[self.players.name == their_player,'fantasy_team'] = their_team
+                my_added_value = my_added_value.append(new_standings.loc[new_standings.team == team_name],ignore_index=True)
+                their_added_value = their_added_value.append(new_standings.loc[new_standings.team == their_team],ignore_index=True)
+                my_added_value.loc[my_added_value.shape[0] - 1,'player_to_trade_away'] = my_player
+                my_added_value.loc[my_added_value.shape[0] - 1,'player_to_trade_for'] = their_player
+                their_added_value.loc[their_added_value.shape[0] - 1,'player_to_trade_away'] = my_player
+                their_added_value.loc[their_added_value.shape[0] - 1,'player_to_trade_for'] = their_player
+            if verbose and possible.shape[0] > 0:
+                me = my_added_value.iloc[-1*possible.shape[0]:][['player_to_trade_away','player_to_trade_for','earnings']].rename(columns={'earnings':'my_earnings'})
+                them = their_added_value.iloc[-1*possible.shape[0]:][['player_to_trade_away','player_to_trade_for','team','earnings']].rename(columns={'earnings':'their_earnings'})
+                me['my_earnings'] -= orig_standings.loc[orig_standings.team == team_name,'earnings'].values[0]
+                for their_team in them.team.unique():
+                    them.loc[them.team == their_team,'their_earnings'] -= orig_standings.loc[orig_standings.team == their_team,'earnings'].values[0]
+                temp = pd.merge(left=me,right=them,how='inner',on=['player_to_trade_away','player_to_trade_for'])
+                if temp.shape[0] > 0:
+                    print(temp.sort_values(by='my_earnings',ascending=False).to_string(index=False))
+                del me, them, temp, their_team
+        
+        if given_check:
+            mine = [player for player in given if my_players.name.isin([player]).any()]
+            theirs = [player for player in given if their_players.name.isin([player]).any()]
+            their_team = self.players.loc[self.players.name.isin(theirs),'fantasy_team'].values[0]
+            self.players.loc[self.players.name.isin(mine),'fantasy_team'] = their_team
+            self.players.loc[self.players.name.isin(theirs),'fantasy_team'] = team_name
+
+        for col in ['wins_avg','wins_stdev','points_avg','points_stdev',\
+        'per_game_avg','per_game_stdev','per_game_fano','playoffs','playoff_bye'] + \
+        (['winner','runner_up','third','earnings'] if postseason else []):
+            my_added_value[col] -= orig_standings.loc[orig_standings.team == team_name,col].values[0]
+            my_added_value[col] = round(my_added_value[col],4)
+        for their_team in their_added_value.team.unique():
+            for col in ['wins_avg','wins_stdev','points_avg','points_stdev',\
+            'per_game_avg','per_game_stdev','per_game_fano','playoffs','playoff_bye'] + \
+            (['winner','runner_up','third','earnings'] if postseason else []):
+                their_added_value.loc[their_added_value.team == their_team,col] -= \
+                orig_standings.loc[orig_standings.team == their_team,col].values[0]
+                their_added_value[col] = round(their_added_value[col],4)
+        for col in ['team','wins_avg','wins_stdev','points_avg','points_stdev',\
+        'per_game_avg','per_game_stdev','per_game_fano','playoffs','playoff_bye'] + \
+        (['winner','runner_up','third','earnings'] if postseason else []):
+            my_added_value = my_added_value.rename(index=str,columns={col:'my_' + col})
+            their_added_value = their_added_value.rename(index=str,columns={col:'their_' + col})
+        added_value = pd.merge(left=my_added_value,right=their_added_value,\
+        how='inner',on=['player_to_trade_away','player_to_trade_for'])
+        added_value = added_value.sort_values(by='my_winner' if postseason else 'playoffs',ascending=False)
+        return added_value
+
+    def perGameDelta(self,num_sims=1000,team_name=None,postseason=True,\
+    basaloppqbtime=[1.0,0.0,0.0,0.0],payouts=[800,300,100]):
+        as_of = self.season*100 + self.week
+        self.refresh_oauth()
+        if not team_name:
+            team_name = [team['name'] for team in self.teams if team['team_key'] == self.lg.team_key()][0]
+        deltas = self.season_sims(num_sims,False,postseason,basaloppqbtime,payouts)[1][['team','earnings']]
+        for team in self.players.fantasy_team.unique():
+            new_standings = self.season_sims(num_sims,False,postseason,basaloppqbtime,payouts,\
+            fixed_winner=[as_of%100,team])[1][['team','earnings']].rename(columns={'earnings':'earnings_new'})
+            deltas = pd.merge(left=deltas,right=new_standings,how='inner',on='team')
+            deltas[team] = deltas['earnings_new'] - deltas['earnings']
+            del deltas['earnings_new']
+            print(deltas[['team',team]].to_string(index=False))
+        del deltas['earnings']
+        return deltas.set_index('team').T.reset_index().rename(columns={'index':'winner'})
 
         """ FINISH FROM HERE!!! """
         """ FINISH FROM HERE!!! """
