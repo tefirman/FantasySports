@@ -1252,7 +1252,7 @@ def excelAutofit(df,name,writer):
 
 def sendEmail(subject,body,address,filename=None):
     message = MIMEMultipart()
-    message["From"] = config.sender
+    message["From"] = os.environ['EMAIL_SENDER']
     message["To"] = address
     message["Subject"] = subject
     message.attach(MIMEText(body + '\n\n', "plain"))
@@ -1266,8 +1266,8 @@ def sendEmail(subject,body,address,filename=None):
     text = message.as_string()
     context = ssl.create_default_context()
     with smtplib.SMTP_SSL("smtp.gmail.com",465,context=context) as server:
-        server.login(config.sender,config.password)
-        server.sendmail(config.sender,address,text)
+        server.login(os.environ['EMAIL_SENDER'],os.environ['EMAIL_PW'])
+        server.sendmail(os.environ['EMAIL_SENDER'],address,text)
 
 def main():
     parser = optparse.OptionParser()
