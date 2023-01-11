@@ -671,7 +671,7 @@ def get_schedule(as_of=None):
         schedule = schedule.append(pd.DataFrame({'week':[15,15,16,16,17],\
         'team_1':['Crotch de Fuego','Christian Murder Force','Crotch de Fuego','Christian Murder Force','Crotch de Fuego'],\
         'team_2':['Chase-ing a Dream','69ers','The Sofa Kings','All About the D','Christian Murder Force'],\
-        'score_1':[90.44,103.46,85.60,82.80,0.00],'score_2':[92.30,117.74,90.80,114.08,10.00]}),ignore_index=True,sort=False)
+        'score_1':[90.44,103.46,85.60,82.80,71.86],'score_2':[92.30,117.74,90.80,114.08,126.00]}),ignore_index=True,sort=False)
     """ MANY MILE POSTSEASON """
     
     switch = schedule.team_1 > schedule.team_2
