@@ -28,22 +28,36 @@ from dotenv import load_dotenv
 import traceback
 
 class League:
-    def __init__(self, name=None, season=None, week=None, roster_pcts=False):
-        # Defining season of interest
+    def __init__(self, name=None, season=None, week=None, roster_pcts=False, injurytries=None,
+    num_sims=10000, earliest=None, reference_games=None, basaloppqbtime=None):
         self.latest_season = datetime.datetime.now().year - int(datetime.datetime.now().month < 7)
         self.season = season if type(season) == int else self.latest_season
         self.load_credentials()
         self.load_oauth()
         self.load_league(name)
-        self.week = week if week else self.lg.current_week()
+        self.week = week if type(week) == int else self.lg.current_week()
         self.load_settings()
         self.load_fantasy_teams()
         self.load_nfl_abbrevs()
         self.load_nfl_schedule()
-        self.get_yahoo_players()
+        self.get_yahoo_players(injurytries)
         self.get_fantasy_rosters()
         self.name_corrections()
-        self.get_rates()
+        if not earliest:
+            prior_list = [40, 40, 39, 39, 28, 29, 31, 32, 33, 34, 35, 25, 26, 27, 28, 29]
+            prior = prior_list[self.week - 1]
+            earliest = (self.season - prior//17)*100 + self.week - prior%17
+            if (earliest%100 == 0) | (earliest%100 > 50):
+                earliest -= 83 # Assuming 17 weeks... Need to change this soon...
+        if not reference_games:
+            games_list = [51, 51, 50, 50, 39, 40, 40, 41, 41, 42, 42, 34, 36, 39, 42, 44]
+            reference_games = games_list[self.week - 1]
+        if not basaloppqbtime:
+            opp_list = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.15, 0.3, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4]
+            qb_list = [0.0, 0.015, 0.03, 0.045, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.08, 0.115, 0.15, 0.185]
+            time_list = [0.004, 0.005, 0.006, 0.007, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009]
+            basaloppqbtime = [1.0,opp_list[self.week - 1],qb_list[self.week - 1],time_list[self.week - 1]]
+        self.get_rates(earliest,num_sims,reference_games,basaloppqbtime)
         self.war_sim()
         self.add_injuries()
         self.add_bye_weeks()
@@ -236,41 +250,46 @@ class League:
             self.gm = yfa.Game(self.oauth,'nfl')
             self.lg = self.gm.to_league(self.lg_id)
 
-    def get_yahoo_players(self):
+    def get_yahoo_players(self, injurytries=10):
         self.refresh_oauth()
-        players = []
-        # Rostered Players
-        for page_ind in range(100):
-            page = self.lg.yhandler.get("league/{}/players;start={};count=25;status=T/"\
-            .format(self.lg_id,page_ind*25))['fantasy_content']['league'][1]['players']
-            if page == []:
+        tries = 0
+        while tries < injurytries:
+            tries += 1
+            players = []
+            # Rostered Players
+            for page_ind in range(100):
+                page = self.lg.yhandler.get("league/{}/players;start={};count=25;status=T/"\
+                .format(self.lg_id,page_ind*25))['fantasy_content']['league'][1]['players']
+                if page == []:
+                    break
+                for player_ind in range(page['count']):
+                    player = [field for field in page[str(player_ind)]['player'][0] if type(field) == dict]
+                    vals = {}
+                    for field in player:
+                        vals.update(field)
+                    vals['name'] = vals['name']['full']
+                    vals['eligible_positions'] = [pos['position'] for pos in vals['eligible_positions']]
+                    vals['bye_weeks'] = vals['bye_weeks']['week']
+                    players.append(vals)
+            # Available Players
+            for page_ind in range(100):
+                """ Accounting for a weird player_id deletion in 2015... """
+                page = self.lg.yhandler.get_players_raw(self.lg_id,page_ind*25,'A')['fantasy_content']['league'][1]['players']
+                if page == []:
+                    break
+                for player_ind in range(page['count']):
+                    player = [field for field in page[str(player_ind)]['player'][0] if type(field) == dict]
+                    vals = {}
+                    for field in player:
+                        vals.update(field)
+                    vals['name'] = vals['name']['full']
+                    vals['eligible_positions'] = [pos['position'] for pos in vals['eligible_positions']]
+                    vals['bye_weeks'] = vals['bye_weeks']['week']
+                    players.append(vals)
+            self.players = pd.DataFrame(players)
+            self.players.player_id = self.players.player_id.astype(int)
+            if not self.players.status.isnull().all():
                 break
-            for player_ind in range(page['count']):
-                player = [field for field in page[str(player_ind)]['player'][0] if type(field) == dict]
-                vals = {}
-                for field in player:
-                    vals.update(field)
-                vals['name'] = vals['name']['full']
-                vals['eligible_positions'] = [pos['position'] for pos in vals['eligible_positions']]
-                vals['bye_weeks'] = vals['bye_weeks']['week']
-                players.append(vals)
-        # Available Players
-        for page_ind in range(100):
-            """ Accounting for a weird player_id deletion in 2015... """
-            page = self.lg.yhandler.get_players_raw(self.lg_id,page_ind*25,'A')['fantasy_content']['league'][1]['players']
-            if page == []:
-                break
-            for player_ind in range(page['count']):
-                player = [field for field in page[str(player_ind)]['player'][0] if type(field) == dict]
-                vals = {}
-                for field in player:
-                    vals.update(field)
-                vals['name'] = vals['name']['full']
-                vals['eligible_positions'] = [pos['position'] for pos in vals['eligible_positions']]
-                vals['bye_weeks'] = vals['bye_weeks']['week']
-                players.append(vals)
-        self.players = pd.DataFrame(players)
-        self.players.player_id = self.players.player_id.astype(int)
 
     def get_fantasy_rosters(self):
         self.refresh_oauth()
@@ -664,7 +683,7 @@ class League:
             schedule = schedule.append(pd.DataFrame({'week':[15,15,16,16,17],\
             'team_1':['Crotch de Fuego','Christian Murder Force','Crotch de Fuego','Christian Murder Force','Crotch de Fuego'],\
             'team_2':['Chase-ing a Dream','69ers','The Sofa Kings','All About the D','Christian Murder Force'],\
-            'score_1':[90.44,103.46,85.60,82.80,0.00],'score_2':[92.30,117.74,90.80,114.08,10.00]}),ignore_index=True,sort=False)
+            'score_1':[90.44,103.46,85.60,82.80,71.86],'score_2':[92.30,117.74,90.80,114.08,126.00]}),ignore_index=True,sort=False)
         """ MANY MILE POSTSEASON """
         
         switch = schedule.team_1 > schedule.team_2
@@ -1100,7 +1119,7 @@ class League:
     team_name=None,postseason=True,verbose=True,basaloppqbtime=[1.0,0.0,0.0,0.0],payouts=[800,300,100]):
         self.refresh_oauth()
         if not team_name:
-            team_name = [team['name'] for team in self.teams if team['team_key'] == lg.team_key()][0]
+            team_name = [team['name'] for team in self.teams if team['team_key'] == self.lg.team_key()][0]
         my_players = self.players.loc[(self.players.fantasy_team == team_name) & ~self.players.position.isin(['K','DEF'])]
         if my_players.name.isin(focus_on).sum() > 0:
             my_players = my_players.loc[my_players.name.isin(focus_on)]
@@ -1258,185 +1277,125 @@ def sendEmail(subject,body,address,filename=None):
         server.login(os.environ['EMAIL_SENDER'],os.environ['EMAIL_PW'])
         server.sendmail(os.environ['EMAIL_SENDER'],address,text)
 
-""" FINISH FROM HERE!!! """
-""" FINISH FROM HERE!!! """
-""" FINISH FROM HERE!!! """
+def main():
+    parser = optparse.OptionParser()
+    parser.add_option('--season',action="store",dest="season",help="season of interest")
+    parser.add_option('--week',action="store",dest="week",help="week to project the season from")
+    parser.add_option('--name',action="store",dest="name",help="name of team to analyze in the case of multiple teams in a single season")
+    parser.add_option('--earliest',action="store",dest="earliest",help="earliest week of stats being considered, e.g. 201807 corresponds to week 7 of the 2018 season")
+    parser.add_option('--games',action="store",dest="games",help="number of games to build each player's prior off of")
+    parser.add_option('--basaloppqbtime',action="store",dest="basaloppqbtime",help="scaling factors for basal/opponent/quarterback/time factors, comma-separated string of values")
+    parser.add_option('--sims',action="store",dest="sims",help="number of season simulations")
+    parser.add_option('--payouts',action="store",dest="payouts",help="comma separated string containing integer payouts for 1st, 2nd, and 3rd")
+    parser.add_option('--injurytries',action="store",dest="injurytries",help="number of times to try pulling injury statuses before rolling with it")
+    parser.add_option('--rosterpcts',action="store_true",dest="rosterpcts",help="whether to pull roster percentages for each player")
+    parser.add_option('--pickups',action="store",dest="pickups",help='assess possible free agent pickups for the players specified ("all" will analyze all possible pickups)')
+    parser.add_option('--adds',action="store_true",dest="adds",help="whether to assess possible free agent adds")
+    parser.add_option('--drops',action="store_true",dest="drops",help="whether to assess possible drops")
+    parser.add_option('--trades',action="store",dest="trades",help='assess possible trades for the players specified ("all" will analyze all possible trades)')
+    parser.add_option('--given',action="store",dest="given",help='given players to start with for multi-player trades')
+    parser.add_option('--deltas',action="store_true",dest="deltas",help="whether to assess deltas for each matchup of the current week")
+    parser.add_option('--output',action="store",dest="output",help="where to save the final projections spreadsheet")
+    parser.add_option('--email',action="store",dest="email",help="where to send the final projections spreadsheet")
+    options,args = parser.parse_args()
+    if str(options.season).isnumeric():
+        options.season = int(options.season)
+    if str(options.week).isnumeric():
+        options.week = int(options.week)
+    if options.basaloppqbtime:
+        try:
+            options.basaloppqbtime = [float(val) for val in options.basaloppqbtime]
+        except:
+            print('Invalid rate inference parameters, using defaults...')
+            options.basaloppqbtime = None
+    if str(options.injurytries).isnumeric():
+        options.injurytries = int(options.injurytries)
+    else:
+        options.injurytries = 10
 
-# def main():
-#     parser = optparse.OptionParser()
-#     parser.add_option('--earliest',action="store",dest="earliest",help="earliest week of stats being considered, e.g. 201807 corresponds to week 7 of the 2018 season")
-#     parser.add_option('--as_of',action="store",dest="as_of",help="week to project the season from, e.g. 201912 corresponds to week 12 of the 2019 season")
-#     parser.add_option('--name',action="store",dest="name",help="name of team to analyze in the case of multiple teams in a single season")
-#     parser.add_option('--games',action="store",dest="games",help="number of games to build each player's prior off of")
-#     parser.add_option('--basaloppqbtime',action="store",dest="basaloppqbtime",help="scaling factors for basal/opponent/quarterback/time factors, comma-separated string of values")
-#     parser.add_option('--sims',action="store",dest="sims",help="number of season simulations")
-#     parser.add_option('--payouts',action="store",dest="payouts",help="comma separated string containing integer payouts for 1st, 2nd, and 3rd")
-#     parser.add_option('--injurytries',action="store",dest="injurytries",help="number of times to try pulling injury statuses before rolling with it")
-#     parser.add_option('--rosterpcts',action="store_true",dest="rosterpcts",help="whether to pull roster percentages for each player")
-#     parser.add_option('--pickups',action="store",dest="pickups",help='assess possible free agent pickups for the players specified ("all" will analyze all possible pickups)')
-#     parser.add_option('--adds',action="store_true",dest="adds",help="whether to assess possible free agent adds")
-#     parser.add_option('--drops',action="store_true",dest="drops",help="whether to assess possible drops")
-#     parser.add_option('--trades',action="store",dest="trades",help='assess possible trades for the players specified ("all" will analyze all possible trades)')
-#     parser.add_option('--given',action="store",dest="given",help='given players to start with for multi-player trades')
-#     parser.add_option('--deltas',action="store_true",dest="deltas",help="whether to assess deltas for each matchup of the current week")
-#     parser.add_option('--output',action="store",dest="output",help="where to save the final projections spreadsheet")
-#     parser.add_option('--email',action="store",dest="email",help="where to send the final projections spreadsheet")
-#     options,args = parser.parse_args()
-#     if not options.as_of:
-#         establish_oauth(season=latest_season,name=options.name)
-#         options.as_of = 100*latest_season + lg.current_week()
-#     else:
-#         establish_oauth(season=int(options.as_of)//100,name=options.name)
-#     if not options.name:
-#         options.name = [team['name'] for team in teams if team['team_key'] == lg.team_key()][0]
-#     if not options.earliest:
-#         prior_list = [40, 40, 39, 39, 28, 29, 31, 32, 33, 34, 35, 25, 26, 27, 28, 29]
-#         prior = prior_list[int(options.as_of)%100 - 1]
-#         options.earliest = int(options.as_of) - prior//17*100 - prior%17
-#         if (options.earliest%100 == 0) | (options.earliest%100 > 50):
-#             options.earliest -= 83
-#     if not options.games:
-#         games_list = [51, 51, 50, 50, 39, 40, 40, 41, 41, 42, 42, 34, 36, 39, 42, 44]
-#         options.games = games_list[int(options.as_of)%100 - 1]
-#     if options.basaloppqbtime:
-#         options.basaloppqbtime = [float(val) for val in options.basaloppqbtime]
-#     else:
-#         opp_list = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.15, 0.3, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4]
-#         qb_list = [0.0, 0.015, 0.03, 0.045, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.08, 0.115, 0.15, 0.185]
-#         time_list = [0.004, 0.005, 0.006, 0.007, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009]
-#         options.basaloppqbtime = [1.0,opp_list[int(options.as_of)%100 - 1],\
-#         qb_list[int(options.as_of)%100 - 1],time_list[int(options.as_of)%100 - 1]]
-#     if not options.sims:
-#         options.sims = 10000
-#     if options.payouts:
-#         options.payouts = options.payouts.split(',')
-#         if all([val.isnumeric() for val in options.payouts]):
-#             options.payouts = [float(val) for val in options.payouts]
-#         else:
-#             print('Weird values provided for payouts... Assuming standard payouts...')
-#             options.payouts = [800,300,100] if len(teams) == 12 else [700,200,100]
-#         if len(options.payouts) > 3:
-#             print('Too many values provided for payouts... Only using top three...')
-#             options.payouts = options.payouts[:3]
-#     elif options.name == 'The Algorithm':
-#         options.payouts = [800,300,100]
-#     elif options.name == 'Toothless Wonders':
-#         options.payouts = [350,100,50]
-#     elif options.name == 'The GENIEs':
-#         options.payouts = [70,0,0]
-#     elif options.name == "The Great Gadsby's":
-#         options.payouts = [50,35,15]
-#     else:
-#         options.payouts = [800,300,100] if len(teams) == 12 else [700,200,100]
-#     if str(options.injurytries).isnumeric():
-#         options.injurytries = int(options.injurytries)
-#     else:
-#         options.injurytries = 10
-#     if not options.output:
-#         options.output = os.path.expanduser('~/Documents/') if os.path.exists(os.path.expanduser('~/Documents/')) else os.path.expanduser('~/')
-#         if not os.path.exists(options.output + options.name.replace(' ','')):
-#             os.mkdir(options.output + options.name.replace(' ',''))
-#         if not os.path.exists(options.output + options.name.replace(' ','') + '/' + str(options.as_of//100)):
-#             os.mkdir(options.output + options.name.replace(' ','') + '/' + str(options.as_of//100))
-#         options.output += options.name.replace(' ','') + '/' + str(options.as_of//100)
-#     if options.output[-1] != '/':
-#         options.output += '/'
-#     writer = pd.ExcelWriter(options.output + 'FantasyFootballProjections_{}Week{}.xlsx'\
-#     .format(datetime.datetime.now().strftime('%A'),int(options.as_of)%100),engine='xlsxwriter')
-#     writer.book.add_format({'align': 'vcenter'})
+    league = League(name=options.name, season=options.season, week=options.week, 
+    roster_pcts=options.rosterpcts, injurytries=options.injurytries,
+    num_sims=options.sims, earliest=options.earliest, 
+    reference_games=options.games, basaloppqbtime=options.basaloppqbtime)
+
+    if options.payouts:
+        options.payouts = options.payouts.split(',')
+        if all([val.isnumeric() for val in options.payouts]):
+            options.payouts = [float(val) for val in options.payouts]
+        else:
+            print('Weird values provided for payouts... Assuming standard payouts...')
+            options.payouts = [100*len(league.teams)*0.6,100*len(league.teams)*0.3,100*len(league.teams)*0.1]
+        if len(options.payouts) > 3:
+            print('Too many values provided for payouts... Only using top three...')
+            options.payouts = options.payouts[:3]
+    elif league.name == 'The Algorithm':
+        options.payouts = [720,360,120]
+    elif league.name == 'Toothless Wonders':
+        options.payouts = [350,100,50]
+    elif league.name == 'The GENIEs':
+        options.payouts = [100,0,0]
+    elif league.name == "The Great Gadsby's":
+        options.payouts = [50,35,15]
+    else:
+        options.payouts = [100*len(league.teams)*0.6,100*len(league.teams)*0.3,100*len(league.teams)*0.1]
+    if not options.output:
+        options.output = os.path.expanduser('~/Documents/') if os.path.exists(os.path.expanduser('~/Documents/')) else os.path.expanduser('~/')
+        if not os.path.exists(options.output + league.name.replace(' ','')):
+            os.mkdir(options.output + league.name.replace(' ',''))
+        if not os.path.exists(options.output + league.name.replace(' ','') + '/' + str(options.as_of//100)):
+            os.mkdir(options.output + league.name.replace(' ','') + '/' + str(options.as_of//100))
+        options.output += league.name.replace(' ','') + '/' + str(options.as_of//100)
+    if options.output[-1] != '/':
+        options.output += '/'
+    writer = pd.ExcelWriter(options.output + 'FantasyFootballProjections_{}Week{}.xlsx'\
+    .format(datetime.datetime.now().strftime('%A'),int(options.as_of)%100),engine='xlsxwriter')
+    writer.book.add_format({'align': 'vcenter'})
+
+    rosters = league.players.loc[~league.players.fantasy_team.isnull()]\
+    .sort_values(by=['fantasy_team','WAR'],ascending=[True,False]).copy()
+    for col in ['points_avg','points_stdev','WAR','game_factor','opp_factor','qb_factor']:
+        rosters[col] = round(rosters[col],3)
+    writer = excelAutofit(rosters[['name','position','current_team',\
+    'points_avg','points_stdev','WAR','fantasy_team','num_games','game_factor',\
+    'opp_factor','qb_factor','status','bye_week','until','starter','injured']],'Rosters',writer)
+    writer.sheets['Rosters'].freeze_panes(1,1)
+    writer.sheets['Rosters'].conditional_format('F2:F' + str(rosters.shape[0] + 1),\
+    {'type':'3_color_scale','min_color':'#FF6347','mid_color':'#FFD700','max_color':'#3CB371'})
+    available = league.players.loc[league.players.fantasy_team.isnull() & \
+    (league.players.until.isnull() | (league.players.until < 17))].sort_values(by='WAR',ascending=False)
+    del available['fantasy_team']
+    for col in ['points_avg','points_stdev','WAR','game_factor','opp_factor','qb_factor']:
+        available[col] = round(available[col],3)
+    writer = excelAutofit(available[['name','position','current_team',\
+    'points_avg','points_stdev','WAR','num_games','game_factor','opp_factor',\
+    'qb_factor','status','bye_week','until']],'Available',writer)
+    writer.sheets['Available'].freeze_panes(1,1)
+    writer.sheets['Available'].conditional_format('F2:F' + str(available.shape[0] + 1),\
+    {'type':'3_color_scale','min_color':'#FF6347','mid_color':'#FFD700','max_color':'#3CB371'})
     
-#     """ API skips injury statuses sometimes... """
-#     by_player = pd.DataFrame({'status':[float('NaN')]})
-#     tries = 0
-#     while by_player.status.isnull().all() and tries < options.injurytries:
-#         tries += 1
-#         by_player = get_players(int(options.as_of)%100)
-#         if by_player.status.isnull().all() and tries < options.injurytries:
-#             print("Didn't pull injury statuses for some reason... " + \
-#             "Trying " + str(options.injurytries - tries) + " more time" + \
-#             ("s" if tries < options.injurytries - 1 else "") + "...")
-#             establish_oauth(season=int(options.as_of)//100,name=options.name)
-#             time.sleep(60)
-#         elif by_player.status.isnull().all() and tries == options.injurytries:
-#             print("Still can't pull injury statuses... Rolling with it...")
-#     """ API skips injury statuses sometimes... """
-    
-#     """ Duplicate name issues... """
-#     by_player = by_player.loc[by_player.editorial_team_abbr.isin(['TB','Sea','Car']) | \
-#     ~by_player.name.isin(['Ryan Griffin','Josh Johnson','John Lovett'])]
-#     """ Duplicate name issues... """
-#     by_player = get_rates(by_player,int(options.earliest),int(options.as_of),\
-#     int(options.sims),int(options.games),options.basaloppqbtime,None,True)
-#     by_player = pd.merge(left=by_player,right=bye_weeks(latest_season),how='left',on='current_team')
-#     by_player = add_injuries(by_player,int(options.as_of))
-#     if options.rosterpcts:
-#         by_player = add_roster_pcts(by_player)
-#     if (by_player.current_team.isnull() & ~by_player.name.str.contains('Average_')).sum() > 0:
-#         print(str((by_player.current_team.isnull() & ~by_player.name.str.contains('Average_')).sum()) + " players' teams cannot be identified...")
-#     if by_player.loc[~by_player.name.str.contains('Average_')].groupby('name').size().max() > 1:
-#         print('Some players are being duplicated...')
-#         repeats = by_player.loc[~by_player.name.str.contains('Average_')].groupby('name').size().to_frame('freq').reset_index()
-#         print(repeats.loc[repeats.freq > 1,'name'].tolist())
-    
-#     # """ Analyzing multi-player trade """
-#     # by_player.loc[by_player.name.isin(["Deebo Samuel"]),'fantasy_team'] = "The Algorithm"
-#     # by_player.loc[by_player.name.isin(["Terry McLaurin","Devin Singletary"]),'fantasy_team'] = "Football Cream"
-#     # # by_player.loc[by_player.name.isin(['Austin Ekeler','Adam Thielen']),'fantasy_team'] = "Toothless Wonders"
-#     # # by_player.loc[by_player.name.isin(['Gabriel Davis','Tony Pollard']),'fantasy_team'] = "Orchids of Asia"
-#     # """ Analyzing multi-player trade """
-    
-#     rosters = by_player.loc[~by_player.fantasy_team.isnull()].sort_values(by=['fantasy_team','WAR'],ascending=[True,False])
-#     rosters_weighted = starters(rosters,int(options.as_of)%100,int(options.as_of),options.basaloppqbtime)
-#     for col in ['points_avg','points_stdev','WAR','game_factor','opp_factor','qb_factor']:
-#         rosters_weighted[col] = round(rosters_weighted[col],3)
-#     writer = excelAutofit(rosters_weighted[['name','position','current_team',\
-#     'points_avg','points_stdev','WAR','fantasy_team','num_games','game_factor',\
-#     'opp_factor','qb_factor','status','bye_week','until','starter','injured']],'Rosters',writer)
-#     writer.sheets['Rosters'].freeze_panes(1,1)
-#     writer.sheets['Rosters'].conditional_format('F2:F' + str(rosters_weighted.shape[0] + 1),\
-#     {'type':'3_color_scale','min_color':'#FF6347','mid_color':'#FFD700','max_color':'#3CB371'})
-#     available = by_player.loc[by_player.fantasy_team.isnull() & \
-#     (by_player.until.isnull() | (by_player.until < 16))].sort_values(by='WAR',ascending=False)
-#     del available['fantasy_team']
-#     available_weighted = pd.merge(left=available,right=nfl_schedule.loc[(nfl_schedule.season == int(options.as_of)//100) & \
-#     (nfl_schedule.week == int(options.as_of)%100)],how='left',left_on='current_team',right_on='abbrev')
-#     available_weighted['opp_factor'] = options.basaloppqbtime[1]*(available_weighted['opp_elo'] - 1)
-#     available_weighted['qb_factor'] = options.basaloppqbtime[2]*(available_weighted['qb_elo'] - 1)
-#     available_weighted['game_factor'] = options.basaloppqbtime[0] + available_weighted['opp_factor'] + available_weighted['qb_factor']
-#     available_weighted['points_avg'] *= available_weighted['game_factor'].fillna(1.0)
-#     for col in ['points_avg','points_stdev','WAR','game_factor','opp_factor','qb_factor']:
-#         available_weighted[col] = round(available_weighted[col],3)
-#     writer = excelAutofit(available_weighted[['name','position','current_team',\
-#     'points_avg','points_stdev','WAR','num_games','game_factor','opp_factor',\
-#     'qb_factor','status','bye_week','until']],'Available',writer)
-#     writer.sheets['Available'].freeze_panes(1,1)
-#     writer.sheets['Available'].conditional_format('F2:F' + str(available_weighted.shape[0] + 1),\
-#     {'type':'3_color_scale','min_color':'#FF6347','mid_color':'#FFD700','max_color':'#3CB371'})
-    
-#     fantasy_schedule = get_schedule(int(options.as_of))
-#     schedule_sim, standings_sim = season_sims(rosters,fantasy_schedule,int(options.sims),\
-#     True,int(options.as_of),basaloppqbtime=options.basaloppqbtime,payouts=options.payouts)
-#     print(schedule_sim.loc[schedule_sim.week == lg.current_week(),\
-#     ['week','team_1','team_2','win_1','win_2','points_avg_1','points_avg_2']].to_string(index=False))
-#     print(standings_sim[['team','wins_avg','points_avg','playoffs','playoff_bye','winner','earnings'] + \
-#     (['many_mile'] if options.name == 'The Algorithm' else [])].to_string(index=False))
-#     writer = excelAutofit(schedule_sim[['week','team_1','team_2','win_1','win_2',\
-#     'points_avg_1','points_stdev_1','points_avg_2','points_stdev_2','me']],'Schedule',writer)
-#     writer.sheets['Schedule'].freeze_panes(1,3)
-#     writer.sheets['Schedule'].conditional_format('D2:E' + str(schedule_sim.shape[0] + 1),\
-#     {'type':'3_color_scale','min_color':'#FF6347','mid_color':'#FFD700','max_color':'#3CB371'})
-#     writer = excelAutofit(standings_sim[['team','wins_avg','wins_stdev',\
-#     'points_avg','points_stdev','per_game_avg','per_game_stdev','per_game_fano',\
-#     'playoffs','playoff_bye','winner','runner_up','third','earnings'] + \
-#     (['many_mile'] if options.name == 'The Algorithm' else [])],'Standings',writer)
-#     writer.sheets['Standings'].freeze_panes(1,1)
-#     writer.sheets['Standings'].conditional_format('I2:M' + str(standings_sim.shape[0] + 1),\
-#     {'type':'3_color_scale','min_color':'#FF6347','mid_color':'#FFD700','max_color':'#3CB371'})
-#     writer.sheets['Standings'].conditional_format('N2:N' + str(standings_sim.shape[0] + 1),\
-#     {'type':'3_color_scale','min_color':'#FF6347','mid_color':'#FFD700','max_color':'#3CB371'})
-#     if options.name == 'The Algorithm':
-#         writer.sheets['Standings'].conditional_format('O2:O' + str(standings_sim.shape[0] + 1),\
-#         {'type':'3_color_scale','max_color':'#FF6347','mid_color':'#FFD700','min_color':'#3CB371'})
+    schedule_sim, standings_sim = league.season_sims(int(options.sims),True,\
+    basaloppqbtime=options.basaloppqbtime,payouts=options.payouts)
+    print(schedule_sim.loc[schedule_sim.week == lg.current_week(),\
+    ['week','team_1','team_2','win_1','win_2','points_avg_1','points_avg_2']].to_string(index=False))
+    print(standings_sim[['team','wins_avg','points_avg','playoffs','playoff_bye','winner','earnings'] + \
+    (['many_mile'] if league.name == 'The Algorithm' else [])].to_string(index=False))
+    writer = excelAutofit(schedule_sim[['week','team_1','team_2','win_1','win_2',\
+    'points_avg_1','points_stdev_1','points_avg_2','points_stdev_2','me']],'Schedule',writer)
+    writer.sheets['Schedule'].freeze_panes(1,3)
+    writer.sheets['Schedule'].conditional_format('D2:E' + str(schedule_sim.shape[0] + 1),\
+    {'type':'3_color_scale','min_color':'#FF6347','mid_color':'#FFD700','max_color':'#3CB371'})
+    writer = excelAutofit(standings_sim[['team','wins_avg','wins_stdev',\
+    'points_avg','points_stdev','per_game_avg','per_game_stdev','per_game_fano',\
+    'playoffs','playoff_bye','winner','runner_up','third','earnings'] + \
+    (['many_mile'] if league.name == 'The Algorithm' else [])],'Standings',writer)
+    writer.sheets['Standings'].freeze_panes(1,1)
+    writer.sheets['Standings'].conditional_format('I2:M' + str(standings_sim.shape[0] + 1),\
+    {'type':'3_color_scale','min_color':'#FF6347','mid_color':'#FFD700','max_color':'#3CB371'})
+    writer.sheets['Standings'].conditional_format('N2:N' + str(standings_sim.shape[0] + 1),\
+    {'type':'3_color_scale','min_color':'#FF6347','mid_color':'#FFD700','max_color':'#3CB371'})
+    if options.name == 'The Algorithm':
+        writer.sheets['Standings'].conditional_format('O2:O' + str(standings_sim.shape[0] + 1),\
+        {'type':'3_color_scale','max_color':'#FF6347','mid_color':'#FFD700','min_color':'#3CB371'})
     
 #     if options.pickups:
 #         pickups = possible_pickups(rosters,available,fantasy_schedule,int(options.as_of),1000,\
@@ -1523,21 +1482,21 @@ def sendEmail(subject,body,address,filename=None):
 #         writer.sheets['Deltas'].conditional_format('B2:' + chr(ord('A') + deltas.shape[1]) + str(deltas.shape[0] + 1),\
 #         {'type':'3_color_scale','min_color':'#FF6347','mid_color':'#FFD700','max_color':'#3CB371'})
     
-#     writer.save()
-#     os.system('touch -t {} "{}"'.format(datetime.datetime.now().strftime('%Y%m%d%H%M'),'/'.join(options.output.split('/')[:-2])))
-#     if options.email:
-#         try:
-#             sendEmail('Fantasy Football Projections for ' + options.name,\
-#             'Best of luck to you this fantasy football season!!!',options.email,\
-#             options.output + 'FantasyFootballProjections_{}Week{}.xlsx'\
-#             .format(datetime.datetime.now().strftime('%A'),options.as_of%100))
-#         except:
-#             print("Couldn't email results, maybe no wifi...\nResults saved to " + \
-#             options.output + 'FantasyFootballProjections_{}Week{}.xlsx'\
-#             .format(datetime.datetime.now().strftime('%A'),options.as_of%100))
+    writer.save()
+    os.system('touch -t {} "{}"'.format(datetime.datetime.now().strftime('%Y%m%d%H%M'),'/'.join(options.output.split('/')[:-2])))
+    if options.email:
+        try:
+            sendEmail('Fantasy Football Projections for ' + options.name,\
+            'Best of luck to you this fantasy football season!!!',options.email,\
+            options.output + 'FantasyFootballProjections_{}Week{}.xlsx'\
+            .format(datetime.datetime.now().strftime('%A'),options.as_of%100))
+        except:
+            print("Couldn't email results, maybe no wifi...\nResults saved to " + \
+            options.output + 'FantasyFootballProjections_{}Week{}.xlsx'\
+            .format(datetime.datetime.now().strftime('%A'),options.as_of%100))
 
-# if __name__ == "__main__":
-#     main()
+if __name__ == "__main__":
+    main()
 
 
 
