@@ -1080,6 +1080,46 @@ class League:
             added_value = added_value.sort_values(by='winner' if postseason else 'playoffs',ascending=False)
         return added_value
 
+    def possible_adds(self,num_sims=1000,focus_on=[],exclude=[],limit_per=10,team_name=None,postseason=True,\
+    verbose=True,basaloppqbtime=[1.0,0.0,0.0,0.0],payouts=[800,300,100]):
+        as_of = self.season*100 + self.week
+        self.refresh_oauth()
+        orig_standings = self.season_sims(num_sims,False,\
+        postseason=postseason,basaloppqbtime=basaloppqbtime,payouts=payouts)[1]
+        added_value = pd.DataFrame(columns=['player_to_add','wins_avg','wins_stdev',\
+        'points_avg','points_stdev','per_game_avg','per_game_stdev','per_game_fano',\
+        'playoffs','playoff_bye'] + (['winner','runner_up','third','earnings'] + \
+        (['many_mile'] if self.schedule.team_1.isin(['The Algorithm']).any() \
+        or self.schedule.team_2.isin(['The Algorithm']).any() else []) if postseason else []))
+        if not team_name:
+            team_name = [team['name'] for team in self.teams if team['team_key'] == self.lg.team_key()][0]
+        available = self.players.loc[self.players.fantasy_team.isnull()].reset_index(drop=True)
+        possible = available.loc[~available.name.str.contains('Average_')]
+        if possible.name.isin(focus_on).sum() > 0:
+            possible = possible.loc[possible.name.isin(focus_on)]
+        if possible.name.isin(exclude).sum() > 0:
+            possible = possible.loc[~possible.name.isin(exclude)]
+        possible = possible.groupby('position').head(limit_per)
+        for free_agent in possible.name:
+            self.players.loc[self.players.name == free_agent,'fantasy_team'] = team_name
+            new_standings = self.season_sims(num_sims,verbose,postseason,basaloppqbtime,payouts)[1]
+            added_value = added_value.append(new_standings.loc[new_standings.team == team_name],ignore_index=True,sort=False)
+            added_value.loc[added_value.shape[0] - 1,'player_to_add'] = free_agent
+            added_value.loc[added_value.shape[0] - 1,'position'] = possible.loc[possible.name == free_agent,'position'].values[0]
+            added_value.loc[added_value.shape[0] - 1,'current_team'] = possible.loc[possible.name == free_agent,'current_team'].values[0]
+            self.players.loc[self.players.name == free_agent,'fantasy_team'] = None
+        if added_value.shape[0] > 0:
+            for col in ['wins_avg','wins_stdev','points_avg','points_stdev',\
+            'playoffs','playoff_bye'] + (['winner','runner_up','third','earnings'] + \
+            (['many_mile'] if self.schedule.team_1.isin(['The Algorithm']).any() \
+            or self.schedule.team_2.isin(['The Algorithm']).any() else []) if postseason else[]):
+                added_value[col] -= orig_standings.loc[orig_standings.team == team_name,col].values[0]
+                added_value[col] = round(added_value[col],4)
+            added_value = added_value.sort_values(by='winner' if postseason else 'playoffs',ascending=False)
+            if verbose:
+                print(added_value[['player_to_add','earnings']].sort_values(by='earnings').to_string(index=False))
+        return added_value
+
     def possible_drops(self,num_sims=1000,focus_on=[],exclude=[],team_name=None,\
     postseason=True,verbose=True,basaloppqbtime=[1.0,0.0,0.0,0.0],payouts=[800,300,100]):
         self.refresh_oauth()
@@ -1375,7 +1415,7 @@ def main():
     
     schedule_sim, standings_sim = league.season_sims(int(options.sims),True,\
     basaloppqbtime=options.basaloppqbtime,payouts=options.payouts)
-    print(schedule_sim.loc[schedule_sim.week == lg.current_week(),\
+    print(schedule_sim.loc[schedule_sim.week == league.lg.current_week(),\
     ['week','team_1','team_2','win_1','win_2','points_avg_1','points_avg_2']].to_string(index=False))
     print(standings_sim[['team','wins_avg','points_avg','playoffs','playoff_bye','winner','earnings'] + \
     (['many_mile'] if league.name == 'The Algorithm' else [])].to_string(index=False))
@@ -1397,90 +1437,87 @@ def main():
         writer.sheets['Standings'].conditional_format('O2:O' + str(standings_sim.shape[0] + 1),\
         {'type':'3_color_scale','max_color':'#FF6347','mid_color':'#FFD700','min_color':'#3CB371'})
     
-#     if options.pickups:
-#         pickups = possible_pickups(rosters,available,fantasy_schedule,int(options.as_of),1000,\
-#         focus_on=[val.strip() for val in options.pickups.split(',')] if options.pickups.lower() != 'all' else [],\
-#         exclude=['Kirk Cousins','DeAndre Hopkins','Cole Beasley','Deshaun Watson','Gardner Minshew II'],\
-#         limit_per=5,basaloppqbtime=options.basaloppqbtime,payouts=options.payouts)
-#         writer = excelAutofit(pickups[['player_to_drop','player_to_add','wins_avg','wins_stdev',\
-#         'points_avg','points_stdev','per_game_avg','per_game_stdev','per_game_fano',\
-#         'playoffs','playoff_bye','winner','runner_up','third','earnings'] + \
-#         (['many_mile'] if options.name == 'The Algorithm' else [])],'Pickups',writer)
-#         writer.sheets['Pickups'].freeze_panes(1,2)
-#         writer.sheets['Pickups'].conditional_format('J2:N' + str(pickups.shape[0] + 1),\
-#         {'type':'3_color_scale','min_color':'#FF6347','mid_color':'#FFD700','max_color':'#3CB371'})
-#         writer.sheets['Pickups'].conditional_format('O2:O' + str(pickups.shape[0] + 1),\
-#         {'type':'3_color_scale','min_color':'#FF6347','mid_color':'#FFD700','max_color':'#3CB371'})
-#         if options.name == 'The Algorithm':
-#             writer.sheets['Pickups'].conditional_format('P2:P' + str(pickups.shape[0] + 1),\
-#             {'type':'3_color_scale','max_color':'#FF6347','mid_color':'#FFD700','min_color':'#3CB371'})
+    if options.pickups:
+        pickups = league.possible_pickups(int(options.sims),
+        focus_on=[val.strip() for val in options.pickups.split(',')] if options.pickups.lower() != 'all' else [],
+        exclude=[],limit_per=5,basaloppqbtime=options.basaloppqbtime,payouts=options.payouts)
+        writer = excelAutofit(pickups[['player_to_drop','player_to_add','wins_avg','wins_stdev',\
+        'points_avg','points_stdev','per_game_avg','per_game_stdev','per_game_fano',\
+        'playoffs','playoff_bye','winner','runner_up','third','earnings'] + \
+        (['many_mile'] if options.name == 'The Algorithm' else [])],'Pickups',writer)
+        writer.sheets['Pickups'].freeze_panes(1,2)
+        writer.sheets['Pickups'].conditional_format('J2:N' + str(pickups.shape[0] + 1),\
+        {'type':'3_color_scale','min_color':'#FF6347','mid_color':'#FFD700','max_color':'#3CB371'})
+        writer.sheets['Pickups'].conditional_format('O2:O' + str(pickups.shape[0] + 1),\
+        {'type':'3_color_scale','min_color':'#FF6347','mid_color':'#FFD700','max_color':'#3CB371'})
+        if options.name == 'The Algorithm':
+            writer.sheets['Pickups'].conditional_format('P2:P' + str(pickups.shape[0] + 1),\
+            {'type':'3_color_scale','max_color':'#FF6347','mid_color':'#FFD700','min_color':'#3CB371'})
+
+    if options.adds:
+        adds = league.possible_adds(int(options.sims),
+        focus_on=[val.strip() for val in options.pickups.split(',')] if options.pickups.lower() != 'all' else [],
+        exclude=[],limit_per=5,basaloppqbtime=options.basaloppqbtime,payouts=options.payouts)
+        writer = excelAutofit(adds[['player_to_add','wins_avg','wins_stdev',\
+        'points_avg','points_stdev','per_game_avg','per_game_stdev','per_game_fano',\
+        'playoffs','playoff_bye','winner','runner_up','third','earnings'] + \
+        (['many_mile'] if options.name == 'The Algorithm' else [])],'Adds',writer)
+        writer.sheets['Adds'].freeze_panes(1,1)
+        writer.sheets['Adds'].conditional_format('J2:N' + str(adds.shape[0] + 1),\
+        {'type':'3_color_scale','min_color':'#FF6347','mid_color':'#FFD700','max_color':'#3CB371'})
+        writer.sheets['Adds'].conditional_format('O2:O' + str(adds.shape[0] + 1),\
+        {'type':'3_color_scale','min_color':'#FF6347','mid_color':'#FFD700','max_color':'#3CB371'})
+        if options.name == 'The Algorithm':
+            writer.sheets['Adds'].conditional_format('P2:P' + str(adds.shape[0] + 1),\
+            {'type':'3_color_scale','max_color':'#FF6347','mid_color':'#FFD700','min_color':'#3CB371'})
+
+    if options.drops:
+        drops = league.possible_drops(int(options.sims),
+        focus_on=[val.strip() for val in options.pickups.split(',')] if options.pickups.lower() != 'all' else [],
+        exclude=[],basaloppqbtime=options.basaloppqbtime,payouts=options.payouts)
+        writer = excelAutofit(drops[['player_to_drop','wins_avg','wins_stdev',\
+        'points_avg','points_stdev','per_game_avg','per_game_stdev','per_game_fano',\
+        'playoffs','playoff_bye','winner','runner_up','third','earnings'] + \
+        (['many_mile'] if options.name == 'The Algorithm' else [])],'Drops',writer)
+        writer.sheets['Drops'].freeze_panes(1,1)
+        writer.sheets['Drops'].conditional_format('J2:N' + str(drops.shape[0] + 1),\
+        {'type':'3_color_scale','min_color':'#FF6347','mid_color':'#FFD700','max_color':'#3CB371'})
+        writer.sheets['Drops'].conditional_format('O2:O' + str(drops.shape[0] + 1),\
+        {'type':'3_color_scale','min_color':'#FF6347','mid_color':'#FFD700','max_color':'#3CB371'})
+        if options.name == 'The Algorithm':
+            writer.sheets['Drops'].conditional_format('P2:P' + str(drops.shape[0] + 1),\
+            {'type':'3_color_scale','max_color':'#FF6347','mid_color':'#FFD700','min_color':'#3CB371'})
     
-#     if options.adds:
-#         adds = possible_adds(rosters,available,fantasy_schedule,int(options.as_of),\
-#         1000,exclude=['Kirk Cousins','DeAndre Hopkins','Cole Beasley','Deshaun Watson','Gardner Minshew II'],\
-#         limit_per=5,basaloppqbtime=options.basaloppqbtime,payouts=options.payouts)
-#         writer = excelAutofit(adds[['player_to_add','wins_avg','wins_stdev',\
-#         'points_avg','points_stdev','per_game_avg','per_game_stdev','per_game_fano',\
-#         'playoffs','playoff_bye','winner','runner_up','third','earnings'] + \
-#         (['many_mile'] if options.name == 'The Algorithm' else [])],'Adds',writer)
-#         writer.sheets['Adds'].freeze_panes(1,1)
-#         writer.sheets['Adds'].conditional_format('J2:N' + str(adds.shape[0] + 1),\
-#         {'type':'3_color_scale','min_color':'#FF6347','mid_color':'#FFD700','max_color':'#3CB371'})
-#         writer.sheets['Adds'].conditional_format('O2:O' + str(adds.shape[0] + 1),\
-#         {'type':'3_color_scale','min_color':'#FF6347','mid_color':'#FFD700','max_color':'#3CB371'})
-#         if options.name == 'The Algorithm':
-#             writer.sheets['Adds'].conditional_format('P2:P' + str(adds.shape[0] + 1),\
-#             {'type':'3_color_scale','max_color':'#FF6347','mid_color':'#FFD700','min_color':'#3CB371'})
+    if options.trades or options.given:
+        if not options.trades:
+            options.trades = "all"
+        trades = league.possible_trades(int(options.sims),
+        focus_on=[val.strip() for val in options.pickups.split(',')] if options.pickups.lower() != 'all' else [],
+        exclude=[],given=[],limit_per=10,basaloppqbtime=options.basaloppqbtime,payouts=options.payouts)
+        writer = excelAutofit(trades[['player_to_trade_away','player_to_trade_for',\
+        'their_team','my_wins_avg','my_wins_stdev','my_points_avg','my_points_stdev',\
+        'my_per_game_avg','my_per_game_stdev','my_per_game_fano','my_playoffs',\
+        'my_playoff_bye','my_winner','my_runner_up','my_third','my_earnings',\
+        'their_wins_avg','their_wins_stdev','their_points_avg','their_points_stdev',\
+        'their_per_game_avg','their_per_game_stdev','their_per_game_fano',\
+        'their_playoffs','their_playoff_bye','their_winner','their_runner_up',\
+        'their_third','their_earnings']],'Trades',writer)
+        writer.sheets['Trades'].freeze_panes(1,3)
+        writer.sheets['Trades'].conditional_format('K2:O' + str(trades.shape[0] + 1),\
+        {'type':'3_color_scale','min_color':'#FF6347','mid_color':'#FFD700','max_color':'#3CB371'})
+        writer.sheets['Trades'].conditional_format('P2:P' + str(trades.shape[0] + 1),\
+        {'type':'3_color_scale','min_color':'#FF6347','mid_color':'#FFD700','max_color':'#3CB371'})
+        writer.sheets['Trades'].conditional_format('X2:AB' + str(trades.shape[0] + 1),\
+        {'type':'3_color_scale','min_color':'#FF6347','mid_color':'#FFD700','max_color':'#3CB371'})
+        writer.sheets['Trades'].conditional_format('AC2:AC' + str(trades.shape[0] + 1),\
+        {'type':'3_color_scale','min_color':'#FF6347','mid_color':'#FFD700','max_color':'#3CB371'})
     
-#     if options.drops:
-#         drops = possible_drops(rosters,fantasy_schedule,int(options.as_of),\
-#         1000,basaloppqbtime=options.basaloppqbtime,payouts=options.payouts)
-#         writer = excelAutofit(drops[['player_to_drop','wins_avg','wins_stdev',\
-#         'points_avg','points_stdev','per_game_avg','per_game_stdev','per_game_fano',\
-#         'playoffs','playoff_bye','winner','runner_up','third','earnings'] + \
-#         (['many_mile'] if options.name == 'The Algorithm' else [])],'Drops',writer)
-#         writer.sheets['Drops'].freeze_panes(1,1)
-#         writer.sheets['Drops'].conditional_format('J2:N' + str(drops.shape[0] + 1),\
-#         {'type':'3_color_scale','min_color':'#FF6347','mid_color':'#FFD700','max_color':'#3CB371'})
-#         writer.sheets['Drops'].conditional_format('O2:O' + str(drops.shape[0] + 1),\
-#         {'type':'3_color_scale','min_color':'#FF6347','mid_color':'#FFD700','max_color':'#3CB371'})
-#         if options.name == 'The Algorithm':
-#             writer.sheets['Drops'].conditional_format('P2:P' + str(drops.shape[0] + 1),\
-#             {'type':'3_color_scale','max_color':'#FF6347','mid_color':'#FFD700','min_color':'#3CB371'})
-    
-#     if options.trades or options.given:
-#         if not options.trades:
-#             options.trades = "all"
-#         trades = possible_trades(rosters,fantasy_schedule,int(options.as_of),1000,\
-#         focus_on=[val.strip() for val in options.trades.split(',')] if options.trades.lower() != 'all' else [],\
-#         exclude=['Kirk Cousins','DeAndre Hopkins','Cole Beasley','Deshaun Watson','Gardner Minshew II'],\
-#         given=[val.strip() for val in options.given.split(',')] if options.given else [],\
-#         limit_per=10,basaloppqbtime=options.basaloppqbtime,payouts=options.payouts)
-#         writer = excelAutofit(trades[['player_to_trade_away','player_to_trade_for',\
-#         'their_team','my_wins_avg','my_wins_stdev','my_points_avg','my_points_stdev',\
-#         'my_per_game_avg','my_per_game_stdev','my_per_game_fano','my_playoffs',\
-#         'my_playoff_bye','my_winner','my_runner_up','my_third','my_earnings',\
-#         'their_wins_avg','their_wins_stdev','their_points_avg','their_points_stdev',\
-#         'their_per_game_avg','their_per_game_stdev','their_per_game_fano',\
-#         'their_playoffs','their_playoff_bye','their_winner','their_runner_up',\
-#         'their_third','their_earnings']],'Trades',writer)
-#         writer.sheets['Trades'].freeze_panes(1,3)
-#         writer.sheets['Trades'].conditional_format('K2:O' + str(trades.shape[0] + 1),\
-#         {'type':'3_color_scale','min_color':'#FF6347','mid_color':'#FFD700','max_color':'#3CB371'})
-#         writer.sheets['Trades'].conditional_format('P2:P' + str(trades.shape[0] + 1),\
-#         {'type':'3_color_scale','min_color':'#FF6347','mid_color':'#FFD700','max_color':'#3CB371'})
-#         writer.sheets['Trades'].conditional_format('X2:AB' + str(trades.shape[0] + 1),\
-#         {'type':'3_color_scale','min_color':'#FF6347','mid_color':'#FFD700','max_color':'#3CB371'})
-#         writer.sheets['Trades'].conditional_format('AC2:AC' + str(trades.shape[0] + 1),\
-#         {'type':'3_color_scale','min_color':'#FF6347','mid_color':'#FFD700','max_color':'#3CB371'})
-    
-#     if options.deltas:
-#         deltas = perGameDelta(rosters,fantasy_schedule,int(options.as_of),\
-#         1000,basaloppqbtime=options.basaloppqbtime,payouts=options.payouts)
-#         writer = excelAutofit(deltas,'Deltas',writer)
-#         writer.sheets['Deltas'].freeze_panes(0,1)
-#         writer.sheets['Deltas'].conditional_format('B2:' + chr(ord('A') + deltas.shape[1]) + str(deltas.shape[0] + 1),\
-#         {'type':'3_color_scale','min_color':'#FF6347','mid_color':'#FFD700','max_color':'#3CB371'})
+    if options.deltas:
+        deltas = league.perGameDelta(int(options.sims),basaloppqbtime=options.basaloppqbtime,payouts=options.payouts)
+        writer = excelAutofit(deltas,'Deltas',writer)
+        writer.sheets['Deltas'].freeze_panes(0,1)
+        writer.sheets['Deltas'].conditional_format('B2:' + chr(ord('A') + deltas.shape[1]) + str(deltas.shape[0] + 1),\
+        {'type':'3_color_scale','min_color':'#FF6347','mid_color':'#FFD700','max_color':'#3CB371'})
     
     writer.save()
     os.system('touch -t {} "{}"'.format(datetime.datetime.now().strftime('%Y%m%d%H%M'),'/'.join(options.output.split('/')[:-2])))
