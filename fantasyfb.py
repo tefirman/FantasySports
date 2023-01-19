@@ -26,10 +26,12 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from dotenv import load_dotenv
 import traceback
+import warnings
+warnings.filterwarnings("ignore")
 
 class League:
     def __init__(self, name=None, season=None, week=None, roster_pcts=False, injurytries=None,
-    num_sims=10000, earliest=None, reference_games=None, basaloppqbtime=None):
+    num_sims=10000, earliest=None, reference_games=None, basaloppqbtime=[]):
         self.latest_season = datetime.datetime.now().year - int(datetime.datetime.now().month < 7)
         self.season = season if type(season) == int else self.latest_season
         self.load_credentials()
@@ -43,21 +45,28 @@ class League:
         self.get_yahoo_players(injurytries)
         self.get_fantasy_rosters()
         self.name_corrections()
-        if not earliest:
+        if earliest:
+            self.earliest = earliest
+        else:
             prior_list = [40, 40, 39, 39, 28, 29, 31, 32, 33, 34, 35, 25, 26, 27, 28, 29]
             prior = prior_list[self.week - 1]
-            earliest = (self.season - prior//17)*100 + self.week - prior%17
-            if (earliest%100 == 0) | (earliest%100 > 50):
-                earliest -= 83 # Assuming 17 weeks... Need to change this soon...
-        if not reference_games:
+            self.earliest = (self.season - prior//17)*100 + self.week - prior%17
+            if (self.earliest%100 == 0) | (self.earliest%100 > 50):
+                self.earliest -= 83 # Assuming 17 weeks... Need to change this soon...
+        if reference_games:
+            self.reference_games = reference_games
+        else:
             games_list = [51, 51, 50, 50, 39, 40, 40, 41, 41, 42, 42, 34, 36, 39, 42, 44]
-            reference_games = games_list[self.week - 1]
-        if not basaloppqbtime:
+            self.reference_games = games_list[self.week - 1]
+        if basaloppqbtime:
+            self.basaloppqbtime = basaloppqbtime
+        else:
             opp_list = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.15, 0.3, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4]
             qb_list = [0.0, 0.015, 0.03, 0.045, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.08, 0.115, 0.15, 0.185]
             time_list = [0.004, 0.005, 0.006, 0.007, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009]
-            basaloppqbtime = [1.0,opp_list[self.week - 1],qb_list[self.week - 1],time_list[self.week - 1]]
-        self.get_rates(earliest,num_sims,reference_games,basaloppqbtime)
+            self.basaloppqbtime = [1.0,opp_list[self.week - 1],qb_list[self.week - 1],time_list[self.week - 1]]
+        self.num_sims = num_sims if type(num_sims) == int else 10000
+        self.get_rates()
         self.war_sim()
         self.add_injuries()
         self.add_bye_weeks()
@@ -352,7 +361,7 @@ class League:
         stats.opponent = stats.opponent.str.upper()
         return stats
 
-    def get_names_sportsref():
+    def get_names_sportsref(self):
         names = []
         for letter in range(65,91):
             response = requests.get('https://www.pro-football-reference.com/players/' + chr(letter),verify=False)
@@ -389,6 +398,7 @@ class League:
         rosters['drafted'] = rosters.raw.str.split('</td>').str[11].str.split('data-stat="draft_info" >')\
         .str[-1].str.split(' / <a href="https://www.pro-football-reference.com/years/').str[0]
         del rosters['raw']
+        return rosters
     
     def get_stats_sportsref(self,start:int,finish:int):
         stats = self.get_games_sportsref(start,finish)
@@ -438,13 +448,13 @@ class League:
         if os.path.exists('GameByGameFantasyFootballStats.csv'):
             tot = pd.read_csv('GameByGameFantasyFootballStats.csv',low_memory=False)
             if (tot.season*100 + tot.week).min() > start:
-                last = (tot.season*100 + tot.week).min() - 1
+                last = int((tot.season*100 + tot.week).min()) - 1
                 if last%100 == 0:
                     last -= 83
                 tot = tot.append(self.get_stats_sportsref(start,last))
                 tot.to_csv('GameByGameFantasyFootballStats.csv',index=False)
             if (tot.season*100 + tot.week).max() < finish:
-                first = (tot.season*100 + tot.week).max() + 1
+                first = int((tot.season*100 + tot.week).max()) + 1
                 if first%100 == 18:
                     first += 83
                 tot = tot.append(self.get_stats_sportsref(first,finish))
@@ -584,26 +594,24 @@ class League:
         self.players = pd.merge(left=self.players,right=roster_pcts,how='left',on=['player_id','name'])
         self.players.pct_rostered = self.players.pct_rostered.fillna(0.0)
 
-    def get_rates(self,earliest=None,num_sims=10000,reference_games=16,basaloppqbtime=[1.0,0.0,0.0,0.0]):
+    def get_rates(self):
         as_of = self.season*100 + self.week
-        if not earliest:
-            earliest = as_of - 100
-        self.load_stats(earliest,as_of - 1)
+        self.load_stats(self.earliest,as_of - 1)
         norm_schedule = pd.merge(left=self.nfl_schedule,right=self.nfl_teams[['real_abbrev','abbrev']]\
         .rename(columns={'real_abbrev':'team'}),how='inner',on=['abbrev'])
         self.stats = pd.merge(left=self.stats,right=norm_schedule,how='left',on=['season','week','team'])
-        self.stats['game_factor'] = basaloppqbtime[0] + \
-        basaloppqbtime[1]*(self.stats['opp_elo'] - 1) + \
-        basaloppqbtime[2]*(self.stats['qb_elo'] - 1)
+        self.stats['game_factor'] = self.basaloppqbtime[0] + \
+        self.basaloppqbtime[1]*(self.stats['opp_elo'] - 1) + \
+        self.basaloppqbtime[2]*(self.stats['qb_elo'] - 1)
         self.stats.points /= self.stats.game_factor
         by_pos = pd.merge(left=self.stats.groupby('position').points.mean()\
         .reset_index().rename(index=str,columns={'points':'points_avg'}),\
         right=self.stats.groupby('position').points.std().reset_index()\
         .rename(index=str,columns={'points':'points_stdev'}),how='inner',on='position')
         by_pos['name'] = 'Average_' + by_pos['position']
-        self.stats = self.stats.groupby('player_id').head(reference_games)
+        self.stats = self.stats.groupby('player_id').head(self.reference_games)
         self.stats['weeks_ago'] = 17*(as_of//100 - self.stats.season) + as_of%100 - self.stats.week
-        self.stats['time_factor'] = 1 - self.stats.weeks_ago*basaloppqbtime[-1]
+        self.stats['time_factor'] = 1 - self.stats.weeks_ago*self.basaloppqbtime[-1]
         self.stats = self.stats.loc[self.stats.time_factor > 0].reset_index(drop=True)
         self.stats = pd.merge(left=self.stats,right=self.stats.groupby(['name','position'])\
         .agg({'time_factor':sum,'player_id':'count'}).rename(columns={'player_id':'num_games',\
@@ -620,12 +628,12 @@ class League:
         by_player.points_stdev = by_player.points_stdev.fillna(0.0)
         by_player = pd.merge(left=by_player,right=by_pos[['position','points_avg','points_stdev']]\
         .rename(columns={'points_avg':'pos_avg','points_stdev':'pos_stdev'}),how='inner',on='position')
-        inds = by_player.num_games < reference_games
+        inds = by_player.num_games < self.reference_games
         by_player.loc[inds,'points_squared'] = (by_player.loc[inds,'num_games']*(by_player.loc[inds,'points_stdev']**2 + \
-        by_player.loc[inds,'points_avg']**2) + (reference_games - by_player.loc[inds,'num_games'])*\
-        (by_player.loc[inds,'pos_stdev']**2 + by_player.loc[inds,'pos_avg']**2))/reference_games
+        by_player.loc[inds,'points_avg']**2) + (self.reference_games - by_player.loc[inds,'num_games'])*\
+        (by_player.loc[inds,'pos_stdev']**2 + by_player.loc[inds,'pos_avg']**2))/self.reference_games
         by_player.loc[inds,'points_avg'] = (by_player.loc[inds,'num_games']*by_player.loc[inds,'points_avg'] + \
-        (reference_games - by_player.loc[inds,'num_games'])*by_player.loc[inds,'pos_avg'])/reference_games
+        (self.reference_games - by_player.loc[inds,'num_games'])*by_player.loc[inds,'pos_avg'])/self.reference_games
         by_player.loc[inds,'points_stdev'] = (by_player.loc[inds,'points_squared'] - by_player.loc[inds,'points_avg']**2)**0.5
         league_avg = by_player.loc[by_player.name.str.contains('Average_')]
         by_player = pd.merge(left=by_player,right=self.players[['name','position',\
@@ -706,16 +714,16 @@ class League:
                 schedule.loc[schedule.week == as_of%100,'score_2'] = 0.0
         self.schedule = schedule
 
-    def starters(self, week, basaloppqbtime=[1.0,0.0,0.0,0.0]):
+    def starters(self, week):
         as_of = self.season*100 + self.week
         self.refresh_oauth()
         self.players = pd.merge(left=self.players,\
         right=self.nfl_schedule.loc[(self.nfl_schedule.season == as_of//100) & \
         (self.nfl_schedule.week == week),['abbrev','opp_elo','qb_elo','home_away']],\
         how='left',left_on='current_team',right_on='abbrev')
-        self.players['opp_factor'] = basaloppqbtime[1]*(self.players['opp_elo'] - 1)
-        self.players['qb_factor'] = basaloppqbtime[2]*(self.players['qb_elo'] - 1)
-        self.players['game_factor'] = basaloppqbtime[0] + self.players['opp_factor'] + self.players['qb_factor']
+        self.players['opp_factor'] = self.basaloppqbtime[1]*(self.players['opp_elo'] - 1)
+        self.players['qb_factor'] = self.basaloppqbtime[2]*(self.players['qb_elo'] - 1)
+        self.players['game_factor'] = self.basaloppqbtime[0] + self.players['opp_factor'] + self.players['qb_factor']
         self.players['points_avg'] *= self.players['game_factor'].fillna(1.0)
         del self.players['opp_elo'], self.players['qb_elo'], self.players['home_away'], self.players['abbrev']
         """ WAR is linear with points_avg, but slope/intercept depends on position """
@@ -766,14 +774,13 @@ class League:
                 (self.players.bye_week != week) & self.players.position.isin(['WR','RB','TE'])]\
                 .drop_duplicates(subset=['fantasy_team'],keep='first').index,'starter'] = True
 
-    def season_sims(self,num_sims=10000,verbose=False,postseason=True,\
-    basaloppqbtime=[1.0,0.0,0.0,0.0],payouts=[800,300,100],fixed_winner=None):
+    def season_sims(self,verbose=False,postseason=True,payouts=[800,300,100],fixed_winner=None):
         as_of = self.season*100 + self.week
         self.refresh_oauth()
         self.players['points_var'] = self.players.points_stdev**2
         projections = pd.DataFrame(columns=['fantasy_team','week','points_avg','points_var'])
         for week in range(17):
-            self.starters(week + 1,basaloppqbtime)
+            self.starters(week + 1)
             projections = projections.append(self.players.loc[self.players.starter].groupby('fantasy_team')\
             [['points_avg','points_var']].sum().reset_index(),ignore_index=True,sort=False)
             projections.loc[projections.week.isnull(),'week'] = week + 1
@@ -800,7 +807,7 @@ class League:
             schedule.loc[(schedule.week == fixed_winner[0]) & (schedule['team_' + winner] == fixed_winner[1]),'points_avg_' + loser] = 100.0
             schedule.loc[(schedule.week == fixed_winner[0]) & (schedule['team_' + winner] == fixed_winner[1]),'points_stdev_' + winner] = 0.0
             schedule.loc[(schedule.week == fixed_winner[0]) & (schedule['team_' + winner] == fixed_winner[1]),'points_stdev_' + loser] = 0.0
-        schedule_sims = pd.DataFrame().append([schedule]*num_sims,ignore_index=True)
+        schedule_sims = pd.DataFrame().append([schedule]*self.num_sims,ignore_index=True)
         schedule_sims['num_sim'] = schedule_sims.index//schedule.shape[0]
         schedule_sims['sim_1'] = np.random.normal(loc=0,scale=1,size=schedule_sims.shape[0])*schedule_sims['points_stdev_1'] + schedule_sims['points_avg_1']
         schedule_sims['sim_2'] = np.random.normal(loc=0,scale=1,size=schedule_sims.shape[0])*schedule_sims['points_stdev_2'] + schedule_sims['points_avg_2']
@@ -982,7 +989,7 @@ class League:
         standings['per_game_fano'] = round(standings['per_game_fano'],3)
         return schedule, standings
 
-    def war_sim(self,num_sims=10000):
+    def war_sim(self):
         as_of = self.season*100 + self.week
         self.load_stats(as_of - 100,as_of - 1)
         """ Creating histograms across all players in each position """
@@ -993,15 +1000,15 @@ class League:
         pos_hists['FLEX'] = np.histogram(self.stats.loc[self.stats.position.isin(['RB','WR','TE']),'points'],bins=pos_hists['points'])[0]
         pos_hists['FLEX'] = pos_hists['FLEX']/sum(pos_hists['FLEX'])
         """ Simulating an entire team using average players """
-        sim_scores = pd.DataFrame({'QB':np.random.choice(pos_hists['points'][:-1],p=pos_hists['QB'],size=num_sims),\
-        'RB1':np.random.choice(pos_hists['points'][:-1],p=pos_hists['RB'],size=num_sims),\
-        'RB2':np.random.choice(pos_hists['points'][:-1],p=pos_hists['RB'],size=num_sims),\
-        'WR1':np.random.choice(pos_hists['points'][:-1],p=pos_hists['WR'],size=num_sims),\
-        'WR2':np.random.choice(pos_hists['points'][:-1],p=pos_hists['WR'],size=num_sims),\
-        'TE':np.random.choice(pos_hists['points'][:-1],p=pos_hists['TE'],size=num_sims),\
-        'FLEX':np.random.choice(pos_hists['points'][:-1],p=pos_hists['FLEX'],size=num_sims),\
-        'K':np.random.choice(pos_hists['points'][:-1],p=pos_hists['K'],size=num_sims),\
-        'DEF':np.random.choice(pos_hists['points'][:-1],p=pos_hists['DEF'],size=num_sims)})
+        sim_scores = pd.DataFrame({'QB':np.random.choice(pos_hists['points'][:-1],p=pos_hists['QB'],size=self.num_sims),\
+        'RB1':np.random.choice(pos_hists['points'][:-1],p=pos_hists['RB'],size=self.num_sims),\
+        'RB2':np.random.choice(pos_hists['points'][:-1],p=pos_hists['RB'],size=self.num_sims),\
+        'WR1':np.random.choice(pos_hists['points'][:-1],p=pos_hists['WR'],size=self.num_sims),\
+        'WR2':np.random.choice(pos_hists['points'][:-1],p=pos_hists['WR'],size=self.num_sims),\
+        'TE':np.random.choice(pos_hists['points'][:-1],p=pos_hists['TE'],size=self.num_sims),\
+        'FLEX':np.random.choice(pos_hists['points'][:-1],p=pos_hists['FLEX'],size=self.num_sims),\
+        'K':np.random.choice(pos_hists['points'][:-1],p=pos_hists['K'],size=self.num_sims),\
+        'DEF':np.random.choice(pos_hists['points'][:-1],p=pos_hists['DEF'],size=self.num_sims)})
         sim_scores['Total'] = sim_scores.QB + sim_scores.RB1 + sim_scores.RB2 + \
         sim_scores.WR1 + sim_scores.WR2 + sim_scores.TE + sim_scores.FLEX + \
         sim_scores.K + sim_scores.DEF
@@ -1021,12 +1028,11 @@ class League:
             sim_scores.loc[sim_scores.shape[0]//2:,'Total'].values)/(sim_scores.shape[0]//2) - 0.5)*14
             del sim_scores['Alt_Total']
 
-    def possible_pickups(self,num_sims=1000,focus_on=[],exclude=[],limit_per=10,\
-    team_name=None,postseason=True,verbose=True,basaloppqbtime=[1.0,0.0,0.0,0.0],payouts=[800,300,100]):
+    def possible_pickups(self,focus_on=[],exclude=[],limit_per=10,\
+    team_name=None,postseason=True,verbose=True,payouts=[800,300,100]):
         as_of = self.season*100 + self.week
         self.refresh_oauth()
-        orig_standings = self.season_sims(num_sims,False,\
-        postseason=postseason,basaloppqbtime=basaloppqbtime,payouts=payouts)[1]
+        orig_standings = self.season_sims(False,postseason,payouts)[1]
         added_value = pd.DataFrame(columns=['player_to_drop','player_to_add','wins_avg',\
         'wins_stdev','points_avg','points_stdev','per_game_avg','per_game_stdev',\
         'per_game_fano','playoffs','playoff_bye'] + (['winner','runner_up','third','earnings'] + \
@@ -1058,7 +1064,7 @@ class League:
             for free_agent in possible.name:
                 self.players.loc[self.players.name == my_player,'fantasy_team'] = None
                 self.players.loc[self.players.name == free_agent,'fantasy_team'] = team_name
-                new_standings = self.season_sims(num_sims,verbose,postseason,basaloppqbtime,payouts)[1]
+                new_standings = self.season_sims(False,postseason,payouts)[1]
                 added_value = added_value.append(new_standings.loc[new_standings.team == team_name],ignore_index=True,sort=False)
                 added_value.loc[added_value.shape[0] - 1,'player_to_drop'] = my_player
                 added_value.loc[added_value.shape[0] - 1,'player_to_add'] = free_agent
@@ -1080,12 +1086,11 @@ class League:
             added_value = added_value.sort_values(by='winner' if postseason else 'playoffs',ascending=False)
         return added_value
 
-    def possible_adds(self,num_sims=1000,focus_on=[],exclude=[],limit_per=10,team_name=None,postseason=True,\
-    verbose=True,basaloppqbtime=[1.0,0.0,0.0,0.0],payouts=[800,300,100]):
+    def possible_adds(self,focus_on=[],exclude=[],limit_per=10,\
+    team_name=None,postseason=True,verbose=True,payouts=[800,300,100]):
         as_of = self.season*100 + self.week
         self.refresh_oauth()
-        orig_standings = self.season_sims(num_sims,False,\
-        postseason=postseason,basaloppqbtime=basaloppqbtime,payouts=payouts)[1]
+        orig_standings = self.season_sims(False,postseason,payouts)[1]
         added_value = pd.DataFrame(columns=['player_to_add','wins_avg','wins_stdev',\
         'points_avg','points_stdev','per_game_avg','per_game_stdev','per_game_fano',\
         'playoffs','playoff_bye'] + (['winner','runner_up','third','earnings'] + \
@@ -1102,7 +1107,7 @@ class League:
         possible = possible.groupby('position').head(limit_per)
         for free_agent in possible.name:
             self.players.loc[self.players.name == free_agent,'fantasy_team'] = team_name
-            new_standings = self.season_sims(num_sims,verbose,postseason,basaloppqbtime,payouts)[1]
+            new_standings = self.season_sims(False,postseason,payouts)[1]
             added_value = added_value.append(new_standings.loc[new_standings.team == team_name],ignore_index=True,sort=False)
             added_value.loc[added_value.shape[0] - 1,'player_to_add'] = free_agent
             added_value.loc[added_value.shape[0] - 1,'position'] = possible.loc[possible.name == free_agent,'position'].values[0]
@@ -1120,11 +1125,10 @@ class League:
                 print(added_value[['player_to_add','earnings']].sort_values(by='earnings').to_string(index=False))
         return added_value
 
-    def possible_drops(self,num_sims=1000,focus_on=[],exclude=[],team_name=None,\
-    postseason=True,verbose=True,basaloppqbtime=[1.0,0.0,0.0,0.0],payouts=[800,300,100]):
+    def possible_drops(self,focus_on=[],exclude=[],team_name=None,\
+    postseason=True,verbose=True,payouts=[800,300,100]):
         self.refresh_oauth()
-        orig_standings = self.season_sims(num_sims,False,\
-        postseason=postseason,basaloppqbtime=basaloppqbtime,payouts=payouts)[1]
+        orig_standings = self.season_sims(False,postseason,payouts)[1]
         reduced_value = pd.DataFrame(columns=['player_to_drop','wins_avg','wins_stdev',\
         'points_avg','points_stdev','per_game_avg','per_game_stdev','per_game_fano',\
         'playoffs','playoff_bye'] + (['winner','runner_up','third','earnings'] + \
@@ -1139,7 +1143,7 @@ class League:
             players_to_drop = players_to_drop.loc[~players_to_drop.name.isin(exclude)]
         for my_player in players_to_drop.name:
             self.players.loc[self.players.name == my_player,'fantasy_team'] = None
-            new_standings = self.season_sims(num_sims,verbose,postseason,basaloppqbtime,payouts)[1]
+            new_standings = self.season_sims(False,postseason,payouts)[1]
             reduced_value = reduced_value.append(new_standings.loc[new_standings.team == team_name],ignore_index=True,sort=False)
             reduced_value.loc[reduced_value.shape[0] - 1,'player_to_drop'] = my_player
             self.players.loc[self.players.name == my_player,'fantasy_team'] = team_name
@@ -1155,8 +1159,8 @@ class League:
                 print(reduced_value[['player_to_drop','earnings']].sort_values(by='earnings').to_string(index=False))
         return reduced_value
 
-    def possible_trades(self,num_sims=1000,focus_on=[],exclude=[],given=[],limit_per=10,\
-    team_name=None,postseason=True,verbose=True,basaloppqbtime=[1.0,0.0,0.0,0.0],payouts=[800,300,100]):
+    def possible_trades(self,focus_on=[],exclude=[],given=[],limit_per=10,\
+    team_name=None,postseason=True,verbose=True,payouts=[800,300,100]):
         self.refresh_oauth()
         if not team_name:
             team_name = [team['name'] for team in self.teams if team['team_key'] == self.lg.team_key()][0]
@@ -1170,8 +1174,7 @@ class League:
             their_players = their_players.loc[their_players.name.isin(focus_on)]
         if their_players.name.isin(exclude).sum() > 0:
             their_players = their_players.loc[~their_players.name.isin(exclude)]
-        orig_standings = self.season_sims(num_sims,False,\
-        postseason=postseason,basaloppqbtime=basaloppqbtime,payouts=payouts)[1]
+        orig_standings = self.season_sims(False,postseason,payouts)[1]
         
         """ Make sure there are two teams and narrow down to that team!!! """
         given_check = type(given) == list and my_players.name.isin(given).any() \
@@ -1205,7 +1208,7 @@ class League:
                 their_team = self.players.loc[self.players.name == their_player,'fantasy_team'].values[0]
                 self.players.loc[self.players.name == my_player,'fantasy_team'] = their_team
                 self.players.loc[self.players.name == their_player,'fantasy_team'] = team_name
-                new_standings = self.season_sims(num_sims,verbose,postseason,basaloppqbtime,payouts)[1]
+                new_standings = self.season_sims(False,postseason,payouts)[1]
                 self.players.loc[self.players.name == my_player,'fantasy_team'] = team_name
                 self.players.loc[self.players.name == their_player,'fantasy_team'] = their_team
                 my_added_value = my_added_value.append(new_standings.loc[new_standings.team == team_name],ignore_index=True)
@@ -1254,15 +1257,14 @@ class League:
         added_value = added_value.sort_values(by='my_winner' if postseason else 'playoffs',ascending=False)
         return added_value
 
-    def perGameDelta(self,num_sims=1000,team_name=None,postseason=True,\
-    basaloppqbtime=[1.0,0.0,0.0,0.0],payouts=[800,300,100]):
+    def perGameDelta(self,team_name=None,postseason=True,payouts=[800,300,100]):
         as_of = self.season*100 + self.week
         self.refresh_oauth()
         if not team_name:
             team_name = [team['name'] for team in self.teams if team['team_key'] == self.lg.team_key()][0]
-        deltas = self.season_sims(num_sims,False,postseason,basaloppqbtime,payouts)[1][['team','earnings']]
+        deltas = self.season_sims(False,postseason,payouts)[1][['team','earnings']]
         for team in self.players.fantasy_team.unique():
-            new_standings = self.season_sims(num_sims,False,postseason,basaloppqbtime,payouts,\
+            new_standings = self.season_sims(False,postseason,payouts,\
             fixed_winner=[as_of%100,team])[1][['team','earnings']].rename(columns={'earnings':'earnings_new'})
             deltas = pd.merge(left=deltas,right=new_standings,how='inner',on='team')
             deltas[team] = deltas['earnings_new'] - deltas['earnings']
@@ -1382,13 +1384,13 @@ def main():
         options.output = os.path.expanduser('~/Documents/') if os.path.exists(os.path.expanduser('~/Documents/')) else os.path.expanduser('~/')
         if not os.path.exists(options.output + league.name.replace(' ','')):
             os.mkdir(options.output + league.name.replace(' ',''))
-        if not os.path.exists(options.output + league.name.replace(' ','') + '/' + str(options.as_of//100)):
-            os.mkdir(options.output + league.name.replace(' ','') + '/' + str(options.as_of//100))
-        options.output += league.name.replace(' ','') + '/' + str(options.as_of//100)
+        if not os.path.exists(options.output + league.name.replace(' ','') + '/' + str(options.season)):
+            os.mkdir(options.output + league.name.replace(' ','') + '/' + str(options.season))
+        options.output += league.name.replace(' ','') + '/' + str(options.season)
     if options.output[-1] != '/':
         options.output += '/'
     writer = pd.ExcelWriter(options.output + 'FantasyFootballProjections_{}Week{}.xlsx'\
-    .format(datetime.datetime.now().strftime('%A'),int(options.as_of)%100),engine='xlsxwriter')
+    .format(datetime.datetime.now().strftime('%A'),options.week),engine='xlsxwriter')
     writer.book.add_format({'align': 'vcenter'})
 
     rosters = league.players.loc[~league.players.fantasy_team.isnull()]\
@@ -1413,8 +1415,7 @@ def main():
     writer.sheets['Available'].conditional_format('F2:F' + str(available.shape[0] + 1),\
     {'type':'3_color_scale','min_color':'#FF6347','mid_color':'#FFD700','max_color':'#3CB371'})
     
-    schedule_sim, standings_sim = league.season_sims(int(options.sims),True,\
-    basaloppqbtime=options.basaloppqbtime,payouts=options.payouts)
+    schedule_sim, standings_sim = league.season_sims(True,payouts=options.payouts)
     print(schedule_sim.loc[schedule_sim.week == league.lg.current_week(),\
     ['week','team_1','team_2','win_1','win_2','points_avg_1','points_avg_2']].to_string(index=False))
     print(standings_sim[['team','wins_avg','points_avg','playoffs','playoff_bye','winner','earnings'] + \
@@ -1438,9 +1439,8 @@ def main():
         {'type':'3_color_scale','max_color':'#FF6347','mid_color':'#FFD700','min_color':'#3CB371'})
     
     if options.pickups:
-        pickups = league.possible_pickups(int(options.sims),
-        focus_on=[val.strip() for val in options.pickups.split(',')] if options.pickups.lower() != 'all' else [],
-        exclude=[],limit_per=5,basaloppqbtime=options.basaloppqbtime,payouts=options.payouts)
+        pickups = league.possible_pickups(focus_on=[val.strip() for val in options.pickups.split(',')] \
+        if options.pickups.lower() != 'all' else [],exclude=[],limit_per=5,payouts=options.payouts)
         writer = excelAutofit(pickups[['player_to_drop','player_to_add','wins_avg','wins_stdev',\
         'points_avg','points_stdev','per_game_avg','per_game_stdev','per_game_fano',\
         'playoffs','playoff_bye','winner','runner_up','third','earnings'] + \
@@ -1455,9 +1455,8 @@ def main():
             {'type':'3_color_scale','max_color':'#FF6347','mid_color':'#FFD700','min_color':'#3CB371'})
 
     if options.adds:
-        adds = league.possible_adds(int(options.sims),
-        focus_on=[val.strip() for val in options.pickups.split(',')] if options.pickups.lower() != 'all' else [],
-        exclude=[],limit_per=5,basaloppqbtime=options.basaloppqbtime,payouts=options.payouts)
+        adds = league.possible_adds(focus_on=[val.strip() for val in options.pickups.split(',')] \
+        if options.pickups.lower() != 'all' else [],exclude=[],limit_per=5,payouts=options.payouts)
         writer = excelAutofit(adds[['player_to_add','wins_avg','wins_stdev',\
         'points_avg','points_stdev','per_game_avg','per_game_stdev','per_game_fano',\
         'playoffs','playoff_bye','winner','runner_up','third','earnings'] + \
@@ -1472,9 +1471,8 @@ def main():
             {'type':'3_color_scale','max_color':'#FF6347','mid_color':'#FFD700','min_color':'#3CB371'})
 
     if options.drops:
-        drops = league.possible_drops(int(options.sims),
-        focus_on=[val.strip() for val in options.pickups.split(',')] if options.pickups.lower() != 'all' else [],
-        exclude=[],basaloppqbtime=options.basaloppqbtime,payouts=options.payouts)
+        drops = league.possible_drops(focus_on=[val.strip() for val in options.pickups.split(',')] \
+        if options.pickups.lower() != 'all' else [],exclude=[],payouts=options.payouts)
         writer = excelAutofit(drops[['player_to_drop','wins_avg','wins_stdev',\
         'points_avg','points_stdev','per_game_avg','per_game_stdev','per_game_fano',\
         'playoffs','playoff_bye','winner','runner_up','third','earnings'] + \
@@ -1491,9 +1489,8 @@ def main():
     if options.trades or options.given:
         if not options.trades:
             options.trades = "all"
-        trades = league.possible_trades(int(options.sims),
-        focus_on=[val.strip() for val in options.pickups.split(',')] if options.pickups.lower() != 'all' else [],
-        exclude=[],given=[],limit_per=10,basaloppqbtime=options.basaloppqbtime,payouts=options.payouts)
+        trades = league.possible_trades(focus_on=[val.strip() for val in options.pickups.split(',')] \
+        if options.pickups.lower() != 'all' else [],exclude=[],given=[],limit_per=10,payouts=options.payouts)
         writer = excelAutofit(trades[['player_to_trade_away','player_to_trade_for',\
         'their_team','my_wins_avg','my_wins_stdev','my_points_avg','my_points_stdev',\
         'my_per_game_avg','my_per_game_stdev','my_per_game_fano','my_playoffs',\
@@ -1513,7 +1510,7 @@ def main():
         {'type':'3_color_scale','min_color':'#FF6347','mid_color':'#FFD700','max_color':'#3CB371'})
     
     if options.deltas:
-        deltas = league.perGameDelta(int(options.sims),basaloppqbtime=options.basaloppqbtime,payouts=options.payouts)
+        deltas = league.perGameDelta(payouts=options.payouts)
         writer = excelAutofit(deltas,'Deltas',writer)
         writer.sheets['Deltas'].freeze_panes(0,1)
         writer.sheets['Deltas'].conditional_format('B2:' + chr(ord('A') + deltas.shape[1]) + str(deltas.shape[0] + 1),\
@@ -1526,11 +1523,11 @@ def main():
             sendEmail('Fantasy Football Projections for ' + options.name,\
             'Best of luck to you this fantasy football season!!!',options.email,\
             options.output + 'FantasyFootballProjections_{}Week{}.xlsx'\
-            .format(datetime.datetime.now().strftime('%A'),options.as_of%100))
+            .format(datetime.datetime.now().strftime('%A'),options.week))
         except:
             print("Couldn't email results, maybe no wifi...\nResults saved to " + \
             options.output + 'FantasyFootballProjections_{}Week{}.xlsx'\
-            .format(datetime.datetime.now().strftime('%A'),options.as_of%100))
+            .format(datetime.datetime.now().strftime('%A'),options.week))
 
 if __name__ == "__main__":
     main()
