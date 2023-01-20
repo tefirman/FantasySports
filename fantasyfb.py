@@ -30,7 +30,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 class League:
-    def __init__(self, name=None, season=None, week=None, roster_pcts=False, injurytries=None,
+    def __init__(self, name=None, season=None, week=None, roster_pcts=False, injurytries=10,
     num_sims=10000, earliest=None, reference_games=None, basaloppqbtime=[]):
         self.latest_season = datetime.datetime.now().year - int(datetime.datetime.now().month < 7)
         self.season = season if type(season) == int else self.latest_season
@@ -494,6 +494,7 @@ class League:
         self.stats = offense.append(defense,ignore_index=True,sort=False)
         self.stats['weeks_ago'] = (datetime.datetime.now() - pd.to_datetime(self.stats.boxscore.str[:8],infer_datetime_format=True)).dt.days/7.0
         self.get_current_team()
+        self.stats = self.stats.loc[self.stats.season*100 + self.stats.week >= start].reset_index(drop=True)
 
     def name_corrections(self):
         self.load_stats((self.season - 2)*100 + 1,self.season*100 + self.week - 1)
