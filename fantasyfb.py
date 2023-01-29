@@ -30,8 +30,36 @@ import warnings
 warnings.filterwarnings("ignore")
 
 class League:
+    """
+    _summary_
+
+    Longer class information...
+    Longer class information...
+
+    Attributes:
+        season: An integer specifying the season of interest.
+        week: An integer specifiying the week of interest.
+        FINISH THIS!!!
+
+    Methods:
+        FINISH THIS!!!
+    """
     def __init__(self, name=None, season=None, week=None, roster_pcts=False, injurytries=10,
     num_sims=10000, earliest=None, reference_games=None, basaloppqbtime=[]):
+        """
+        _summary_
+
+        Args:
+            name (_type_, optional): _description_. Defaults to None.
+            season (_type_, optional): _description_. Defaults to None.
+            week (_type_, optional): _description_. Defaults to None.
+            roster_pcts (bool, optional): _description_. Defaults to False.
+            injurytries (int, optional): _description_. Defaults to 10.
+            num_sims (int, optional): _description_. Defaults to 10000.
+            earliest (_type_, optional): _description_. Defaults to None.
+            reference_games (_type_, optional): _description_. Defaults to None.
+            basaloppqbtime (list, optional): _description_. Defaults to [].
+        """
         self.latest_season = datetime.datetime.now().year - int(datetime.datetime.now().month < 7)
         self.season = season if type(season) == int else self.latest_season
         self.load_credentials()
@@ -45,26 +73,7 @@ class League:
         self.get_yahoo_players(injurytries)
         self.get_fantasy_rosters()
         self.name_corrections()
-        if earliest:
-            self.earliest = earliest
-        else:
-            prior_list = [40, 40, 39, 39, 28, 29, 31, 32, 33, 34, 35, 25, 26, 27, 28, 29]
-            prior = prior_list[self.week - 1]
-            self.earliest = (self.season - prior//17)*100 + self.week - prior%17
-            if (self.earliest%100 == 0) | (self.earliest%100 > 50):
-                self.earliest -= 83 # Assuming 17 weeks... Need to change this soon...
-        if reference_games:
-            self.reference_games = reference_games
-        else:
-            games_list = [51, 51, 50, 50, 39, 40, 40, 41, 41, 42, 42, 34, 36, 39, 42, 44]
-            self.reference_games = games_list[self.week - 1]
-        if basaloppqbtime:
-            self.basaloppqbtime = basaloppqbtime
-        else:
-            opp_list = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.15, 0.3, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4]
-            qb_list = [0.0, 0.015, 0.03, 0.045, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.08, 0.115, 0.15, 0.185]
-            time_list = [0.004, 0.005, 0.006, 0.007, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009, 0.009]
-            self.basaloppqbtime = [1.0,opp_list[self.week - 1],qb_list[self.week - 1],time_list[self.week - 1]]
+        self.load_parameters(earliest,reference_games,basaloppqbtime)
         self.num_sims = num_sims if type(num_sims) == int else 10000
         self.get_rates()
         self.war_sim()
@@ -511,6 +520,29 @@ class League:
         not_found = ~self.players.name.isin(self.stats.name.unique()) & ~self.players.fantasy_team.isnull()
         if self.players.loc[not_found].shape[0] > 0:
             print('Need to reconcile player names... ' + ', '.join(self.players.loc[not_found,'name']))
+
+    def load_parameters(self,earliest=None,reference_games=None,basaloppqbtime=[]):
+        try:
+            params = pd.read_csv("https://raw.githubusercontent.com/" + \
+            "tefirman/FantasySports/main/res/football/weighting_factors.csv")
+        except:
+            params = [player.split(',') for player in requests.get("https://raw.githubusercontent.com/" + \
+            "tefirman/FantasySports/main/res/football/weighting_factors.csv",verify=False).text.split('\r')]
+        if earliest:
+            self.earliest = earliest
+        else:
+            prior = params.loc[params.week == self.week,'prior'].values[0]
+            self.earliest = (self.season - prior//17)*100 + self.week - prior%17
+            if (self.earliest%100 == 0) | (self.earliest%100 > 50):
+                self.earliest -= 83 # Assuming 17 weeks... Need to change this soon...
+        if reference_games:
+            self.reference_games = reference_games
+        else:
+            self.reference_games = params.loc[params.week == self.week,'games'].values[0]
+        if basaloppqbtime:
+            self.basaloppqbtime = basaloppqbtime
+        else:
+            self.basaloppqbtime = [1.0] + list(params.loc[params.week == 11,['opp_elo','qb_elo','time_factor']].values[0])
 
     def add_injuries(self):
         as_of = self.season*100 + self.week
