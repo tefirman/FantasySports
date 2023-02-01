@@ -31,34 +31,43 @@ warnings.filterwarnings("ignore")
 
 class League:
     """
-    _summary_
-
-    Longer class information...
-    Longer class information...
+    League class that gathers all relevant settings and statistics 
+    to simulate and assess the fantasy league in question.
 
     Attributes:
-        season: An integer specifying the season of interest.
-        week: An integer specifiying the week of interest.
-        FINISH THIS!!!
-
-    Methods:
-        FINISH THIS!!!
+        season: integer specifying the season of interest.
+        week: integer specifiying the week of interest.
+        oauth: yahoo_oauth object contain user credentials and auth tokens
+        lg: yahoo_fantasy_api league object used to connect to Yahoo's API
+        gm: yahoo_fantasy_api game object used to connect to Yahoo's API
+        name: string specifying the name of the fantasy to be analyzed
+        settings: dictionary containing the scheduling and roster settings for the league in question
+        scoring: dictionary containing the scoring categories and values for the league in question
+        teams: list of dictionaries containing identifiers for each fantasy team in the league
+        nfl_teams: dataframe containing different identifiers for each NFL team
+        nfl_schedule: dataframe containing NFL schedules throughout the years with elo statistics for both teams
+        players: dataframe containing demographics and rates for current NFL players
+        num_sims: integer specifying the number of Monte Carlo simulations to run
+        earliest: integer describing the earliest week to pull statistics from (YYYYWW)
+        reference_games: integer describing the number of games to use as a prior for rates
+        basaloppqbtime: list of the four weighting factors when calculating rates
+        schedule: dataframe containing the fantasy schedule for the league and season in question
     """
     def __init__(self, name=None, season=None, week=None, roster_pcts=False, injurytries=10,
     num_sims=10000, earliest=None, reference_games=None, basaloppqbtime=[]):
         """
-        _summary_
+        Initializes a League object using the parameters provided and class functions defined below.
 
         Args:
-            name (_type_, optional): _description_. Defaults to None.
-            season (_type_, optional): _description_. Defaults to None.
-            week (_type_, optional): _description_. Defaults to None.
-            roster_pcts (bool, optional): _description_. Defaults to False.
-            injurytries (int, optional): _description_. Defaults to 10.
-            num_sims (int, optional): _description_. Defaults to 10000.
-            earliest (_type_, optional): _description_. Defaults to None.
-            reference_games (_type_, optional): _description_. Defaults to None.
-            basaloppqbtime (list, optional): _description_. Defaults to [].
+            name (str, optional): string describing the name of the fantasy team in question, defaults to None.
+            season (int, optional): integer specifying the season of interest, defaults to None.
+            week (int, optional): integer specifiying the week of interest, defaults to None.
+            roster_pcts (bool, optional): boolean that triggers whether to pull roster percentages, defaults to False.
+            injurytries (int, optional): integer specifying the number of attempts to pull injury statuses, defaults to 10.
+            num_sims (int, optional): integer specifying the number of Monte Carlo simulations to run, defaults to 10000.
+            earliest (int, optional): integer describing the earliest week to pull statistics from (YYYYWW), defaults to None.
+            reference_games (int, optional): integer describing the number of games to use as a prior for rates, defaults to None.
+            basaloppqbtime (list, optional): list of the four weighting factors when calculating rates, defaults to an empty list.
         """
         self.latest_season = datetime.datetime.now().year - int(datetime.datetime.now().month < 7)
         self.season = season if type(season) == int else self.latest_season
