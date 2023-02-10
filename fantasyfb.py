@@ -1424,7 +1424,7 @@ def main():
     fantasy_schedule = get_schedule(int(options.as_of))
     schedule_sim, standings_sim = season_sims(rosters,fantasy_schedule,int(options.sims),\
     True,int(options.as_of),basaloppqbtime=options.basaloppqbtime,payouts=options.payouts)
-    print(schedule_sim.loc[schedule_sim.week == lg.current_week(),\
+    print(schedule_sim.loc[schedule_sim.week == int(options.as_of)%100,\
     ['week','team_1','team_2','win_1','win_2','points_avg_1','points_avg_2']].to_string(index=False))
     print(standings_sim[['team','wins_avg','points_avg','playoffs','playoff_bye','winner','earnings'] + \
     (['many_mile'] if options.name == 'The Algorithm' else [])].to_string(index=False))
