@@ -656,7 +656,7 @@ class League:
 
     def get_games_sportsref(self, start: int, finish: int):
         """
-        Pulls a dataframe containing player statistics for every game in the specified timeframe.
+        Pulls individual player statistics for each game in the specified timeframe from Pro Football Reference.
 
         Args:
             start (int): year and date of the first week of interest (YYYYWW, e.g. 202102 = week 2 of 2021).
@@ -751,6 +751,12 @@ class League:
         return names
 
     def get_rosters_sportsref(self):
+        """
+        Pulls roster list for every NFL team during the season in question from Pro Football Reference.
+
+        Returns:
+            pd.DataFrame: dataframe describing which team is player was on during the season in question.
+        """
         rosters = pd.DataFrame(columns=["raw", "real_abbrev"])
         for team in self.nfl_teams.real_abbrev.unique():
             response = requests.get(
@@ -814,6 +820,16 @@ class League:
         return rosters
 
     def get_stats_sportsref(self, start: int, finish: int):
+        """
+        Pulls a dataframe containing event rates based on per-game statistics during the specified timeframe.
+
+        Args:
+            start (int): year and date of the first week of interest (YYYYWW, e.g. 202102 = week 2 of 2021).
+            finish (int): year and date of the last week of interest (YYYYWW, e.g. 202307 = week 7 of 2023)).
+
+        Returns:
+            pd.DataFrame: dataframe containing player rates based on games during the timespan of interest.
+        """
         stats = self.get_games_sportsref(start, finish)
         names = self.get_names_sportsref()
         stats = pd.merge(left=stats, right=names, how="left", on="player_id")
