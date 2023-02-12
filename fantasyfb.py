@@ -659,8 +659,8 @@ class League:
         Pulls individual player statistics for each game in the specified timeframe from Pro Football Reference.
 
         Args:
-            start (int): year and date of the first week of interest (YYYYWW, e.g. 202102 = week 2 of 2021).
-            finish (int): year and date of the last week of interest (YYYYWW, e.g. 202307 = week 7 of 2023)).
+            start (int): year and number of the first week of interest (YYYYWW, e.g. 202102 = week 2 of 2021).
+            finish (int): year and number of the last week of interest (YYYYWW, e.g. 202307 = week 7 of 2023)).
         
         Returns:
             pd.DataFrame: dataframe containing player statistics for games during the timespan of interest.
@@ -824,8 +824,8 @@ class League:
         Pulls a dataframe containing event rates based on per-game statistics during the specified timeframe.
 
         Args:
-            start (int): year and date of the first week of interest (YYYYWW, e.g. 202102 = week 2 of 2021).
-            finish (int): year and date of the last week of interest (YYYYWW, e.g. 202307 = week 7 of 2023)).
+            start (int): year and number of the first week of interest (YYYYWW, e.g. 202102 = week 2 of 2021).
+            finish (int): year and number of the last week of interest (YYYYWW, e.g. 202307 = week 7 of 2023).
 
         Returns:
             pd.DataFrame: dataframe containing player rates based on games during the timespan of interest.
@@ -881,6 +881,9 @@ class League:
         return stats
 
     def get_current_team(self):
+        """
+        Derives the current team of every player based on the season and week in question.
+        """
         as_of = self.season * 100 + self.week
         if (self.stats.season * 100 + self.stats.week).max() >= as_of:
             teams_as_of = (
@@ -914,6 +917,15 @@ class League:
         )
 
     def load_stats(self, start, finish):
+        """
+        Loads individual player statistics for each game in the specified timeframe 
+        and calculates fantasy points based on league settings. Initially looks for 
+        pre-pulled statistics saved locally and pulls new stats when necessary.
+
+        Args:
+            start (int): year and number of the first week of interest (YYYYWW, e.g. 202102 = week 2 of 2021).
+            finish (int): year and number of the last week of interest (YYYYWW, e.g. 202307 = week 7 of 2023).
+        """
         if os.path.exists("GameByGameFantasyFootballStats.csv"):
             tot = pd.read_csv("GameByGameFantasyFootballStats.csv", low_memory=False)
             if (tot.season * 100 + tot.week).min() > start:
@@ -991,6 +1003,9 @@ class League:
         ].reset_index(drop=True)
 
     def name_corrections(self):
+        """
+        Applies name corrections between Pro Football Reference and Yahoo.
+        """
         self.load_stats((self.season - 2) * 100 + 1, self.season * 100 + self.week - 1)
         try:
             corrections = pd.read_csv(
@@ -1023,6 +1038,16 @@ class League:
             )
 
     def load_parameters(self, earliest=None, reference_games=None, basaloppqbtime=[]):
+        """
+        Initializes rate adjustment parameters for future season simulations. 
+        If parameters are not manually, optimal values are chosen based on 
+        maximum likelihood fitting over five years.
+
+        Args:
+            earliest (int, optional): year and number of the earliest week to be included in the prior for rate calculation, defaults to None.
+            reference_games (int, optional): number of games to include the prior for rate calculation, defaults to None.
+            basaloppqbtime (list, optional): list containing the basal factor, opponent elo factor, and QB elo factor, defaults to [].
+        """
         try:
             params = pd.read_csv(
                 "https://raw.githubusercontent.com/"
@@ -1061,6 +1086,10 @@ class League:
             )
 
     def add_injuries(self):
+        """
+        Adds manual projections for injury timespans. If a new injury pops up 
+        and no projection has been provided yet, timespan defaults to one week.
+        """
         as_of = self.season * 100 + self.week
         if "until" in self.players.columns:
             del self.players["until"]
@@ -1159,6 +1188,9 @@ class League:
             del self.players["until_orig"]
 
     def add_bye_weeks(self):
+        """
+        Derives bye weeks based on the current NFL schedule and merges them to the players dataframe.
+        """
         byes = pd.DataFrame(columns=["current_team", "bye_week"])
         for team in self.nfl_schedule.abbrev.unique():
             bye_week = 1
@@ -1176,6 +1208,12 @@ class League:
         )
 
     def add_roster_pcts(self, inc=25):
+        """
+        Pulls the percentage of leagues each player is rostered in and merges it into the players dataframe.
+
+        Args:
+            inc (int, optional): number of players to pull per API call, defaults to 25.
+        """
         self.refresh_oauth()
         roster_pcts = pd.DataFrame()
         for ind in range(self.players.shape[0] // inc + 1):
@@ -1236,6 +1274,10 @@ class League:
         self.players.pct_rostered = self.players.pct_rostered.fillna(0.0)
 
     def get_rates(self):
+        """
+        Calculates the average and standard deviation of fantasy points for each player 
+        based on the specified prior and normalizing with respect to the provided weighting factors.
+        """
         as_of = self.season * 100 + self.week
         self.load_stats(self.earliest, as_of - 1)
         norm_schedule = pd.merge(
@@ -1417,6 +1459,10 @@ class League:
         self.players = by_player
 
     def get_schedule(self):
+        """
+        Pulls the fantasy schedule for the season in question as well as 
+        scores for all matchups up to the week in question.
+        """
         as_of = self.season * 100 + self.week
         self.refresh_oauth()
         schedule = pd.DataFrame()
@@ -1430,9 +1476,8 @@ class League:
             for week in range(1, limit):
                 while True:
                     try:
-                        matchup = tm.yhandler.get_matchup_raw(tm.team_key, week)[
-                            "fantasy_content"
-                        ]["team"][1]["matchups"]
+                        matchup = tm.yhandler.get_matchup_raw(tm.team_key, week)
+                        matchup = matchup["fantasy_content"]["team"][1]["matchups"]
                         break
                     except:
                         print(
