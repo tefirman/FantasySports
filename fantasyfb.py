@@ -1582,6 +1582,13 @@ class League:
         self.schedule = schedule
 
     def starters(self, week):
+        """
+        Identifies which players should be started on each fantasy team 
+        based on fantasy point projections and available roster spots.
+
+        Args:
+            week (int, optional): week for which to identify starters.
+        """
         as_of = self.season * 100 + self.week
         self.refresh_oauth()
         self.players = pd.merge(
@@ -1733,6 +1740,20 @@ class League:
     def season_sims(
         self, verbose=False, postseason=True, payouts=[800, 300, 100], fixed_winner=None
     ):
+        """
+        Simulates the remainder of the fantasy season based on current rosters 
+        using Monte Carlo simulations.
+
+        Args:
+            verbose (bool, optional): whether to print status updates throughout the simulation, defaults to False.
+            postseason (bool, optional): whether to simulate the postseason in addition to the regular season, defaults to True.
+            payouts (list, optional): list of prize amounts for first, second, and third, defaults to [800, 300, 100].
+            fixed_winner (list, optional): list containing the week and team name of a fixed winner, defaults to None.
+
+        Returns:
+            schedule (pd.DataFrame): _description_
+            standings (pd.DataFrame): _description_
+        """
         as_of = self.season * 100 + self.week
         self.refresh_oauth()
         self.players["points_var"] = self.players.points_stdev**2
