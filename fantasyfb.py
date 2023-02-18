@@ -1751,8 +1751,8 @@ class League:
             fixed_winner (list, optional): list containing the week and team name of a fixed winner, defaults to None.
 
         Returns:
-            schedule (pd.DataFrame): _description_
-            standings (pd.DataFrame): _description_
+            schedule (pd.DataFrame): simulated results for each matchup throughout the season in question
+            standings (pd.DataFrame): simulated results for the final season standings and playoff projections
         """
         as_of = self.season * 100 + self.week
         self.refresh_oauth()
@@ -2345,6 +2345,11 @@ class League:
         return schedule, standings
 
     def war_sim(self):
+        """
+        Simulates the wins-above-replacement (WAR) for each of the players eligible to roster, 
+        i.e. how many more wins in a season you would have by rostering that player 
+        compared to an average player at that position.
+        """
         as_of = self.season * 100 + self.week
         self.load_stats(as_of - 100, as_of - 1)
         """ Creating histograms across all players in each position """
@@ -2447,6 +2452,22 @@ class League:
         verbose=True,
         payouts=[800, 300, 100],
     ):
+        """
+        Simulates the remainder of the season with the current roster and compares it to 
+        a simulation of the roster after a series of potential add & drop transactions.
+
+        Args:
+            focus_on (list, optional): list of players to include in every potential trade, defaults to [].
+            exclude (list, optional): list of players to exclude from every potential trade, defaults to [].
+            limit_per (int, optional): number of players per position to analyze, defaults to 10.
+            team_name (str, optional): name of team to analyze trades for, defaults to None (and therefore team of interest).
+            postseason (bool, optional): whether to analyze postseason gains or just regular season, defaults to True.
+            verbose (bool, optional): whether to print out a status report as the code runs, defaults to True.
+            payouts (list, optional): list of payout amounts for top three finishers, defaults to [800, 300, 100].
+
+        Returns:
+            pd.DataFrame: dataframe containing the impact and value of every add & drop combination analyzed.
+        """
         as_of = self.season * 100 + self.week
         self.refresh_oauth()
         orig_standings = self.season_sims(False, postseason, payouts)[1]
@@ -2587,6 +2608,22 @@ class League:
         verbose=True,
         payouts=[800, 300, 100],
     ):
+        """
+        Simulates the remainder of the season with the current roster and compares it to 
+        a simulation of the roster after a series of potential add transactions.
+
+        Args:
+            focus_on (list, optional): list of players to include in every potential trade, defaults to [].
+            exclude (list, optional): list of players to exclude from every potential trade, defaults to [].
+            limit_per (int, optional): number of players per position to analyze, defaults to 10.
+            team_name (str, optional): name of team to analyze trades for, defaults to None (and therefore team of interest).
+            postseason (bool, optional): whether to analyze postseason gains or just regular season, defaults to True.
+            verbose (bool, optional): whether to print out a status report as the code runs, defaults to True.
+            payouts (list, optional): list of payout amounts for top three finishers, defaults to [800, 300, 100].
+
+        Returns:
+            pd.DataFrame: dataframe containing the impact and value of every possible add analyzed.
+        """
         as_of = self.season * 100 + self.week
         self.refresh_oauth()
         orig_standings = self.season_sims(False, postseason, payouts)[1]
@@ -2691,6 +2728,21 @@ class League:
         verbose=True,
         payouts=[800, 300, 100],
     ):
+        """
+        Simulates the remainder of the season with the current roster and compares it to 
+        a simulation of the roster after a series of potential drop transactions.
+
+        Args:
+            focus_on (list, optional): list of players to include in every potential trade, defaults to [].
+            exclude (list, optional): list of players to exclude from every potential trade, defaults to [].
+            team_name (str, optional): name of team to analyze trades for, defaults to None (and therefore team of interest).
+            postseason (bool, optional): whether to analyze postseason gains or just regular season, defaults to True.
+            verbose (bool, optional): whether to print out a status report as the code runs, defaults to True.
+            payouts (list, optional): list of payout amounts for top three finishers, defaults to [800, 300, 100].
+
+        Returns:
+            pd.DataFrame: dataframe containing the impact and value of every possible drop analyzed.
+        """
         self.refresh_oauth()
         orig_standings = self.season_sims(False, postseason, payouts)[1]
         reduced_value = pd.DataFrame(
@@ -2784,6 +2836,23 @@ class League:
         verbose=True,
         payouts=[800, 300, 100],
     ):
+        """
+        Simulates the remainder of the season with the current roster and compares it to 
+        a simulation of the roster after a series of potential trade transactions.
+
+        Args:
+            focus_on (list, optional): list of players to include in every potential trade, defaults to [].
+            exclude (list, optional): list of players to exclude from every potential trade, defaults to [].
+            given (list, optional): list of players to include in the trade in the background, defaults to [].
+            limit_per (int, optional): number of players per position to analyze, defaults to 10.
+            team_name (str, optional): name of team to analyze trades for, defaults to None (and therefore team of interest).
+            postseason (bool, optional): whether to analyze postseason gains or just regular season, defaults to True.
+            verbose (bool, optional): whether to print out a status report as the code runs, defaults to True.
+            payouts (list, optional): list of payout amounts for top three finishers, defaults to [800, 300, 100].
+
+        Returns:
+            pd.DataFrame: dataframe containing the impact and value of every possible trade analyzed.
+        """
         self.refresh_oauth()
         if not team_name:
             team_name = [
@@ -2809,7 +2878,7 @@ class League:
             their_players = their_players.loc[~their_players.name.isin(exclude)]
         orig_standings = self.season_sims(False, postseason, payouts)[1]
 
-        """ Make sure there are two teams and narrow down to that team!!! """
+        # Make sure there are two teams and narrow down to that team!!!
         given_check = (
             type(given) == list
             and my_players.name.isin(given).any()
@@ -2835,7 +2904,7 @@ class League:
             ]
             my_players["WAR"] = 0.0
             their_players["WAR"] = 0.0
-        """ Make sure there are two teams and narrow down to that teams!!! """
+        # Make sure there are two teams and narrow down to that teams!!!
 
         my_added_value = pd.DataFrame()
         their_added_value = pd.DataFrame()
@@ -2989,6 +3058,18 @@ class League:
         return added_value
 
     def perGameDelta(self, team_name=None, postseason=True, payouts=[800, 300, 100]):
+        """
+        Simulates the remainder of the season and compares it to a simulation 
+        of the season given one team winning or losing each matchup.
+
+        Args:
+            team_name (str, optional): name of team to analyze matchup values for, defaults to None (and therefore team of interest).
+            postseason (bool, optional): whether to analyze postseason gains or just regular season, defaults to True.
+            payouts (list, optional): list of payout amounts for top three finishers, defaults to [800, 300, 100].
+
+        Returns:
+            pd.DataFrame: dataframe containing the impact and value of every matchup during the week of interest.
+        """
         as_of = self.season * 100 + self.week
         self.refresh_oauth()
         if not team_name:
@@ -3013,6 +3094,18 @@ class League:
 
 
 def excelAutofit(df, name, writer):
+    """
+    Writes the provided dataframe to a new tab in an excel spreadsheet 
+    with the columns autofitted and autoformatted.
+
+    Args:
+        df (pd.DataFrame): dataframe to print to the excel spreadsheet.
+        name (str): name of the new tab to be added.
+        writer (pd.ExcelWriter): ExcelWriter object representing the excel spreadsheet.
+
+    Returns:
+        pd.ExcelWriter: same excel spreadsheet provided originally with the new tab added.
+    """
     f = writer.book.add_format()
     f.set_align("center")
     f.set_align("vcenter")
@@ -3056,6 +3149,15 @@ def excelAutofit(df, name, writer):
 
 
 def sendEmail(subject, body, address, filename=None):
+    """
+    Sends an email to the address provided with whichever subject, body, and attachements desired.
+
+    Args:
+        subject (str): subject line of the email to be sent.
+        body (str): body text of the email to be sent.
+        address (str): email address to send the message to.
+        filename (str, optional): location of a file to be attached to the email, defaults to None.
+    """
     message = MIMEMultipart()
     message["From"] = os.environ["EMAIL_SENDER"]
     message["To"] = address
