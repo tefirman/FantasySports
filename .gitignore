@@ -1,4 +1,6 @@
 GameByGameFantasyFootballStats.csv
+GameByGameFantasyBaseballBattingStats.csv
+GameByGameFantasyBaseballPitchingStats.csv
 .env
-oauth.json
+oauth2.json
 
