@@ -1,6 +1,6 @@
 name: fantasy
 dependencies:
-  - python=3.7
+  - python=3.10
   - numpy
   - pandas
   - pip
@@ -9,4 +9,5 @@ dependencies:
     - yahoo_fantasy_api
     - python-dotenv
     - XlsxWriter
+    - beautifulsoup4
     - "-e git+https://github.com/tefirman/sportsipy.git#egg=sportsipy"
