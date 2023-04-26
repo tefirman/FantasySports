@@ -10,4 +10,5 @@ dependencies:
     - python-dotenv
     - XlsxWriter
     - beautifulsoup4
+    - Unidecode
     - "-e git+https://github.com/tefirman/sportsipy.git#egg=sportsipy"
