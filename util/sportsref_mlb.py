@@ -151,8 +151,9 @@ def get_boxscore(game_id: str):
     deets = deets.fillna(0.0).groupby('player_id').sum(numeric_only=True).reset_index()
     batting = pd.merge(left=batting,right=deets,how='left',on='player_id')
     batting = batting.fillna(0.0)
-    batting.player = batting.player.str.split(' ').str[:-1].apply(' '.join)
+    batting.player = batting.player.str.split(' ').str[:-1].apply(' '.join).str.strip()
     batting['date'] = date
+    batting['game_id'] = game_id
     pitching = pd.concat([parse_table(raw_text,away.replace(' ','').replace('.','') + 'pitching'),
                           parse_table(raw_text,home.replace(' ','').replace('.','') + 'pitching')])
     pitching = pitching.loc[~pitching.player.isin(['Team Totals'])]
@@ -166,6 +167,7 @@ def get_boxscore(game_id: str):
     pitching = pitching.fillna(0.0)
     pitching.player = pitching.player.str.split(', ').str[0]
     pitching['date'] = date
+    pitching['game_id'] = game_id
     return batting, pitching
 
 
