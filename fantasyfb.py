@@ -660,7 +660,7 @@ class League:
 
         Args:
             start (int): year and number of the first week of interest (YYYYWW, e.g. 202102 = week 2 of 2021).
-            finish (int): year and number of the last week of interest (YYYYWW, e.g. 202307 = week 7 of 2023)).
+            finish (int): year and number of the last week of interest (YYYYWW, e.g. 202307 = week 7 of 2023).
         
         Returns:
             pd.DataFrame: dataframe containing player statistics for games during the timespan of interest.
