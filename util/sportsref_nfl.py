@@ -113,6 +113,7 @@ def get_boxscore(game_id: str):
     game_stats = game_stats.fillna(0.0).groupby(['player','player_id','team']).sum().reset_index()
     game_stats['season'] = season
     game_stats['week'] = week
+    game_stats['game_id'] = game_id
     starters = pd.concat([parse_table(raw_text,'home_starters'),
                           parse_table(raw_text,'vis_starters')])
     snaps = pd.concat([parse_table(raw_text,'home_snap_counts'),
