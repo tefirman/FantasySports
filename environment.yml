@@ -3,6 +3,7 @@ dependencies:
   - python=3.10
   - numpy
   - pandas
+  - wget
   - pip
   - pip:
     - yahoo_oauth
