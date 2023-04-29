@@ -16,11 +16,27 @@ from math import factorial
 import optparse
 
 
-def n_choose_k(n, k):
+def n_choose_k(n: int, k: int) -> float:
+    """
+    Generates the number of possible combinations for choosing k items from a unique list of n.
+
+    Args:
+        n (int): number of things to choose from.
+        k (int): number of things to choose.
+
+    Returns:
+        float: number of possible combinations.
+    """
     return factorial(n) / (factorial(n - k) * factorial(k))
 
 
-def pull_elo_rankings():
+def pull_elo_rankings() -> pd.DataFrame:
+    """
+    Pull the latest men's and women's elo rankings from "Tennis Abstract" and formats them into a dataframe.
+
+    Returns:
+        pd.DataFrame: dataframe containing details and rankings for each of the top ~800 players.
+    """
     elo = pd.DataFrame()
     for tour in ["atp", "wta"]:
         os.system(
@@ -58,7 +74,17 @@ def pull_elo_rankings():
     return elo
 
 
-def load_elos(elo_loc="TennisElo.csv"):
+def load_elos(elo_loc: str = "TennisElo.csv") -> pd.DataFrame:
+    """
+    Loads the specified elo rankings csv, but if it doesn't exist or isn't recent,
+    downloads the latest version from "Tennis Abstract".
+
+    Args:
+        elo_loc (str, optional): location of your preferred elo csv. Defaults to "TennisElo.csv".
+
+    Returns:
+        pd.DataFrame: dataframe containing the latest details and rankings for each of the top ~800 players.
+    """
     if os.path.exists(elo_loc):
         elo = pd.read_csv(elo_loc)
         elo.Updated = pd.to_datetime(elo.Updated, infer_datetime_format=True)
@@ -79,7 +105,18 @@ def load_elos(elo_loc="TennisElo.csv"):
     return elo
 
 
-def add_match_details(elo, salary_loc="DKSalaries.csv", court_type="h"):
+def add_match_details(elo: pd.DataFrame, salary_loc: str = "DKSalaries.csv", court_type: str = "h") -> pd.DataFrame:
+    """
+    Merges in opponents and DFS salaries to elo rankings and extrapolates match & game win probabilities.
+
+    Args:
+        elo (pd.DataFrame): dataframe containing the latest details and rankings for each of the top ~800 players.
+        salary_loc (str, optional): location of the current DFS salaries. Defaults to "DKSalaries.csv".
+        court_type (str, optional): court surface type for the current contests ("h"ard, "c"lay, "g"rass). Defaults to "h".
+
+    Returns:
+        pd.DataFrame: updated dataframe containing matchup details for each player in the current slate.
+    """
     salaries = pd.read_csv(salary_loc)
     missing = salaries.loc[~salaries.Name.isin(elo.Player.tolist()), "Name"].tolist()
     if len(missing) > 0:
@@ -485,7 +522,7 @@ def excel_autofit(df, name, writer):
 
 def write_to_spreadsheet(teams, output=""):
     writer = pd.ExcelWriter(
-        output + "DFS_Tennis_{}.xlsx".format(datetime.datetime.now().strftime("%b%d")),
+        output + "DFS_Tennis_{}.xlsx".format(datetime.datetime.now().strftime("%m%d%y")),
         engine="xlsxwriter",
     )
     writer.book.add_format({"align": "vcenter"})
@@ -561,10 +598,17 @@ def main():
         "--output",
         action="store",
         dest="output",
-        default="",
+        default=os.path.expanduser("~/Documents/"),
         help="where to save the final projections spreadsheet",
     )
     options, args = parser.parse_args()
+    if not options.output.endswith('/'):
+        options.output += '/'
+    if not os.path.exists(options.output + 'DFS'):
+        os.mkdir(options.output + 'DFS')
+    if not os.path.exists(options.output + 'DFS/Tennis'):
+        os.mkdir(options.output + 'DFS/Tennis')
+    options.output += 'DFS/Tennis/'
 
     elo = load_elos(options.elos)
     matchups = add_match_details(elo, options.salaries, options.court[0])
