@@ -10,6 +10,8 @@ dependencies:
     - yahoo_fantasy_api
     - python-dotenv
     - XlsxWriter
+    - geopy
+    - matplotlib
     - beautifulsoup4
     - Unidecode
     - black
