@@ -71,6 +71,7 @@ def pull_elo_rankings() -> pd.DataFrame:
         if elo[col].str.replace(".", "", regex=False).str.isnumeric().all():
             elo[col] = elo[col].astype(float)
     elo.Updated = pd.to_datetime(elo.Updated, infer_datetime_format=True)
+    elo.Player = elo.Player.str.replace('\xa0',' ')
     return elo
 
 
