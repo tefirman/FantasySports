@@ -12,7 +12,7 @@
 import requests
 from bs4 import BeautifulSoup
 import time
-import sys
+import numpy as np
 import pandas as pd
 from geopy.distance import geodesic
 from geopy.geocoders import Nominatim
@@ -257,7 +257,7 @@ class Schedule:
         schedule: dataframe containing matchup details for the seasons of interest.
     """
 
-    def __init__(self, start: int, finish: int, playoffs: bool = True, locations: bool = False):
+    def __init__(self, start: int, finish: int, playoffs: bool = True, elo: bool = False):
         """
         Initializes a Schedule object using the parameters provided and class functions defined below.
 
@@ -265,17 +265,22 @@ class Schedule:
             start (int): first NFL season of interest
             finish (int): last NFL season of interest
             playoffs (bool, optional): whether to include playoff games, defaults to True.
-            locations (bool, optional): whether to include game locations, defaults to False.
+            elo (bool, optional): whether to include elo rating considerations, defaults to False.
         """
         self.get_schedules(start, finish, playoffs)
         self.add_weeks()
         self.convert_to_home_away()
         self.mark_intl_games()
         self.add_rest()
-        if locations:
+        if elo:
             self.add_team_coords()
             self.add_game_coords()
             self.add_travel()
+            self.add_elo_columns()
+            while self.schedule.elo1_pre.isnull().any():
+                self.next_init_elo()
+                self.next_elo_prob()
+                self.next_elo_delta()
 
     def get_schedules(self, start: int, finish: int, playoffs: bool = True):
         self.schedule = pd.DataFrame(columns=["season"])
@@ -414,6 +419,64 @@ class Schedule:
             ] = True
         self.schedule.rested1 = self.schedule.rested1.fillna(False)
         self.schedule.rested2 = self.schedule.rested2.fillna(False)
+    
+    def add_elo_columns(self):
+        self.schedule[['elo1_pre','elo2_pre','elo1_post','elo2_post','elo_diff',\
+        'point_spread','elo_prob1','elo_prob2','score_diff','forecast_delta',\
+        'mov_multiplier','elo_delta']] = None
+
+    def next_init_elo(self, init_elo=1300, regress_pct=0.333):
+        ind = self.schedule.loc[self.schedule.elo1_pre.isnull()].index[0]
+        for team_num in ['1','2']:
+            team = self.schedule.loc[ind,'team{}_abbrev'.format(team_num)]
+            prev = self.schedule.iloc[:ind].copy()
+            prev = prev.loc[(prev.team1_abbrev == team) | (prev.team2_abbrev == team)]
+            if prev.shape[0] > 0:
+                # Team already exists
+                prev = prev.iloc[-1]
+                prev_num = 1 if prev['team1_abbrev'] == team else 2
+                if not pd.isnull(prev['elo{}_post'.format(prev_num)]):
+                    self.schedule.loc[ind,'elo{}_pre'.format(team_num)] = prev['elo{}_post'.format(prev_num)]
+                    if prev['season'] == self.schedule.loc[ind,'season'] - 1:
+                        # Start of a new season
+                        self.schedule.loc[ind,'elo{}_pre'.format(team_num)] += (1505 - prev['elo{}_post'.format(prev_num)])*regress_pct
+                    elif prev['season'] < self.schedule.loc[ind,'season'] - 1:
+                        # Resurrected teams (e.g. 1999 Cleveland Browns)
+                        self.schedule.loc[ind,'elo{}_pre'.format(team_num)] = init_elo
+                else:
+                    # Game hasn't been played yet...
+                    self.schedule.loc[ind,'elo{}_pre'.format(team_num)] = prev['elo{}_pre'.format(prev_num)]
+            else:
+                # New Team
+                self.schedule.loc[ind,'elo{}_pre'.format(team_num)] = init_elo
+    
+    def next_elo_prob(self, homefield=48, travel=0.004, rested=25, playoffs=1.2, elo2points=0.04):
+        ind = self.schedule.loc[self.schedule.elo_prob1.isnull()].index[0]
+        self.schedule.loc[ind,'elo_diff'] = self.schedule.loc[ind,'elo1_pre'] - self.schedule.loc[ind,'elo2_pre']
+        self.schedule.loc[ind,'elo_diff'] += homefield # Homefield advantage
+        self.schedule.loc[ind,'elo_diff'] += travel*(self.schedule.loc[ind,'travel2'] - self.schedule.loc[ind,'travel1']) # Travel
+        if self.schedule.loc[ind,'rested1']:
+            self.schedule.loc[ind,'elo_diff'] += rested # Bye week
+        if self.schedule.loc[ind,'rested2']:
+            self.schedule.loc[ind,'elo_diff'] -= rested # Bye week
+        if not self.schedule.loc[ind,'week_num'].isnumeric():
+            self.schedule.loc[ind,'elo_diff'] *= playoffs # Playoffs
+        self.schedule.loc[ind,'point_spread'] = self.schedule.loc[ind,'elo_diff']*elo2points
+        self.schedule.loc[ind,'elo_prob1'] = 1/(10**(self.schedule.loc[ind,'elo_diff']/-400) + 1)
+        self.schedule.loc[ind,'elo_prob2'] = 1 - self.schedule.loc[ind,'elo_prob1']
+    
+    def next_elo_delta(self, k_factor=20):
+        ind = self.schedule.loc[~self.schedule.elo_prob1.isnull() & self.schedule.elo_delta.isnull()].index[-1]
+        if not pd.isnull(self.schedule.loc[ind,'score1']):
+            self.schedule.loc[ind,'score_diff'] = self.schedule.loc[ind,'score1'] - self.schedule.loc[ind,'score2']
+            self.schedule.loc[ind,'forecast_delta'] = float(self.schedule.loc[ind,'score_diff'] > 0) + \
+            0.5*float(self.schedule.loc[ind,'score_diff'] == 0) - self.schedule.loc[ind,'elo_prob1']
+            self.schedule.loc[ind,'mov_multiplier'] = np.log(abs(self.schedule.loc[ind,'score_diff']) + 1)*2.2/(self.schedule.loc[ind,'elo_diff']*0.001 + 2.2)
+            if pd.isnull(self.schedule.loc[ind,'mov_multiplier']):
+                self.schedule.loc[ind,'mov_multiplier'] = 0.0
+            self.schedule.loc[ind,'elo_delta'] = self.schedule.loc[ind,'forecast_delta']*self.schedule.loc[ind,'mov_multiplier']*k_factor
+            self.schedule.loc[ind,'elo1_post'] = self.schedule.loc[ind,'elo1_pre'] + self.schedule.loc[ind,'elo_delta']
+            self.schedule.loc[ind,'elo2_post'] = self.schedule.loc[ind,'elo2_pre'] - self.schedule.loc[ind,'elo_delta']
 
 
 class Boxscore:
