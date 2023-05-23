@@ -508,6 +508,7 @@ def add_ownership(players,inc=25):
                 pct_owned = [0.0]
             ownership = pd.concat([ownership,pd.DataFrame({'player_id':player_id,\
             'full_name':full_name,'pct_owned':pct_owned})]).reset_index(drop=True)
+    ownership.full_name = ownership.full_name.apply(unidecode.unidecode)
     players = pd.merge(left=players,right=ownership,how='left',on=['player_id','full_name'])
     players.pct_owned = players.pct_owned.fillna(0.0)
     return players
