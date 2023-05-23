@@ -14,6 +14,7 @@ from bs4 import BeautifulSoup
 import time
 import numpy as np
 import pandas as pd
+import os
 from geopy.distance import geodesic
 from geopy.geocoders import Nominatim
 
@@ -488,6 +489,7 @@ class Boxscore:
         self.get_starters()
         self.get_snap_counts()
         self.add_depth_chart()
+        self.normalize_team_names()
 
     def get_raw_text(self):
         self.raw_text = get_page("boxscores/{}.htm".format(self.game_id))
@@ -567,6 +569,17 @@ class Boxscore:
             how="inner",
             on=["player", "player_id", "team"],
         )
+    
+    def normalize_team_names(self):
+        abbrevs = {'OAK':'RAI','LVR':'RAI','LAC':'SDG','STL':'RAM','LAR':'RAM',\
+        'ARI':'CRD','IND':'CLT','BAL':'RAV','HOU':'HTX','TEN':'OTI'}
+        for team in abbrevs:
+            for val in ['team','opponent']:
+                self.game_stats.loc[self.game_stats[val] == team,val] = abbrevs[team]
+        if self.team1_abbrev in abbrevs:
+            self.team1_abbrev = abbrevs[self.team1_abbrev]
+        if self.team2_abbrev in abbrevs:
+            self.team2_abbrev = abbrevs[self.team2_abbrev]
 
 
 def get_bulk_stats(
@@ -575,6 +588,7 @@ def get_bulk_stats(
     finish_season: int,
     finish_week: int,
     playoffs: bool = True,
+    path: str = None,
 ):
     """
     Pulls individual player statistics for each game in the specified timeframe from Pro Football Reference.
@@ -585,6 +599,7 @@ def get_bulk_stats(
         finish_season (int): last season of interest.
         finish_week (int): last week of interest.
         playoffs (bool, optional): whether to include playoff games, defaults to True.
+        path(str, optional): file path where stats are/should be saved to, defaults to None.
 
     Returns:
         pd.DataFrame: dataframe containing player statistics for games during the timespan of interest.
@@ -597,14 +612,22 @@ def get_bulk_stats(
             <= finish_season * 100 + finish_week
         )
     ].reset_index(drop=True)
-    stats = pd.DataFrame(columns=["season", "week", "game_id"])
+    if path and os.path.exists(str(path)):
+        stats = pd.read_csv(path)
+    else:
+        stats = pd.DataFrame(columns=["season", "week", "game_id"])
+    new_games = (~s.schedule.boxscore_abbrev.isin(stats.game_id.unique())).any()
     for ind in range(s.schedule.shape[0]):
-        print(s.schedule.iloc[ind]["boxscore_abbrev"])
-        b = Boxscore(s.schedule.iloc[ind]["boxscore_abbrev"])
-        stats = pd.concat([stats, b.game_stats], ignore_index=True)
-        stats.season = stats.season.fillna(b.season)
-        stats.week = stats.week.fillna(b.week)
-        stats.game_id = stats.game_id.fillna(b.game_id)
+        if s.schedule.iloc[ind]["boxscore_abbrev"] not in stats.game_id.unique():
+            print(s.schedule.iloc[ind]["boxscore_abbrev"])
+            b = Boxscore(s.schedule.iloc[ind]["boxscore_abbrev"])
+            stats = pd.concat([stats, b.game_stats], ignore_index=True)
+            stats.season = stats.season.fillna(b.season)
+            stats.week = stats.week.fillna(b.week)
+            stats.game_id = stats.game_id.fillna(b.game_id)
+    if path and new_games:
+        stats.to_csv(path,index=False)
+    stats = stats.loc[stats.game_id.isin(s.schedule.boxscore_abbrev.tolist())].reset_index(drop=True)
     return stats
 
 
