@@ -637,6 +637,22 @@ def get_draft(season: int):
     return draft_order
 
 
+def get_bulk_draft_pos(start_season: int, finish_season: int, path: str = None):
+    if path and os.path.exists(str(path)):
+        draft_pos = pd.read_csv(path)
+    else:
+        draft_pos = pd.DataFrame(columns=['year'])
+    new_drafts = any([year not in draft_pos.year.unique() for year in range(start_season,finish_season + 1)])
+    for year in range(start_season,finish_season + 1):
+        if year not in draft_pos.year.unique():
+            draft_pos = pd.concat([draft_pos,get_draft(year)],ignore_index=True)
+            draft_pos.year = draft_pos.year.fillna(year)
+    if path and new_drafts:
+        draft_pos.to_csv(path,index=False)
+    draft_pos = draft_pos.loc[draft_pos.year.isin(list(range(start_season,finish_season + 1)))].reset_index(drop=True)
+    return draft_pos
+
+
 def get_names():
     """
     Pulls the player id and name for every player on Pro Football Reference for conversion purposes.
