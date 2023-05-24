@@ -469,14 +469,19 @@ def add_injuries(by_player):
     inj_proj = inj_proj.loc[inj_proj.until >= datetime.datetime.now()]
     by_player = pd.merge(left=by_player,right=inj_proj,how='left',on=['full_name','editorial_team_abbr'])
     by_player.loc[by_player.status.isin(['DTD']) & by_player.until.isnull(),'until'] = datetime.datetime.now() + datetime.timedelta(days=1)
-    newInjury = by_player.status.isin(['IL10','IL7','COVID-19','IL60','NA','SUSP']) & \
-    by_player.until.isnull() & (~by_player.fantasy_team.isnull() | (by_player.WAR >= -0.4))
+    # newInjury = by_player.status.isin(['IL15','IL10','IL7','COVID-19','IL60','NA','SUSP']) & \
+    # by_player.until.isnull() & (~by_player.fantasy_team.isnull() | (by_player.WAR >= -0.4))
+    newInjury = by_player.status.isin(['IL15','IL10','IL7','COVID-19','IL60','NA','SUSP']) & \
+    by_player.until.isnull() & (~by_player.fantasy_team.isnull() | (by_player.pct_owned >= 0.1))
     if newInjury.sum() > 0:
         print('Need to look up new injuries... ' + ', '.join(by_player.loc[newInjury,'full_name'].tolist()))
         by_player.loc[newInjury & by_player.status.isin(['IL10','IL7','COVID-19','NA']),'until'] = datetime.datetime.now() + datetime.timedelta(days=10)
+        by_player.loc[newInjury & by_player.status.isin(['IL15']),'until'] = datetime.datetime.now() + datetime.timedelta(days=20)
         by_player.loc[newInjury & by_player.status.isin(['IL60','SUSP']),'until'] = datetime.datetime.now() + datetime.timedelta(days=60)
-    oldInjury = ~by_player.status.isin(['DTD','IL10','IL7','COVID-19','IL60','NA','SUSP']) & ~by_player.until.isnull() & \
-    (~by_player.fantasy_team.isnull() | (by_player.WAR >= -0.4))
+    # oldInjury = ~by_player.status.isin(['DTD','IL15','IL10','IL7','COVID-19','IL60','NA','SUSP']) & ~by_player.until.isnull() & \
+    # (~by_player.fantasy_team.isnull() | (by_player.WAR >= -0.4))
+    oldInjury = ~by_player.status.isin(['DTD','IL15','IL10','IL7','COVID-19','IL60','NA','SUSP']) & ~by_player.until.isnull() & \
+    (~by_player.fantasy_team.isnull() | (by_player.pct_owned >= 0.1))
     if oldInjury.sum() > 0:
         print('Need to update old injuries... ' + ', '.join(by_player.loc[oldInjury,'full_name'].tolist()))
     return by_player
@@ -573,7 +578,7 @@ position=None,min_owner=0.1,limit=10,pas_per_game=4):
     return added_value
 
 def possible_adds(rosters,available,team_name,focus_on=[],exclude=[],\
-position=None,min_owner=0.20,limit=10,pas_per_game=4):
+position=None,min_owner=0.1,limit=10,pas_per_game=4):
     refresh_oauth()
     while True:
         try:
@@ -869,6 +874,11 @@ def main():
     .drop_duplicates(subset=['full_name','editorial_team_abbr','fantasy_team']).reset_index(drop=True)
     players = add_injuries(players)
     
+    # # HOTFIX FOR POTENTIAL MOVE!!!
+    # players.loc[players.full_name.isin(['Jeff McNeil']),'fantasy_team'] = None
+    # players.loc[players.full_name.isin(['Paul DeJong']),'fantasy_team'] = "This Year's The Year"
+    # # HOTFIX FOR POTENTIAL MOVE!!!
+
     """ Running season-long simulation """
     rosters = players.loc[~players.fantasy_team.isnull()].reset_index(drop=True)
     available = players.loc[players.fantasy_team.isnull()].reset_index(drop=True)
