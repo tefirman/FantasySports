@@ -258,7 +258,7 @@ class Schedule:
         schedule: dataframe containing matchup details for the seasons of interest.
     """
 
-    def __init__(self, start: int, finish: int, playoffs: bool = True, elo: bool = False):
+    def __init__(self, start: int, finish: int, playoffs: bool = True, elo: bool = False, qbelo: bool = False):
         """
         Initializes a Schedule object using the parameters provided and class functions defined below.
 
@@ -267,6 +267,7 @@ class Schedule:
             finish (int): last NFL season of interest
             playoffs (bool, optional): whether to include playoff games, defaults to True.
             elo (bool, optional): whether to include elo rating considerations, defaults to False.
+            qbelo (bool, optional): whether to include QB elo rating considerations, defaults to False.
         """
         self.get_schedules(start, finish, playoffs)
         self.add_weeks()
@@ -277,7 +278,7 @@ class Schedule:
             self.add_team_coords()
             self.add_game_coords()
             self.add_travel()
-            self.add_elo_columns()
+            self.add_elo_columns(qbelo)
             while self.schedule.elo1_pre.isnull().any():
                 self.next_init_elo()
                 self.next_elo_prob()
@@ -285,7 +286,7 @@ class Schedule:
 
     def get_schedules(self, start: int, finish: int, playoffs: bool = True):
         self.schedule = pd.DataFrame(columns=["season"])
-        for season in range(start, finish + 1):
+        for season in range(int(start), int(finish) + 1):
             raw_text = get_page("years/{}/games.htm".format(season))
             self.schedule = pd.concat(
                 [self.schedule, parse_table(raw_text, "games")], ignore_index=True
@@ -421,10 +422,21 @@ class Schedule:
         self.schedule.rested1 = self.schedule.rested1.fillna(False)
         self.schedule.rested2 = self.schedule.rested2.fillna(False)
     
-    def add_elo_columns(self):
+    def add_elo_columns(self, qbelo: bool = False):
         self.schedule[['elo1_pre','elo2_pre','elo1_post','elo2_post','elo_diff',\
         'point_spread','elo_prob1','elo_prob2','score_diff','forecast_delta',\
         'mov_multiplier','elo_delta']] = None
+        if qbelo:
+            qb_elos = get_qb_elos(self.schedule.season.min(),self.schedule.season.max())
+            for team_num in ['1','2']:
+                self.schedule = pd.merge(left=self.schedule,right=qb_elos\
+                .rename(columns={'game_id':'boxscore_abbrev','team':'team{}_abbrev'.format(team_num),\
+                'player':'qb' + team_num,'team_qbvalue_avg':'team{}_qbvalue_avg'.format(team_num),\
+                'opp_qbvalue_avg':'opp{}_qbvalue_avg'.format(team_num),\
+                'qb_value_pre':'qb{}_value_pre'.format(team_num),'qb_adj':'qb{}_adj'.format(team_num),\
+                'qb_value_post':'qb{}_value_post'.format(team_num),'VALUE':'VALUE{}'.format(team_num)}),\
+                how='inner',on=['boxscore_abbrev','team{}_abbrev'.format(team_num)])
+            # Need to pull depth charts to extrapolate future values... Probably not worth it...
 
     def next_init_elo(self, init_elo=1300, regress_pct=0.333):
         ind = self.schedule.loc[self.schedule.elo1_pre.isnull()].index[0]
@@ -450,6 +462,10 @@ class Schedule:
             else:
                 # New Team
                 self.schedule.loc[ind,'elo{}_pre'.format(team_num)] = init_elo
+            if 'qb{}_adj'.format(team_num) in self.schedule.columns:
+                self.schedule.loc[ind,'qbelo{}_pre'.format(team_num)] = \
+                self.schedule.loc[ind,'elo{}_pre'.format(team_num)] + \
+                self.schedule.loc[ind,'qb{}_adj'.format(team_num)]
     
     def next_elo_prob(self, homefield=48, travel=0.004, rested=25, playoffs=1.2, elo2points=0.04):
         ind = self.schedule.loc[self.schedule.elo_prob1.isnull()].index[0]
@@ -465,7 +481,13 @@ class Schedule:
         self.schedule.loc[ind,'point_spread'] = self.schedule.loc[ind,'elo_diff']*elo2points
         self.schedule.loc[ind,'elo_prob1'] = 1/(10**(self.schedule.loc[ind,'elo_diff']/-400) + 1)
         self.schedule.loc[ind,'elo_prob2'] = 1 - self.schedule.loc[ind,'elo_prob1']
-    
+        if 'qb1_adj' in self.schedule.columns and 'qb2_adj' in self.schedule.columns:
+            self.schedule.loc[ind,'qbelo_diff'] = self.schedule.loc[ind,'elo_diff'] + \
+            self.schedule.loc[ind,'qb1_adj'] - self.schedule.loc[ind,'qb2_adj']
+            self.schedule.loc[ind,'qbpoint_spread'] = self.schedule.loc[ind,'qbelo_diff']*elo2points
+            self.schedule.loc[ind,'qbelo_prob1'] = 1/(10**(self.schedule.loc[ind,'qbelo_diff']/-400) + 1)
+            self.schedule.loc[ind,'qbelo_prob2'] = 1 - self.schedule.loc[ind,'qbelo_prob1']
+
     def next_elo_delta(self, k_factor=20):
         ind = self.schedule.loc[~self.schedule.elo_prob1.isnull() & self.schedule.elo_delta.isnull()].index[-1]
         if not pd.isnull(self.schedule.loc[ind,'score1']):
@@ -489,6 +511,7 @@ class Boxscore:
         self.get_starters()
         self.get_snap_counts()
         self.add_depth_chart()
+        self.add_qb_value()
         self.normalize_team_names()
 
     def get_raw_text(self):
@@ -570,6 +593,15 @@ class Boxscore:
             on=["player", "player_id", "team"],
         )
     
+    def add_qb_value(self, pass_att=-2.2, pass_cmp=3.7, pass_yds=0.2, pass_td=11.3,\
+    pass_int=-14.1, pass_sacked=-8.0, rush_att=-1.1, rush_yds=0.6, rush_td=15.9):
+        qbs = self.game_stats.pos == 'QB'
+        self.game_stats.loc[qbs,'VALUE'] = pass_att*self.game_stats.loc[qbs,'pass_att'] \
+        + pass_cmp*self.game_stats.loc[qbs,'pass_cmp'] + pass_yds*self.game_stats.loc[qbs,'pass_yds'] \
+        + pass_td*self.game_stats.loc[qbs,'pass_td'] + pass_int*self.game_stats.loc[qbs,'pass_int'] \
+        + pass_sacked*self.game_stats.loc[qbs,'pass_sacked'] + rush_att*self.game_stats.loc[qbs,'rush_att'] \
+        + rush_yds*self.game_stats.loc[qbs,'rush_yds'] + rush_td*self.game_stats.loc[qbs,'rush_td']
+
     def normalize_team_names(self):
         abbrevs = {'OAK':'RAI','LVR':'RAI','LAC':'SDG','STL':'RAM','LAR':'RAM',\
         'ARI':'CRD','IND':'CLT','BAL':'RAV','HOU':'HTX','TEN':'OTI'}
@@ -637,7 +669,10 @@ def get_draft(season: int):
     return draft_order
 
 
-def get_bulk_draft_pos(start_season: int, finish_season: int, path: str = None):
+def get_bulk_draft_pos(start_season: int, finish_season: int, path: str = None, \
+best_qb_val: float = 34.313, qb_val_per_pick: float = -0.137):
+    start_season = int(start_season)
+    finish_season = int(finish_season)
     if path and os.path.exists(str(path)):
         draft_pos = pd.read_csv(path)
     else:
@@ -650,7 +685,51 @@ def get_bulk_draft_pos(start_season: int, finish_season: int, path: str = None):
     if path and new_drafts:
         draft_pos.to_csv(path,index=False)
     draft_pos = draft_pos.loc[draft_pos.year.isin(list(range(start_season,finish_season + 1)))].reset_index(drop=True)
+    qbs = draft_pos.pos == 'QB'
+    draft_pos.loc[qbs,'qb_value_init'] = draft_pos.loc[qbs,'draft_pick']*qb_val_per_pick + best_qb_val
     return draft_pos
+
+
+def get_qb_elos(start, finish, regress_pct=0.25, qb_games=10, team_games=20, elo_adj=3.3):
+    stats = get_bulk_stats(start - 2,1,finish,50,True,"GameByGameFantasyFootballStats.csv")
+    draft_pos = get_bulk_draft_pos(start - 10,finish,"NFLDraftPositions.csv")
+    prev_all = stats.loc[(stats.season < stats.season.min() + 2) & \
+    (stats.pos == 'QB') & (stats.string == 1)].reset_index(drop=True)
+    by_opponent = prev_all.groupby(['season','week','game_id','opponent']).VALUE.sum().reset_index()
+    by_opponent = by_opponent.sort_values(by=['season','week'],ascending=False).reset_index(drop=True)
+    by_opponent = by_opponent.groupby('opponent').head(team_games).groupby('opponent').VALUE.mean().reset_index()
+    by_team = prev_all.groupby(['season','week','game_id','team']).VALUE.sum().reset_index()
+    by_team = by_team.sort_values(by=['season','week'],ascending=False).reset_index(drop=True)
+    by_team = by_team.groupby('team').head(team_games).groupby('team').VALUE.mean().reset_index()
+    new = stats.loc[(stats.season >= stats.season.min() + 2) & \
+    (stats.pos == 'QB') & (stats.string == 1)].reset_index(drop=True)
+    new['qb_value_pre'] = None
+    for ind in range(new.shape[0]):
+        avg_value = by_opponent.VALUE.mean()
+        prev_qb = new.loc[(new.player == new.loc[ind,'player']) & (new.index < ind)]
+        if prev_qb.shape[0] == 0:
+            drafted = draft_pos.loc[draft_pos.player == new.loc[ind,'player']]
+            if drafted.shape[0] > 0:
+                new.loc[ind,'qb_value_pre'] = drafted.iloc[0].qb_value_init
+            else:
+                new.loc[ind,'qb_value_pre'] = 0.0
+            new.loc[ind,'num_games'] = 0.0
+        else:
+            new.loc[ind,'qb_value_pre'] = prev_qb.iloc[-1]['qb_value_post']
+            if new.loc[ind,'season'] > prev_qb.iloc[-1]['season'] and prev_qb.shape[0] >= 10 and prev_qb.shape[0] <= 100:
+                new.loc[ind,'qb_value_pre'] = (1 - regress_pct)*new.loc[ind,'qb_value_pre'] + regress_pct*avg_value
+            new.loc[ind,'num_games'] = prev_qb.shape[0]
+        new.loc[ind,'team_qbvalue_avg'] = by_team.loc[by_team.team == new.loc[ind,'team'],'VALUE'].values[0]
+        new.loc[ind,'opp_qbvalue_avg'] = by_opponent.loc[by_opponent.opponent == new.loc[ind,'opponent'],'VALUE'].values[0] - avg_value
+        new.loc[ind,'VALUE'] -= new.loc[ind,'opp_qbvalue_avg']
+        new.loc[ind,'qb_value_post'] = new.loc[ind,'qb_value_pre']*(1 - 1/qb_games) + new.loc[ind,'VALUE']/qb_games
+        by_opponent.loc[by_opponent.opponent == new.loc[ind,'opponent'],'VALUE'] *= (1 - 1/team_games)
+        by_opponent.loc[by_opponent.opponent == new.loc[ind,'opponent'],'VALUE'] += new.loc[ind,'VALUE']/team_games
+        by_team.loc[by_team.team == new.loc[ind,'team'],'VALUE'] *= (1 - 1/team_games)
+        by_team.loc[by_team.team == new.loc[ind,'team'],'VALUE'] += new.loc[ind,'VALUE']/team_games
+    new['qb_adj'] = elo_adj*(new.qb_value_pre - new.team_qbvalue_avg)
+    return new[['game_id','player','team','team_qbvalue_avg',\
+    'opp_qbvalue_avg','qb_value_pre','qb_adj','qb_value_post','VALUE']]
 
 
 def get_names():
