@@ -1,33 +1,33 @@
-abbrev,real_abbrev,name,yahoo,fivethirtyeight,espn,full_team_name
-ARI,CRD,Arizona,Ari,ARI,ari,Arizona Cardinals
-ATL,ATL,Atlanta,Atl,ATL,atl,Atlanta Falcons
-BAL,RAV,Baltimore,Bal,BAL,bal,Baltimore Ravens
-BUF,BUF,Buffalo,Buf,BUF,buf,Buffalo Bills
-CAR,CAR,Carolina,Car,CAR,car,Carolina Panthers
-CHI,CHI,Chicago,Chi,CHI,chi,Chicago Bears
-CIN,CIN,Cincinnati,Cin,CIN,cin,Cincinnati Bengals
-CLE,CLE,Cleveland,Cle,CLE,cle,Cleveland Browns
-DAL,DAL,Dallas,Dal,DAL,dal,Dallas Cowboys
-DEN,DEN,Denver,Den,DEN,den,Denver Broncos
-DET,DET,Detroit,Det,DET,det,Detroit Lions
-GNB,GNB,Green Bay,GB,GB,gb,Green Bay Packers
-HOU,HTX,Houston,Hou,HOU,hou,Houston Texans
-IND,CLT,Indianapolis,Ind,IND,ind,Indianapolis Colts
-JAX,JAX,Jacksonville,Jax,JAX,jax,Jacksonville Jaguars
-KAN,KAN,Kansas City,KC,KC,kc,Kansas City Chiefs
-LAC,SDG,Los Angeles Chargers,LAC,LAC,lac,Los Angeles Chargers
-LAR,RAM,Los Angeles Rams,LAR,LAR,lar,Los Angeles Rams
-MIA,MIA,Miami,Mia,MIA,mia,Miami Dolphins
-MIN,MIN,Minnesota,Min,MIN,min,Minnesota Vikings
-NOR,NOR,New Orleans,NO,NO,ne,New England Patriots
-NWE,NWE,New England,NE,NE,no,New Orleans Saints
-NYG,NYG,New York Giants,NYG,NYG,nyg,New York Giants
-NYJ,NYJ,New York Jets,NYJ,NYJ,nyj,New York Jets
-OAK,RAI,Las Vegas,LV,OAK,lv,Las Vegas Raiders
-PHI,PHI,Philadelphia,Phi,PHI,phi,Philadelphia Eagles
-PIT,PIT,Pittsburgh,Pit,PIT,pit,Pittsburgh Steelers
-SEA,SEA,Seattle,Sea,SEA,sea,Seattle Seahawks
-SFO,SFO,San Francisco,SF,SF,sf,San Francisco 49ers
-TAM,TAM,Tampa Bay,TB,TB,tb,Tampa Bay Buccaneers
-TEN,OTI,Tennessee,Ten,TEN,ten,Tennessee Titans
-WAS,WAS,Washington,Was,WSH,wsh,Washington Commanders
+abbrev,real_abbrev,name,yahoo,fivethirtyeight
+ARI,CRD,Arizona,Ari,ARI
+ATL,ATL,Atlanta,Atl,ATL
+BAL,RAV,Baltimore,Bal,BAL
+BUF,BUF,Buffalo,Buf,BUF
+CAR,CAR,Carolina,Car,CAR
+CHI,CHI,Chicago,Chi,CHI
+CIN,CIN,Cincinnati,Cin,CIN
+CLE,CLE,Cleveland,Cle,CLE
+DAL,DAL,Dallas,Dal,DAL
+DEN,DEN,Denver,Den,DEN
+DET,DET,Detroit,Det,DET
+GNB,GNB,Green Bay,GB,GB
+HOU,HTX,Houston,Hou,HOU
+IND,CLT,Indianapolis,Ind,IND
+JAX,JAX,Jacksonville,Jax,JAX
+KAN,KAN,Kansas City,KC,KC
+LAC,SDG,Los Angeles Chargers,LAC,LAC
+LAR,RAM,Los Angeles Rams,LAR,LAR
+MIA,MIA,Miami,Mia,MIA
+MIN,MIN,Minnesota,Min,MIN
+NOR,NOR,New Orleans,NO,NO
+NWE,NWE,New England,NE,NE
+NYG,NYG,New York Giants,NYG,NYG
+NYJ,NYJ,New York Jets,NYJ,NYJ
+OAK,RAI,Las Vegas,LV,OAK
+PHI,PHI,Philadelphia,Phi,PHI
+PIT,PIT,Pittsburgh,Pit,PIT
+SEA,SEA,Seattle,Sea,SEA
+SFO,SFO,San Francisco,SF,SF
+TAM,TAM,Tampa Bay,TB,TB
+TEN,OTI,Tennessee,Ten,TEN
+WAS,WAS,Washington,Was,WSH
