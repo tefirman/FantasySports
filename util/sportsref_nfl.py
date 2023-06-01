@@ -107,6 +107,43 @@ def get_intl_games():
     return intl_games[["game_date", "team1", "team2"]]
 
 
+def get_depth_chart(team_abbrev: str):
+    response = requests.get("https://www.espn.com/nfl/team/depth/_/name/{}".format(team_abbrev)).text
+    soup = BeautifulSoup(response, "html.parser")
+    tables = soup.find_all('table')
+    depth = pd.DataFrame()
+    for table_ind in range(len(tables)//2):
+        positions = [pos.text.strip() for pos in tables[table_ind*2].find_all('td')]
+        players = [player.text.strip() for player in tables[table_ind*2 + 1].find_all('td')]
+        num_strings = len(players)//len(positions)
+        for pos in range(len(positions)):
+            for string in range(num_strings):
+                depth = pd.concat([depth,pd.DataFrame({'player':[players[pos*num_strings + string]],\
+                'pos':[positions[pos]],'string':[string + 1]})],ignore_index=True)
+    wrs = depth.pos == 'WR'
+    depth.loc[wrs,'string'] = 1 + (depth.loc[wrs].string.rank(method='first') - 1)/3
+    depth = depth.loc[depth.player != '-'].reset_index(drop=True)
+    for status in ['Q']: # Need to expand this with possible values as the season goes on...
+        injured = depth.player.str.endswith(' ' + status)
+        depth.loc[injured,'player'] = depth.loc[injured,'player'].str.split(' ').str[:-1].apply(' '.join)
+    corrections = pd.read_csv("https://raw.githubusercontent.com/tefirman/FantasySports/main/res/football/name_corrections.csv")
+    depth = pd.merge(left=depth, right=corrections.rename(columns={'name':'player'}), how="left", on="player")
+    to_fix = ~depth.new_name.isnull()
+    depth.loc[to_fix, "player"] = depth.loc[to_fix, "new_name"]
+    del depth['new_name']
+    return depth
+
+
+def get_all_depth_charts():
+    teams = pd.read_csv("https://raw.githubusercontent.com/tefirman/FantasySports/main/res/football/team_abbrevs.csv")
+    teams['espn'] = teams.fivethirtyeight.str.replace('OAK','LV')
+    depths = pd.DataFrame(columns=['team'])
+    for ind in range(teams.shape[0]):
+        depths = pd.concat([depths,get_depth_chart(teams.loc[ind,'espn'])],ignore_index=True)
+        depths.team = depths.team.fillna(teams.loc[ind,'real_abbrev'])
+    return depths
+
+
 def get_stadiums():
     """
     Pulls details about all stadiums ever used for an NFL game.
@@ -436,7 +473,7 @@ class Schedule:
                 'qb_value_pre':'qb{}_value_pre'.format(team_num),'qb_adj':'qb{}_adj'.format(team_num),\
                 'qb_value_post':'qb{}_value_post'.format(team_num),'VALUE':'VALUE{}'.format(team_num)}),\
                 how='inner',on=['boxscore_abbrev','team{}_abbrev'.format(team_num)])
-            # Need to pull depth charts to extrapolate future values... Probably not worth it...
+            # Need to pull depth charts to extrapolate future values...
 
     def next_init_elo(self, init_elo=1300, regress_pct=0.333):
         ind = self.schedule.loc[self.schedule.elo1_pre.isnull()].index[0]
