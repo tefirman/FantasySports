@@ -10,7 +10,7 @@ import pandas as pd
 import os
 import shutil
 import numpy as np
-from sportsipy.nfl.boxscore import Boxscore, Boxscores
+from util import sportsref_nfl as sr
 import time
 import datetime
 from pytz import timezone
@@ -270,234 +270,57 @@ class League:
             ]
             self.nfl_teams = pd.DataFrame(raw_teams[1:], columns=raw_teams[0])
 
-    def load_nfl_sched_538(self):
+    def load_nfl_schedule(self,path='NFLSchedule.csv'):
         """
-        Loads the full NFL schedule from 538 containing elo ratings throughout time
+        Loads and processes the NFL schedule for use in future simulations
         """
-        nfl_schedule = pd.read_csv(
-            "https://projects.fivethirtyeight.com/nfl-api/nfl_elo.csv"
-        )
-        nfl_schedule = nfl_schedule.loc[
-            nfl_schedule.playoff.isnull(),
-            [
+        if os.path.exists(path):
+            nfl_schedule = pd.read_csv(path)
+        else:
+            nfl_schedule = pd.DataFrame(columns=['season','week','score1','score2'])
+        before = nfl_schedule.season*100 + nfl_schedule.week < self.season*100 + self.week
+        missing = before & nfl_schedule.score1.isnull() & nfl_schedule.score2.isnull()
+        if missing.any() or self.season not in nfl_schedule.season.unique():
+            s = sr.Schedule(self.season - 8,self.season,False,True,True)
+            s.schedule.to_csv(path,index=False)
+            nfl_schedule = s.schedule.copy()
+        
+        nfl_schedule = nfl_schedule[[
                 "season",
-                "date",
-                "team1",
-                "team2",
+                "game_date",
+                "week",
+                "team1_abbrev",
+                "team2_abbrev",
                 "elo1_pre",
                 "elo2_pre",
                 "qb1_value_pre",
                 "qb2_value_pre",
-            ],
-        ].rename(
-            index=str,
+            ]].rename(
             columns={
-                "team1": "home_team",
-                "team2": "away_team",
+                "game_date":"date",
+                "team1_abbrev": "home_team",
+                "team2_abbrev": "away_team",
                 "elo1_pre": "home_elo",
                 "elo2_pre": "away_elo",
                 "qb1_value_pre": "home_qb",
                 "qb2_value_pre": "away_qb",
             },
         )
-        nfl_schedule.date = pd.to_datetime(
-            nfl_schedule.date, infer_datetime_format=True
-        )
-        nfl_schedule = pd.merge(
-            left=nfl_schedule,
-            right=nfl_schedule.groupby("season")
-            .date.min()
-            .reset_index()
-            .rename(columns={"date": "first_game"}),
-            how="inner",
-            on="season",
-        )
-        nfl_schedule["week"] = (
-            nfl_schedule.date - nfl_schedule.first_game
-        ).dt.days // 7 + 1
-        del nfl_schedule["first_game"]
-        self.nfl_schedule_538 = nfl_schedule
-
-    def load_nfl_sched_sportsref(self):
-        """
-        Loads the current season's NFL schedule from Pro Football Reference
-        and calculates current elo values for each team (valuable during preseason)
-        """
-        if self.nfl_schedule_538.season.max() < self.season:
-            current_sched = pd.DataFrame()
-            games = Boxscores(1, self.season, 17).games
-            for week in games.keys():
-                week_games = pd.DataFrame(games[week])
-                week_games["week"] = int(week.split("-")[0])
-                current_sched = current_sched.append(
-                    week_games.drop_duplicates(), ignore_index=True, sort=False
-                )
-            current_sched["season"] = self.season
-            current_sched["date"] = pd.to_datetime(
-                current_sched.boxscore.str[:8], infer_datetime_format=True
-            )
-            current_sched["home_abbr"] = current_sched["home_abbr"].str.upper()
-            current_sched["away_abbr"] = current_sched["away_abbr"].str.upper()
-            current_sched = pd.merge(
-                left=current_sched,
-                right=self.nfl_teams.rename(
-                    columns={"real_abbrev": "home_abbr", "fivethirtyeight": "home_team"}
-                ),
-                how="inner",
-                on="home_abbr",
-            )
-            current_sched = pd.merge(
-                left=current_sched,
-                right=self.nfl_teams.rename(
-                    columns={"real_abbrev": "away_abbr", "fivethirtyeight": "away_team"}
-                ),
-                how="inner",
-                on="away_abbr",
-            )
-            # Regressing last season's final team elos to the mean, and merging in best QB from last season
-            prev_elos = (
-                self.nfl_schedule_538.loc[
-                    (self.nfl_schedule_538.season == self.season - 1)
-                    & (self.nfl_schedule_538.week == 17),
-                    ["home_team", "home_elo"],
-                ]
-                .rename(columns={"home_team": "team", "home_elo": "elo"})
-                .append(
-                    self.nfl_schedule_538.loc[
-                        (self.nfl_schedule_538.season == self.season - 1)
-                        & (self.nfl_schedule_538.week == 17),
-                        ["away_team", "away_elo"],
-                    ].rename(columns={"away_team": "team", "away_elo": "elo"}),
-                    ignore_index=True,
-                    sort=False,
-                )
-            )
-            prev_elos["elo"] += (
-                1500 - prev_elos["elo"]
-            ) * 0.333  # Regression FiveThirtyEight uses...
-            current_sched = pd.merge(
-                left=current_sched,
-                right=prev_elos[["team", "elo"]].rename(
-                    columns={"team": "home_team", "elo": "home_elo"}
-                ),
-                how="inner",
-                on=["home_team"],
-            )
-            current_sched = pd.merge(
-                left=current_sched,
-                right=prev_elos[["team", "elo"]].rename(
-                    columns={"team": "away_team", "elo": "away_elo"}
-                ),
-                how="inner",
-                on=["away_team"],
-            )
-            qb_elos = (
-                self.nfl_schedule_538.loc[
-                    self.nfl_schedule_538.season == self.season - 1,
-                    ["home_team", "home_qb"],
-                ]
-                .rename(columns={"home_team": "team", "home_qb": "qb_elo"})
-                .append(
-                    self.nfl_schedule_538.loc[
-                        (self.nfl_schedule_538.season == self.season - 1)
-                        & (self.nfl_schedule_538.week == 17),
-                        ["away_team", "away_qb"],
-                    ].rename(columns={"away_team": "team", "away_qb": "qb_elo"}),
-                    ignore_index=True,
-                    sort=False,
-                )
-            )
-            qb_elos = qb_elos.groupby("team").qb_elo.max().reset_index()
-            current_sched = pd.merge(
-                left=current_sched,
-                right=qb_elos[["team", "qb_elo"]].rename(
-                    columns={"team": "home_team", "qb_elo": "home_qb"}
-                ),
-                how="inner",
-                on=["home_team"],
-            )
-            current_sched = pd.merge(
-                left=current_sched,
-                right=qb_elos[["team", "qb_elo"]].rename(
-                    columns={"team": "away_team", "qb_elo": "away_qb"}
-                ),
-                how="inner",
-                on=["away_team"],
-            )
-            self.nfl_schedule_sportsref = current_sched[
-                [
-                    "season",
-                    "week",
-                    "date",
-                    "home_team",
-                    "away_team",
-                    "home_elo",
-                    "away_elo",
-                    "home_qb",
-                    "away_qb",
-                ]
-            ]
-        else:
-            self.nfl_schedule_sportsref = pd.DataFrame(
-                columns=[
-                    "season",
-                    "week",
-                    "date",
-                    "home_team",
-                    "away_team",
-                    "home_elo",
-                    "away_elo",
-                    "home_qb",
-                    "away_qb",
-                ]
-            )
-
-    def load_nfl_schedule(self):
-        """
-        Loads and processes the NFL schedule for use in future simulations
-        """
-        self.load_nfl_sched_538()
-        self.load_nfl_sched_sportsref()
-        nfl_schedule = self.nfl_schedule_538.append(
-            self.nfl_schedule_sportsref, ignore_index=True, sort=False
-        )
-        nfl_schedule = pd.merge(
-            left=nfl_schedule,
-            right=self.nfl_teams[["fivethirtyeight", "abbrev"]],
-            left_on="home_team",
-            right_on="fivethirtyeight",
-            how="inner",
-        )
-        nfl_schedule.loc[
-            nfl_schedule.home_team != nfl_schedule.abbrev, "home_team"
-        ] = nfl_schedule.loc[nfl_schedule.home_team != nfl_schedule.abbrev, "abbrev"]
-        del nfl_schedule["fivethirtyeight"], nfl_schedule["abbrev"]
-        nfl_schedule = pd.merge(
-            left=nfl_schedule,
-            right=self.nfl_teams[["fivethirtyeight", "abbrev"]],
-            left_on="away_team",
-            right_on="fivethirtyeight",
-            how="inner",
-        )
-        nfl_schedule.loc[
-            nfl_schedule.away_team != nfl_schedule.abbrev, "away_team"
-        ] = nfl_schedule.loc[nfl_schedule.away_team != nfl_schedule.abbrev, "abbrev"]
-        del nfl_schedule["fivethirtyeight"], nfl_schedule["abbrev"]
         home = nfl_schedule[
             ["season", "week", "date", "home_team", "away_elo", "home_qb"]
         ].rename(
-            columns={"home_team": "abbrev", "away_elo": "opp_elo", "home_qb": "qb_elo"}
+            columns={"home_team": "team", "away_elo": "opp_elo", "home_qb": "qb_elo"}
         )
         home["home_away"] = "Home"
         away = nfl_schedule[
             ["season", "week", "date", "away_team", "home_elo", "away_qb"]
         ].rename(
-            columns={"away_team": "abbrev", "home_elo": "opp_elo", "away_qb": "qb_elo"}
+            columns={"away_team": "team", "home_elo": "opp_elo", "away_qb": "qb_elo"}
         )
         away["home_away"] = "Away"
         nfl_schedule = home.append(away, ignore_index=True)
         nfl_schedule.opp_elo = 1500 / nfl_schedule.opp_elo
-        nfl_schedule.qb_elo = nfl_schedule.qb_elo / 157.5
+        nfl_schedule.qb_elo = nfl_schedule.qb_elo / nfl_schedule.qb_elo.mean()
         self.nfl_schedule = nfl_schedule.sort_values(
             by=["season", "week"], ignore_index=True
         )
@@ -624,12 +447,12 @@ class League:
         rosters.loc[rosters.player_id == 100019, "name"] += " Giants"
         rosters = pd.merge(
             left=rosters,
-            right=self.nfl_teams[["abbrev", "name"]],
+            right=self.nfl_teams[["real_abbrev", "name"]],
             how="left",
             on="name",
         )
-        rosters.loc[~rosters.abbrev.isnull(), "name"] = rosters.loc[
-            ~rosters.abbrev.isnull(), "abbrev"
+        rosters.loc[~rosters.real_abbrev.isnull(), "name"] = rosters.loc[
+            ~rosters.real_abbrev.isnull(), "real_abbrev"
         ]
         """ CONVERT THIS LATER TO USE W/R/T ITSELF!!! """
         rosters["position"] = rosters.eligible_positions.apply(
@@ -653,172 +476,6 @@ class League:
             ]
         ]
 
-
-    def get_games_sportsref(self, start: int, finish: int):
-        """
-        Pulls individual player statistics for each game in the specified timeframe from Pro Football Reference.
-
-        Args:
-            start (int): year and number of the first week of interest (YYYYWW, e.g. 202102 = week 2 of 2021).
-            finish (int): year and number of the last week of interest (YYYYWW, e.g. 202307 = week 7 of 2023).
-        
-        Returns:
-            pd.DataFrame: dataframe containing player statistics for games during the timespan of interest.
-        """
-        stats = pd.DataFrame(
-            columns=["boxscore", "season", "week", "team", "opponent", "points_allowed"]
-        )
-        for season in range(int(start) // 100, int(finish) // 100 + 1):
-            start_week = start % 100 if season == start // 100 else 1
-            end_week = finish % 100 if season == finish // 100 else 17
-            uris = Boxscores(start_week, season, end_week).games
-            for week in uris:
-                print(week)
-                for game in uris[week]:
-                    box = Boxscore(game["boxscore"])
-                    # Gating SportsReference requests (limit is 20/minute, jail for an hour penalty)
-                    time.sleep(10)
-                    """ Blank rosters due to weird team name changes """
-                    if len(box.home_players) == 0 or len(box.away_players) == 0:
-                        print("BLANK ROSTER FOR " + game["boxscore"] + "!!!")
-                    for player in box.home_players:
-                        stats = stats.append(player.dataframe, sort=False)
-                    stats.loc[stats.team.isnull(), "team"] = box.home_abbreviation
-                    stats.loc[
-                        stats.opponent.isnull(), "opponent"
-                    ] = box.away_abbreviation
-                    stats.loc[
-                        stats.points_allowed.isnull(), "points_allowed"
-                    ] = box.away_points
-                    for player in box.away_players:
-                        stats = stats.append(player.dataframe, sort=False)
-                    stats.loc[stats.team.isnull(), "team"] = box.away_abbreviation
-                    stats.loc[
-                        stats.opponent.isnull(), "opponent"
-                    ] = box.home_abbreviation
-                    stats.loc[
-                        stats.points_allowed.isnull(), "points_allowed"
-                    ] = box.home_points
-                    stats.loc[stats.season.isnull(), "season"] = season
-                    stats.loc[stats.week.isnull(), "week"] = int(week.split("-")[0])
-                    stats.loc[stats.boxscore.isnull(), "boxscore"] = game["boxscore"]
-        stats = (
-            stats.reset_index()
-            .rename(index=str, columns={"index": "player_id"})
-            .fillna(0.0)
-        )
-        stats.team = stats.team.str.upper()
-        stats.opponent = stats.opponent.str.upper()
-        return stats
-
-    def get_names_sportsref(self):
-        """
-        Pulls the player id and name for every player on Pro Football Reference for conversion purposes.
-
-        Returns:
-            pd.DataFrame: dataframe containing player id, name, and position of every player.
-        """
-        names = []
-        for letter in range(65, 91):
-            response = requests.get(
-                "https://www.pro-football-reference.com/players/" + chr(letter),
-                verify=False,
-            )
-            names.extend(
-                response.text.split(
-                    '<div class="section_content" id="div_players">\n\t    <p>'
-                )[-1]
-                .split("</p>\n\t\t\n")[0]
-                .split("</p><p>")
-            )
-            time.sleep(10)
-        names = pd.DataFrame({"raw": names})
-        names["player_id"] = (
-            names.raw.str.split('href="')
-            .str[-1]
-            .str.split('">')
-            .str[0]
-            .str.split("/")
-            .str[-1]
-            .str.split(".htm")
-            .str[0]
-        )
-        names["name"] = names.raw.str.split('.htm">').str[-1].str.split("</a>").str[0]
-        names["position"] = names.raw.str.split("\(").str[-1].str.split("\)").str[0]
-        names.loc[names.name == "Logan Thomas", "position"] = "TE"
-        names.loc[names.name == "Cordarrelle Patterson", "position"] = "RB"
-        del names["raw"]
-        return names
-
-    def get_rosters_sportsref(self):
-        """
-        Pulls roster list for every NFL team during the season in question from Pro Football Reference.
-
-        Returns:
-            pd.DataFrame: dataframe describing which team is player was on during the season in question.
-        """
-        rosters = pd.DataFrame(columns=["raw", "real_abbrev"])
-        for team in self.nfl_teams.real_abbrev.unique():
-            response = requests.get(
-                "https://www.pro-football-reference.com/teams/{}/{}_roster.htm".format(
-                    team.lower(), self.season
-                ),
-                verify=False,
-            )
-            rosters = rosters.append(
-                pd.DataFrame(
-                    {
-                        "raw": response.text.split("</thead>\n<tbody><tr >")[-1]
-                        .split("</tr>\n</tbody><tfoot>")[0]
-                        .split("</tr>\n<tr >")
-                    }
-                ),
-                ignore_index=True,
-                sort=False,
-            )
-            rosters.real_abbrev = rosters.real_abbrev.fillna(team)
-            time.sleep(10)
-        rosters["player_id"] = (
-            rosters.raw.str.split("</td>")
-            .str[0]
-            .str.split('.htm">')
-            .str[0]
-            .str.split("/")
-            .str[-1]
-        )
-        rosters["name"] = (
-            rosters.raw.str.split("</td>")
-            .str[0]
-            .str.split('.htm">')
-            .str[-1]
-            .str.split("</a>")
-            .str[0]
-        )
-        rosters["age"] = rosters.raw.str.split("</td>").str[1].str.split(">").str[-1]
-        rosters["position"] = (
-            rosters.raw.str.split("</td>").str[2].str.split(">").str[-1]
-        )
-        rosters["games"] = rosters.raw.str.split("</td>").str[3].str.split(">").str[-1]
-        rosters["games_started"] = (
-            rosters.raw.str.split("</td>").str[4].str.split(">").str[-1]
-        )
-        rosters["weight"] = rosters.raw.str.split("</td>").str[5].str.split(">").str[-1]
-        rosters["height"] = rosters.raw.str.split("</td>").str[6].str.split(">").str[-1]
-        rosters["birthdate"] = (
-            rosters.raw.str.split("</td>").str[8].str.split(">").str[-1]
-        )
-        rosters["years"] = rosters.raw.str.split("</td>").str[9].str.split(">").str[-1]
-        rosters["drafted"] = (
-            rosters.raw.str.split("</td>")
-            .str[11]
-            .str.split('data-stat="draft_info" >')
-            .str[-1]
-            .str.split(' / <a href="https://www.pro-football-reference.com/years/')
-            .str[0]
-        )
-        del rosters["raw"]
-        return rosters
-
     def get_stats_sportsref(self, start: int, finish: int):
         """
         Pulls a dataframe containing event rates based on per-game statistics during the specified timeframe.
@@ -830,54 +487,36 @@ class League:
         Returns:
             pd.DataFrame: dataframe containing player rates based on games during the timespan of interest.
         """
-        stats = self.get_games_sportsref(start, finish)
-        names = self.get_names_sportsref()
-        stats = pd.merge(left=stats, right=names, how="left", on="player_id")
-        rosters = self.get_rosters_sportsref()
-        stats = pd.merge(
-            left=stats, right=rosters, how="left", on=["player_id", "name", "position"]
-        )
-        stats = pd.merge(
-            left=stats,
-            right=self.nfl_teams[["abbrev", "real_abbrev"]].rename(
-                columns={"abbrev": "current_team"}
-            ),
-            how="inner",
-            on="real_abbrev",
-        )
-        del stats["real_abbrev"]
-        to_fix = ~stats.position.isin(["QB", "RB", "WR", "TE", "K"]) & (
-            stats.position.str.contains("QB")
-            | stats.position.str.contains("WR")
-            | stats.position.str.contains("RB")
-            | stats.position.str.contains("TE")
-            | stats.position.str.contains("K")
+        stats = sr.get_bulk_stats(start//100,start%100,finish//100,finish%100,False,"GameByGameFantasyFootballStats.csv")
+        s = sr.Schedule(stats.season.min(),stats.season.max())
+        pts_allowed = pd.concat([s.schedule[['boxscore_abbrev','team1_abbrev','score2']]\
+        .rename(columns={'boxscore_abbrev':'game_id','team1_abbrev':'team','score2':'points_allowed'}),\
+        s.schedule[['boxscore_abbrev','team2_abbrev','score1']]\
+        .rename(columns={'boxscore_abbrev':'game_id','team2_abbrev':'team','score1':'points_allowed'})],ignore_index=True)
+        stats = pd.merge(left=stats,right=pts_allowed,how='left',on=['game_id','team'])
+        to_fix = ~stats.pos.isin(["QB", "RB", "WR", "TE", "K"]) & (
+            stats.pos.str.contains("QB")
+            | stats.pos.str.contains("WR")
+            | stats.pos.str.contains("RB")
+            | stats.pos.str.contains("TE")
+            | stats.pos.str.contains("K")
         )
         if to_fix.any():
-            print(stats.loc[to_fix, ["player_id", "name", "position"]])
+            print(stats.loc[to_fix, ["player_id", "player", "pos"]])
         defenses = (
-            stats.loc[~stats.position.isin(["QB", "RB", "WR", "TE", "K"])]
+            stats.loc[~stats.pos.isin(["QB", "RB", "WR", "TE", "K"])]
             .groupby(
-                ["boxscore", "season", "week", "team", "opponent", "points_allowed"]
+                ["game_id", "season", "week", "team", "opponent", "points_allowed"]
             )
             .sum()
             .reset_index()
         )
-        defenses = pd.merge(
-            left=defenses,
-            right=self.nfl_teams[["abbrev", "real_abbrev"]],
-            how="inner",
-            left_on="team",
-            right_on="real_abbrev",
-        )
-        defenses["name"] = defenses["abbrev"]
-        defenses["player_id"] = defenses["name"]
-        del defenses["abbrev"], defenses["real_abbrev"]
-        defenses["position"] = "DEF"
-        defenses["current_team"] = defenses["name"]
+        defenses["player"] = defenses["team"]
+        defenses["player_id"] = defenses["player"]
+        defenses["pos"] = "DEF"
         defenses = defenses[[col for col in stats.columns if col in defenses.columns]]
-        stats = stats.loc[stats.position.isin(["QB", "RB", "WR", "TE", "K"])]
-        stats = stats.append(defenses, ignore_index=True)
+        stats = stats.loc[stats.pos.isin(["QB", "RB", "WR", "TE", "K"])]
+        stats = stats.append(defenses, ignore_index=True).rename(columns={'pos':'position','player':'name'})
         return stats
 
     def get_current_team(self):
@@ -894,19 +533,15 @@ class League:
                 ]
                 .rename(columns={"team": "real_abbrev"})
             )
-            teams_as_of = pd.merge(
-                left=teams_as_of,
-                right=self.nfl_teams[["abbrev", "real_abbrev"]].rename(
-                    columns={"abbrev": "current_team"}
-                ),
-                how="inner",
-                on="real_abbrev",
-            )
-            del teams_as_of["real_abbrev"]
         else:
+
+            # PULL THIS FROM YAHOO!!!
+            # PULL THIS FROM YAHOO!!!
+            # PULL THIS FROM YAHOO!!!
+
             teams_as_of = self.stats.sort_values(by="week").drop_duplicates(
                 subset="player_id", keep="last"
-            )[["player_id", "current_team"]]
+            )[["player_id", "team"]].rename(columns={'team':'current_team'})
         if "current_team" in self.stats.columns:
             del self.stats["current_team"]
         self.stats = pd.merge(
@@ -926,50 +561,32 @@ class League:
             start (int): year and number of the first week of interest (YYYYWW, e.g. 202102 = week 2 of 2021).
             finish (int): year and number of the last week of interest (YYYYWW, e.g. 202307 = week 7 of 2023).
         """
-        if os.path.exists("GameByGameFantasyFootballStats.csv"):
-            tot = pd.read_csv("GameByGameFantasyFootballStats.csv", low_memory=False)
-            if (tot.season * 100 + tot.week).min() > start:
-                last = int((tot.season * 100 + tot.week).min()) - 1
-                if last % 100 == 0:
-                    last -= 83
-                tot = tot.append(self.get_stats_sportsref(start, last))
-                tot.to_csv("GameByGameFantasyFootballStats.csv", index=False)
-            if (tot.season * 100 + tot.week).max() < finish:
-                first = int((tot.season * 100 + tot.week).max()) + 1
-                if first % 100 == 18:
-                    first += 83
-                tot = tot.append(self.get_stats_sportsref(first, finish))
-                tot.to_csv("GameByGameFantasyFootballStats.csv", index=False)
-        else:
-            tot = self.get_stats_sportsref(start, finish)
-            tot.to_csv("GameByGameFantasyFootballStats.csv", index=False)
+        tot = self.get_stats_sportsref(start, finish)
         offense = tot.loc[tot.position != "DEF"].reset_index(drop=True)
         offense["points"] = (
-            offense["rush_yards"] * self.scoring.loc["Rush Yds", "value"]
-            + offense["rush_touchdowns"] * self.scoring.loc["Rush TD", "value"]
-            + offense["receptions"] * self.scoring.loc["Rec", "value"]
-            + offense["receiving_yards"] * self.scoring.loc["Rec Yds", "value"]
-            + offense["receiving_touchdowns"] * self.scoring.loc["Rec TD", "value"]
-            + offense["passing_yards"] * self.scoring.loc["Pass Yds", "value"]
-            + offense["passing_touchdowns"] * self.scoring.loc["Pass TD", "value"]
-            + offense["interceptions_thrown"] * self.scoring.loc["Int Thrown", "value"]
+            offense["rush_yds"] * self.scoring.loc["Rush Yds", "value"]
+            + offense["rush_td"] * self.scoring.loc["Rush TD", "value"]
+            + offense["rec"] * self.scoring.loc["Rec", "value"]
+            + offense["rec_yds"] * self.scoring.loc["Rec Yds", "value"]
+            + offense["rec_td"] * self.scoring.loc["Rec TD", "value"]
+            + offense["pass_yds"] * self.scoring.loc["Pass Yds", "value"]
+            + offense["pass_td"] * self.scoring.loc["Pass TD", "value"]
+            + offense["pass_int"] * self.scoring.loc["Int Thrown", "value"]
             + offense["fumbles_lost"] * self.scoring.loc["Fum Lost", "value"]
-            + (offense["kickoff_return_yards"] + offense["punt_return_yards"])
+            + (offense["kick_ret_yds"] + offense["punt_ret_yds"])
             * self.scoring.loc["Ret Yds", "value"]
-            + (offense["kickoff_return_touchdown"] + offense["punt_return_touchdown"])
+            + (offense["kick_ret_td"] + offense["punt_ret_td"])
             * self.scoring.loc["Ret TD", "value"]
-            + offense["extra_points_made"] * self.scoring.loc["PAT Made", "value"]
-            + offense["field_goals_made"] * self.scoring.loc["FG 0-19", "value"]
+            + offense["xpm"] * self.scoring.loc["PAT Made", "value"]
+            + offense["fgm"] * self.scoring.loc["FG 0-19", "value"]
         )
         defense = tot.loc[tot.position == "DEF"].reset_index(drop=True)
         defense["points"] = (
             defense["sacks"] * self.scoring.loc["Sack", "value"]
-            + defense["interceptions"] * self.scoring.loc["Int", "value"]
-            + defense["fumbles_recovered"] * self.scoring.loc["Fum Rec", "value"]
-            + defense["interceptions_returned_for_touchdown"]
-            * self.scoring.loc["Ret TD", "value"]
-            + defense["kickoff_return_touchdown"] * self.scoring.loc["Ret TD", "value"]
-            + defense["punt_return_touchdown"] * self.scoring.loc["Ret TD", "value"]
+            + defense["def_int"] * self.scoring.loc["Int", "value"]
+            + defense["fumbles_rec"] * self.scoring.loc["Fum Rec", "value"]
+            + (defense["def_int_td"] + defense['fumbles_rec_td'] 
+            + defense["kick_ret_td"] + defense["punt_ret_td"]) * self.scoring.loc["Ret TD", "value"]
         )
         defense.loc[defense.points_allowed == 0, "points"] += self.scoring.loc[
             "Pts Allow 0", "value"
@@ -995,7 +612,7 @@ class League:
         self.stats = offense.append(defense, ignore_index=True, sort=False)
         self.stats["weeks_ago"] = (
             datetime.datetime.now()
-            - pd.to_datetime(self.stats.boxscore.str[:8], infer_datetime_format=True)
+            - pd.to_datetime(self.stats.game_id.str[:8], infer_datetime_format=True)
         ).dt.days / 7.0
         self.get_current_team()
         self.stats = self.stats.loc[
@@ -1192,10 +809,10 @@ class League:
         Derives bye weeks based on the current NFL schedule and merges them to the players dataframe.
         """
         byes = pd.DataFrame(columns=["current_team", "bye_week"])
-        for team in self.nfl_schedule.abbrev.unique():
+        for team in self.nfl_schedule.team.unique():
             bye_week = 1
             while (
-                (self.nfl_schedule.abbrev == team)
+                (self.nfl_schedule.team == team)
                 & (self.nfl_schedule.season == self.season)
                 & (self.nfl_schedule.week == bye_week)
             ).any():
@@ -1280,17 +897,9 @@ class League:
         """
         as_of = self.season * 100 + self.week
         self.load_stats(self.earliest, as_of - 1)
-        norm_schedule = pd.merge(
-            left=self.nfl_schedule,
-            right=self.nfl_teams[["real_abbrev", "abbrev"]].rename(
-                columns={"real_abbrev": "team"}
-            ),
-            how="inner",
-            on=["abbrev"],
-        )
         self.stats = pd.merge(
             left=self.stats,
-            right=norm_schedule,
+            right=self.nfl_schedule,
             how="left",
             on=["season", "week", "team"],
         )
@@ -1338,11 +947,11 @@ class League:
             left=self.stats.groupby(["name", "position"])
             .weighted_points.mean()
             .reset_index()
-            .rename(index=str, columns={"weighted_points": "points_avg"}),
+            .rename(columns={"weighted_points": "points_avg"}),
             right=self.stats.groupby(["name", "position"])
             .weighted_points.std()
             .reset_index()
-            .rename(index=str, columns={"weighted_points": "points_stdev"}),
+            .rename(columns={"weighted_points": "points_stdev"}),
             how="inner",
             on=["name", "position"],
         )
@@ -1445,16 +1054,16 @@ class League:
             """First week issues..."""
             by_player = pd.merge(
                 left=by_player,
-                right=self.nfl_teams[["abbrev", "yahoo"]].rename(
+                right=self.nfl_teams[["real_abbrev", "yahoo"]].rename(
                     columns={"yahoo": "editorial_team_abbr"}
                 ),
                 how="left",
                 on="editorial_team_abbr",
             )
-            by_player.loc[~by_player.abbrev.isnull(), "current_team"] = by_player.loc[
-                ~by_player.abbrev.isnull(), "abbrev"
+            by_player.loc[~by_player.real_abbrev.isnull(), "current_team"] = by_player.loc[
+                ~by_player.real_abbrev.isnull(), "real_abbrev"
             ]
-            del by_player["abbrev"]
+            del by_player["real_abbrev"]
             """ First week issues... """
         self.players = by_player
 
@@ -1596,11 +1205,11 @@ class League:
             right=self.nfl_schedule.loc[
                 (self.nfl_schedule.season == as_of // 100)
                 & (self.nfl_schedule.week == week),
-                ["abbrev", "opp_elo", "qb_elo", "home_away"],
+                ["team", "opp_elo", "qb_elo", "home_away"],
             ],
             how="left",
             left_on="current_team",
-            right_on="abbrev",
+            right_on="team",
         )
         self.players["opp_factor"] = self.basaloppqbtime[1] * (
             self.players["opp_elo"] - 1
@@ -1618,7 +1227,7 @@ class League:
             self.players["opp_elo"],
             self.players["qb_elo"],
             self.players["home_away"],
-            self.players["abbrev"],
+            self.players["team"],
         )
         """ WAR is linear with points_avg, but slope/intercept depends on position """
         """ Harder to characterize how WAR varies with points_stdev, ignoring for now... """
