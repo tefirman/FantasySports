@@ -485,7 +485,7 @@ def compile_teams(
         teams = (
             teams.drop_duplicates(subset=["Name"])
             .sort_values(by="DKFP", ascending=False)
-            .reset_index(drop=True)
+            .reset_index(drop=True)#.iloc[:100000]
         )
     del teams["dummy"]
     teams.Name = teams.Name.str[1:].str.replace("_", ", ")
