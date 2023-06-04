@@ -15,6 +15,7 @@ import time
 import numpy as np
 import pandas as pd
 import os
+import datetime
 from geopy.distance import geodesic
 from geopy.geocoders import Nominatim
 
@@ -62,17 +63,18 @@ def parse_table(raw_text: str, table_name: str):
         for col in columns:
             entry[col] = player.find(["th", "td"], attrs={"data-stat": col})
             if col in ["boxscore_word", "stadium_name"]:
-                new_col = col.split("_")[0] + "_abbrev"
-                entry[new_col] = entry[col].find("a").attrs["href"]
-                entry[new_col] = entry[new_col].split("/")[-1].split(".")[0]
+                abbrev = entry[col].find("a")
+                if abbrev is not None:
+                    new_col = col.split("_")[0] + "_abbrev"
+                    entry[new_col] = abbrev.attrs["href"]
+                    entry[new_col] = entry[new_col].split("/")[-1].split(".")[0]
             elif col == "player" and "data-append-csv" in entry[col].attrs:
                 entry["player_id"] = entry[col].attrs["data-append-csv"]
-            elif col in ["winner", "loser"]:
+            elif col in ["winner", "loser", "home_team", "visitor_team"]:
                 entry[col + "_abbrev"] = (
                     entry[col].find("a").attrs["href"].split("/")[-2].upper()
                 )
-            if col != "boxscore_word":
-                entry[col] = entry[col].text
+            entry[col] = entry[col].text
         stats = pd.concat([stats, pd.DataFrame(entry, index=[stats.shape[0]])])
     stats = stats.replace("", None).reset_index(drop=True)
     for col in stats.columns:
@@ -169,7 +171,7 @@ def get_team_stadium(abbrev: str, season: int):
     """
     raw_text = get_page("teams/{}/{}.htm".format(abbrev.lower(), int(season)))
     team_info = raw_text.find(id="meta").find_all("p")
-    stadium_info = [val for val in team_info if val.text.startswith("Stadium:")]  # [0]
+    stadium_info = [val for val in team_info if val.text.startswith("Stadium:")]
     if len(stadium_info) == 0:
         stadiums = get_stadiums()
         stadiums.teams = stadiums.teams.str.split(", ")
@@ -306,7 +308,7 @@ class Schedule:
             elo (bool, optional): whether to include elo rating considerations, defaults to False.
             qbelo (bool, optional): whether to include QB elo rating considerations, defaults to False.
         """
-        self.get_schedules(start, finish, playoffs)
+        self.get_schedules(start, finish)
         self.add_weeks()
         self.convert_to_home_away()
         self.mark_intl_games()
@@ -320,19 +322,25 @@ class Schedule:
                 self.next_init_elo()
                 self.next_elo_prob()
                 self.next_elo_delta()
-
-    def get_schedules(self, start: int, finish: int, playoffs: bool = True):
-        self.schedule = pd.DataFrame(columns=["season"])
-        for season in range(int(start), int(finish) + 1):
-            raw_text = get_page("years/{}/games.htm".format(season))
-            self.schedule = pd.concat(
-                [self.schedule, parse_table(raw_text, "games")], ignore_index=True
-            )
-            self.schedule.season = self.schedule.season.fillna(season)
         if not playoffs:
             self.schedule = self.schedule.loc[
                 self.schedule.week_num.str.isnumeric()
             ].reset_index(drop=True)
+
+    def get_schedules(self, start: int, finish: int):
+        self.schedule = pd.DataFrame(columns=["season"])
+        for season in range(int(start), int(finish) + 1):
+            raw_text = get_page("years/{}/games.htm".format(season))
+            season_sched = parse_table(raw_text, "games")
+            season_sched = season_sched.loc[~season_sched.week_num.str.startswith('Pre')].reset_index(drop=True)
+            season_sched['season'] = season
+            if "game_date" not in season_sched.columns: # Current season
+                season_sched['game_date'] = season_sched.boxscore_word + ', ' + \
+                (datetime.datetime.now().year + season_sched.boxscore_word.str.startswith('January').astype(int)).astype(str)
+                season_sched = season_sched.rename(columns={'visitor_team':'winner',\
+                'visitor_team_abbrev':'winner_abbrev','home_team':'loser','home_team_abbrev':'loser_abbrev'})
+                season_sched[['yards_win','to_win','yards_lose','to_lose']] = None
+            self.schedule = pd.concat([self.schedule, season_sched], ignore_index=True)
 
     def add_weeks(self):
         self.schedule.game_date = pd.to_datetime(
@@ -561,12 +569,16 @@ class Boxscore:
         season_week = season_week.find("a").attrs["href"]
         self.season = int(season_week.split("/")[-2])
         self.week = int(season_week.split("/")[-1].split("_")[-1].split(".")[0])
-        self.team1_abbrev = self.raw_text.find(
-            "th", attrs={"data-stat": "home_team_score"}
-        ).text
-        self.team2_abbrev = self.raw_text.find(
-            "th", attrs={"data-stat": "vis_team_score"}
-        ).text
+        home_scores = self.raw_text.find_all(
+            ["th","td"], attrs={"data-stat": "home_team_score"}
+        )
+        self.team1_abbrev = home_scores[0].text
+        self.team1_score = int(home_scores[-1].text)
+        away_scores = self.raw_text.find_all(
+            ["th","td"], attrs={"data-stat": "vis_team_score"}
+        )
+        self.team2_abbrev = away_scores[0].text
+        self.team2_score = int(away_scores[-1].text)
 
     def get_stats(self):
         self.game_stats = pd.concat(
@@ -602,12 +614,19 @@ class Boxscore:
         )
 
     def get_snap_counts(self):
-        self.snaps = pd.concat(
-            [
-                parse_table(self.raw_text, "home_snap_counts"),
-                parse_table(self.raw_text, "vis_snap_counts"),
-            ]
-        )
+        # Games before 2012 don't have snapcounts and therefore no positions for non-starters...
+        # Could merge position in via the get_names function...
+        if self.raw_text.find(id="home_snap_counts") is not None \
+        and self.raw_text.find(id="vis_snap_counts") is not None:
+            self.snaps = pd.concat(
+                [
+                    parse_table(self.raw_text, "home_snap_counts"),
+                    parse_table(self.raw_text, "vis_snap_counts"),
+                ]
+            )
+        else:
+            self.snaps = self.game_stats[["player", "player_id"]].copy()
+            self.snaps[["off_pct","def_pct","st_pct"]] = 0.0
 
     def add_depth_chart(self):
         nonstarters = self.snaps.loc[
