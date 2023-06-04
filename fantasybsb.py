@@ -896,7 +896,7 @@ def main():
     if not col.endswith('_rate') and not col.endswith('_per_game') \
     and col not in ['player_key','player_id','uniform_number']]],'Rosters',writer,pcts=['pct_owned'])
     writer.sheets['Rosters'].freeze_panes(1,1)
-    writer.sheets['Rosters'].conditional_format('Q2:Q' + str(rosters.shape[0] + 1),\
+    writer.sheets['Rosters'].conditional_format('R2:R' + str(rosters.shape[0] + 1),\
     {'type':'3_color_scale','min_color':'#FF6347','mid_color':'#FFD700','max_color':'#3CB371'})
     for col in available.columns:
         if available[col].dtype == float:
