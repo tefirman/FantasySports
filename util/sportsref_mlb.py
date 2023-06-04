@@ -66,7 +66,7 @@ def parse_table(raw_text: str, table_name: str):
         stats = pd.concat([stats, pd.DataFrame(entry, index=[stats.shape[0]])])
     stats = stats.replace("", None).reset_index(drop=True)
     for col in stats.columns:
-        if col.endswith("_pct"):
+        if col.endswith("_pct") or col in ["wpa_bat_neg","cwpa_bat"]:
             stats[col] = stats[col].str.replace("%", "")
         stats[col] = stats[col].astype(float, errors="ignore")
     return stats
