@@ -15,4 +15,4 @@ dependencies:
     - beautifulsoup4
     - Unidecode
     - black
-    - "-e git+https://github.com/tefirman/sportsipy.git#egg=sportsipy"
+    - lxml
