@@ -476,7 +476,7 @@ class League:
             ]
         ]
 
-    def get_stats_sportsref(self, start: int, finish: int):
+    def pull_stats(self, start: int, finish: int):
         """
         Pulls a dataframe containing event rates based on per-game statistics during the specified timeframe.
 
@@ -516,8 +516,11 @@ class League:
         defenses["pos"] = "DEF"
         defenses = defenses[[col for col in stats.columns if col in defenses.columns]]
         stats = stats.loc[stats.pos.isin(["QB", "RB", "WR", "TE", "K"])]
-        stats = stats.append(defenses, ignore_index=True).rename(columns={'pos':'position','player':'name'})
-        return stats
+        self.stats = stats.append(defenses, ignore_index=True).rename(columns={'pos':'position','player':'name'})
+        self.stats["weeks_ago"] = (
+            datetime.datetime.now()
+            - pd.to_datetime(self.stats.game_id.str[:8], infer_datetime_format=True)
+        ).dt.days / 7.0
 
     def get_current_team(self):
         """
@@ -551,7 +554,7 @@ class League:
             on="player_id",
         )
 
-    def load_stats(self, start, finish):
+    def add_points(self):
         """
         Loads individual player statistics for each game in the specified timeframe 
         and calculates fantasy points based on league settings. Initially looks for 
@@ -561,8 +564,7 @@ class League:
             start (int): year and number of the first week of interest (YYYYWW, e.g. 202102 = week 2 of 2021).
             finish (int): year and number of the last week of interest (YYYYWW, e.g. 202307 = week 7 of 2023).
         """
-        tot = self.get_stats_sportsref(start, finish)
-        offense = tot.loc[tot.position != "DEF"].reset_index(drop=True)
+        offense = self.stats.loc[self.stats.position != "DEF"].reset_index(drop=True)
         offense["points"] = (
             offense["rush_yds"] * self.scoring.loc["Rush Yds", "value"]
             + offense["rush_td"] * self.scoring.loc["Rush TD", "value"]
@@ -580,7 +582,7 @@ class League:
             + offense["xpm"] * self.scoring.loc["PAT Made", "value"]
             + offense["fgm"] * self.scoring.loc["FG 0-19", "value"]
         )
-        defense = tot.loc[tot.position == "DEF"].reset_index(drop=True)
+        defense = self.stats.loc[self.stats.position == "DEF"].reset_index(drop=True)
         defense["points"] = (
             defense["sacks"] * self.scoring.loc["Sack", "value"]
             + defense["def_int"] * self.scoring.loc["Int", "value"]
@@ -610,14 +612,11 @@ class League:
             "Pts Allow 35+", "value"
         ]
         self.stats = offense.append(defense, ignore_index=True, sort=False)
-        self.stats["weeks_ago"] = (
-            datetime.datetime.now()
-            - pd.to_datetime(self.stats.game_id.str[:8], infer_datetime_format=True)
-        ).dt.days / 7.0
+    
+    def load_stats(self, start: int, finish: int):
+        self.pull_stats(start, finish)
         self.get_current_team()
-        self.stats = self.stats.loc[
-            self.stats.season * 100 + self.stats.week >= start
-        ].reset_index(drop=True)
+        self.add_points()
 
     def name_corrections(self):
         """
