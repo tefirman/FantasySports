@@ -746,6 +746,23 @@ best_qb_val: float = 34.313, qb_val_per_pick: float = -0.137):
     return draft_pos
 
 
+def get_roster(team: str, season: int):
+    raw_text = get_page("teams/{}/{}_roster.htm".format(team.lower(),season))
+    roster = parse_table(raw_text, "roster")
+    return roster
+
+
+def get_bulk_rosters(season: int):
+    s = Schedule(season,season)
+    teams = pd.DataFrame()
+    for team in s.schedule.team1_abbrev.unique():
+        roster = get_roster(team,season)
+        roster['team'] = team
+        roster['season'] = season
+        teams = pd.concat([teams,roster],ignore_index=True)
+    return teams
+
+
 def get_qb_elos(start, finish, regress_pct=0.25, qb_games=10, team_games=20, elo_adj=3.3):
     stats = get_bulk_stats(start - 2,1,finish,50,True,"GameByGameFantasyFootballStats.csv")
     draft_pos = get_bulk_draft_pos(start - 10,finish,"NFLDraftPositions.csv")
