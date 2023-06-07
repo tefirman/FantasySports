@@ -26,9 +26,6 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from dotenv import load_dotenv
 import traceback
-import warnings
-
-warnings.filterwarnings("ignore")
 
 
 class League:
@@ -318,7 +315,7 @@ class League:
             columns={"away_team": "team", "home_elo": "opp_elo", "away_qb": "qb_elo"}
         )
         away["home_away"] = "Away"
-        nfl_schedule = home.append(away, ignore_index=True)
+        nfl_schedule = pd.concat([home, away], ignore_index=True)
         nfl_schedule.opp_elo = 1500 / nfl_schedule.opp_elo
         nfl_schedule.qb_elo = nfl_schedule.qb_elo / nfl_schedule.qb_elo.mean()
         self.nfl_schedule = nfl_schedule.sort_values(
@@ -431,8 +428,8 @@ class League:
                     )
                 )
             players["fantasy_team"] = team["name"]
-            selected = selected.append(
-                players[["player_id", "selected_position", "fantasy_team"]],
+            selected = pd.concat([selected,
+                players[["player_id", "selected_position", "fantasy_team"]]],
                 ignore_index=True,
                 sort=False,
             )
@@ -508,7 +505,7 @@ class League:
             .groupby(
                 ["game_id", "season", "week", "team", "opponent", "points_allowed"]
             )
-            .sum()
+            .sum(numeric_only=True)
             .reset_index()
         )
         defenses["player"] = defenses["team"]
@@ -516,7 +513,7 @@ class League:
         defenses["pos"] = "DEF"
         defenses = defenses[[col for col in stats.columns if col in defenses.columns]]
         stats = stats.loc[stats.pos.isin(["QB", "RB", "WR", "TE", "K"])]
-        self.stats = stats.append(defenses, ignore_index=True).rename(columns={'pos':'position','player':'name'})
+        self.stats = pd.concat([stats,defenses], ignore_index=True).rename(columns={'pos':'position','player':'name'})
         self.stats["weeks_ago"] = (
             datetime.datetime.now()
             - pd.to_datetime(self.stats.game_id.str[:8], infer_datetime_format=True)
@@ -534,19 +531,10 @@ class League:
                 .drop_duplicates(subset="player_id", keep="first")[
                     ["player_id", "team"]
                 ]
-                .rename(columns={"team": "real_abbrev"})
+                .rename(columns={"team": "current_team"})
             )
         else:
-
-            # PULL THIS FROM YAHOO!!!
-            # PULL THIS FROM YAHOO!!!
-            # PULL THIS FROM YAHOO!!!
-
-            teams_as_of = self.stats.sort_values(by="week").drop_duplicates(
-                subset="player_id", keep="last"
-            )[["player_id", "team"]].rename(columns={'team':'current_team'})
-        if "current_team" in self.stats.columns:
-            del self.stats["current_team"]
+            teams_as_of = sr.get_bulk_rosters(self.season)[["player_id", "team"]].rename(columns={'team':'current_team'})
         self.stats = pd.merge(
             left=self.stats.loc[self.stats.season * 100 + self.stats.week < as_of],
             right=teams_as_of,
@@ -611,7 +599,7 @@ class League:
         defense.loc[(defense.points_allowed >= 35), "points"] += self.scoring.loc[
             "Pts Allow 35+", "value"
         ]
-        self.stats = offense.append(defense, ignore_index=True, sort=False)
+        self.stats = pd.concat([offense,defense], ignore_index=True, sort=False)
     
     def load_stats(self, start: int, finish: int):
         self.pull_stats(start, finish)
@@ -816,8 +804,8 @@ class League:
                 & (self.nfl_schedule.week == bye_week)
             ).any():
                 bye_week += 1
-            byes = byes.append(
-                {"current_team": team, "bye_week": bye_week}, ignore_index=True
+            byes = pd.concat([byes,
+                pd.DataFrame({"current_team": [team], "bye_week": [bye_week]})], ignore_index=True
             )
         self.players = pd.merge(
             left=self.players, right=byes, how="left", on="current_team"
@@ -873,14 +861,14 @@ class League:
                 if len(pct_owned) == 0:
                     # print("Can't find roster percentage for {}...".format(full_name))
                     pct_owned = [0.0]
-                roster_pcts = roster_pcts.append(
+                roster_pcts = pd.concat([roster_pcts,
                     pd.DataFrame(
                         {
                             "player_id": player_id,
                             "name": full_name,
                             "pct_rostered": pct_owned,
                         }
-                    ),
+                    )],
                     ignore_index=True,
                     sort=False,
                 )
@@ -963,8 +951,8 @@ class League:
             how="inner",
             on=["name", "position"],
         )
-        by_player = by_player.append(
-            by_pos[["name", "position", "points_avg", "points_stdev"]],
+        by_player = pd.concat([by_player,
+            by_pos[["name", "position", "points_avg", "points_stdev"]]],
             ignore_index=True,
             sort=False,
         )
@@ -1015,7 +1003,8 @@ class League:
             ].drop_duplicates(),
             how="right",
             on=["name", "position"],
-        ).append(league_avg, ignore_index=True, sort=False)
+        )
+        by_player = pd.concat([by_player,league_avg], ignore_index=True, sort=False)
         rookies = pd.merge(
             left=by_player.loc[
                 by_player.num_games.isnull(),
@@ -1033,7 +1022,7 @@ class League:
             on="position",
         )
         by_player = by_player.loc[~by_player.num_games.isnull()]
-        by_player = by_player.append(
+        by_player = pd.concat([by_player,
             rookies[
                 [
                     "name",
@@ -1045,7 +1034,7 @@ class League:
                     "editorial_team_abbr",
                     "selected_position",
                 ]
-            ],
+            ]],
             ignore_index=True,
             sort=False,
         )
@@ -1095,7 +1084,7 @@ class League:
                 if "0" in matchup.keys():
                     team_1 = matchup["0"]["matchup"]["0"]["teams"]["0"]["team"]
                     team_2 = matchup["0"]["matchup"]["0"]["teams"]["1"]["team"]
-                    schedule = schedule.append(
+                    schedule = pd.concat([schedule,
                         pd.DataFrame(
                             {
                                 "week": [week],
@@ -1104,7 +1093,7 @@ class League:
                                 "score_1": [team_1[1]["team_points"]["total"]],
                                 "score_2": [team_2[1]["team_points"]["total"]],
                             }
-                        ),
+                        )],
                         ignore_index=True,
                     )
         schedule.score_1 = schedule.score_1.astype(float)
@@ -1132,12 +1121,12 @@ class League:
             ]
             standings["win_1"] = (standings.score_1 > standings.score_2).astype(int)
             standings["win_2"] = 1 - standings.win_1
-            standings = standings.rename(
+            standings = pd.concat([standings.rename(
                 columns={col: col.replace("_1", "") for col in standings.columns}
-            ).append(
+            ),
                 standings.rename(
                     columns={col: col.replace("_2", "") for col in standings.columns}
-                ),
+                )],
                 ignore_index=True,
                 sort=False,
             )
@@ -1150,8 +1139,8 @@ class League:
                 (schedule.week < self.settings["playoff_start_week"])
                 | ~schedule.team_1.isin(consolation)
             ].reset_index(drop=True)
-            schedule = schedule.append(
-                many_mile_sched,
+            schedule = pd.concat([schedule,
+                many_mile_sched],
                 ignore_index=True,
                 sort=False,
             )
@@ -1370,11 +1359,11 @@ class League:
         )
         for week in range(17):
             self.starters(week + 1)
-            projections = projections.append(
+            projections = pd.concat([projections,
                 self.players.loc[self.players.starter]
                 .groupby("fantasy_team")[["points_avg", "points_var"]]
                 .sum()
-                .reset_index(),
+                .reset_index()],
                 ignore_index=True,
                 sort=False,
             )
@@ -1445,7 +1434,7 @@ class League:
                 & (schedule["team_" + winner] == fixed_winner[1]),
                 "points_stdev_" + loser,
             ] = 0.0
-        schedule_sims = pd.DataFrame().append(
+        schedule_sims = pd.concat(
             [schedule] * self.num_sims, ignore_index=True
         )
         schedule_sims["num_sim"] = schedule_sims.index // schedule.shape[0]
@@ -1461,22 +1450,16 @@ class League:
         ).astype(float)
         schedule_sims["win_1"] = (schedule_sims.sim_1 > schedule_sims.sim_2).astype(int)
         schedule_sims["win_2"] = 1 - schedule_sims["win_1"]
-        standings = (
+        standings = pd.concat([
             schedule_sims[["num_sim", "week", "team_1", "sim_1", "win_1"]]
-            .reset_index()
             .rename(
-                index=str,
                 columns={"team_1": "team", "win_1": "wins", "sim_1": "points"},
-            )
-            .append(
-                schedule_sims[["num_sim", "week", "team_2", "sim_2", "win_2"]]
-                .reset_index()
-                .rename(
-                    index=str,
-                    columns={"team_2": "team", "win_2": "wins", "sim_2": "points"},
-                ),
-                ignore_index=True,
-            )
+            ),
+            schedule_sims[["num_sim", "week", "team_2", "sim_2", "win_2"]]
+            .rename(
+                columns={"team_2": "team", "win_2": "wins", "sim_2": "points"},
+            )],
+            ignore_index=True,
         )
         standings = (
             standings.loc[standings.week < self.settings["playoff_start_week"]]
@@ -1502,24 +1485,18 @@ class League:
                 or schedule.team_2.isin(["The Algorithm"]).any()
             )
             standings["seed"] = standings.index % len(self.teams)
-            scores = (
-                schedule.loc[
+            scores = pd.concat([schedule.loc[
                     schedule.week >= self.settings["playoff_start_week"],
                     ["week", "team_1", "score_1"],
                 ]
-                .rename(columns={"team_1": "team", "score_1": "score"})
-                .append(
-                    schedule.loc[
-                        schedule.week >= self.settings["playoff_start_week"],
-                        ["week", "team_2", "score_2"],
-                    ].rename(columns={"team_2": "team", "score_2": "score"}),
-                    ignore_index=True,
-                    sort=False,
-                )
-                .groupby(["week", "team"])
-                .score.sum()
-                .reset_index()
-            )
+                .rename(columns={"team_1": "team", "score_1": "score"}),
+                schedule.loc[
+                    schedule.week >= self.settings["playoff_start_week"],
+                    ["week", "team_2", "score_2"],
+                ].rename(columns={"team_2": "team", "score_2": "score"})],
+                ignore_index=True,
+                sort=False,
+            ).groupby(["week", "team"]).score.sum().reset_index()
             playoffs = (
                 standings.loc[standings.seed < self.settings["num_playoff_teams"]]
                 .copy()
@@ -1900,17 +1877,8 @@ class League:
         standings["third"] = standings["third"].fillna(0.0)
         if algorithm:
             standings["many_mile"] = standings["many_mile"].fillna(0.0)
-        scores = (
-            schedule_sims[["team_1", "sim_1"]]
-            .rename(index=str, columns={"team_1": "team", "sim_1": "sim"})
-            .append(
-                schedule_sims[["team_2", "sim_2"]].rename(
-                    index=str, columns={"team_2": "team", "sim_2": "sim"}
-                ),
-                ignore_index=True,
-            )
-            .groupby("team")
-        )
+        scores = pd.concat([schedule_sims[["team_1", "sim_1"]].rename(columns={"team_1": "team", "sim_1": "sim"}),
+        schedule_sims[["team_2", "sim_2"]].rename(columns={"team_2": "team", "sim_2": "sim"})],ignore_index=True).groupby("team")
         standings = pd.merge(
             left=standings,
             right=scores.sim.mean()
@@ -2153,8 +2121,8 @@ class League:
                     self.players.name == free_agent, "fantasy_team"
                 ] = team_name
                 new_standings = self.season_sims(False, postseason, payouts)[1]
-                added_value = added_value.append(
-                    new_standings.loc[new_standings.team == team_name],
+                added_value = pd.concat([added_value,
+                    new_standings.loc[new_standings.team == team_name]],
                     ignore_index=True,
                     sort=False,
                 )
@@ -2280,8 +2248,8 @@ class League:
                 self.players.name == free_agent, "fantasy_team"
             ] = team_name
             new_standings = self.season_sims(False, postseason, payouts)[1]
-            added_value = added_value.append(
-                new_standings.loc[new_standings.team == team_name],
+            added_value = pd.concat([added_value,
+                new_standings.loc[new_standings.team == team_name]],
                 ignore_index=True,
                 sort=False,
             )
@@ -2392,8 +2360,8 @@ class League:
         for my_player in players_to_drop.name:
             self.players.loc[self.players.name == my_player, "fantasy_team"] = None
             new_standings = self.season_sims(False, postseason, payouts)[1]
-            reduced_value = reduced_value.append(
-                new_standings.loc[new_standings.team == team_name],
+            reduced_value = pd.concat([reduced_value,
+                new_standings.loc[new_standings.team == team_name]],
                 ignore_index=True,
                 sort=False,
             )
@@ -2552,12 +2520,12 @@ class League:
                 ] = their_team
                 new_standings["player_to_trade_away"] = my_player
                 new_standings["player_to_trade_for"] = their_player
-                my_added_value = my_added_value.append(
-                    new_standings.loc[new_standings.team == team_name],
+                my_added_value = pd.concat([my_added_value,
+                    new_standings.loc[new_standings.team == team_name]],
                     ignore_index=True,
                 )
-                their_added_value = their_added_value.append(
-                    new_standings.loc[new_standings.team == their_team],
+                their_added_value = pd.concat([their_added_value,
+                    new_standings.loc[new_standings.team == their_team]],
                     ignore_index=True,
                 )
             if verbose and possible.shape[0] > 0:
