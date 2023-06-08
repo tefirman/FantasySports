@@ -251,21 +251,10 @@ class League:
         """
         Loads a translation table for all NFL team abbreviations across platforms
         """
-        try:
-            self.nfl_teams = pd.read_csv(
-                "https://raw.githubusercontent.com/"
-                + "tefirman/FantasySports/main/res/football/team_abbrevs.csv"
-            )
-        except:
-            raw_teams = [
-                team.split(",")
-                for team in requests.get(
-                    "https://raw.githubusercontent.com/"
-                    + "tefirman/FantasySports/main/res/football/team_abbrevs.csv",
-                    verify=False,
-                ).text.split("\r")
-            ]
-            self.nfl_teams = pd.DataFrame(raw_teams[1:], columns=raw_teams[0])
+        self.nfl_teams = pd.read_csv(
+            "https://raw.githubusercontent.com/"
+            + "tefirman/FantasySports/main/res/football/team_abbrevs.csv"
+        )
 
     def load_nfl_schedule(self,path='NFLSchedule.csv'):
         """
@@ -491,6 +480,13 @@ class League:
         s.schedule[['boxscore_abbrev','team2_abbrev','score1']]\
         .rename(columns={'boxscore_abbrev':'game_id','team2_abbrev':'team','score1':'points_allowed'})],ignore_index=True)
         stats = pd.merge(left=stats,right=pts_allowed,how='left',on=['game_id','team'])
+        pos_corrections = pd.read_csv(
+            "https://raw.githubusercontent.com/"
+            + "tefirman/FantasySports/main/res/football/pos_corrections.csv"
+        )
+        stats = pd.merge(left=stats,right=pos_corrections[['player_id','actual_pos']],how='left',on=['player_id'])
+        stats.loc[~stats.actual_pos.isnull(),'pos'] = stats.loc[~stats.actual_pos.isnull(),'actual_pos']
+        del stats['actual_pos']
         to_fix = ~stats.pos.isin(["QB", "RB", "WR", "TE", "K"]) & (
             stats.pos.str.contains("QB")
             | stats.pos.str.contains("WR")
@@ -499,7 +495,8 @@ class League:
             | stats.pos.str.contains("K")
         )
         if to_fix.any():
-            print(stats.loc[to_fix, ["player_id", "player", "pos"]])
+            print('Weird positions in game-by-game stats...')
+            print(stats.loc[to_fix, ["player_id", "player", "pos"]].to_string(index=False))
         defenses = (
             stats.loc[~stats.pos.isin(["QB", "RB", "WR", "TE", "K"])]
             .groupby(
@@ -611,21 +608,10 @@ class League:
         Applies name corrections between Pro Football Reference and Yahoo.
         """
         self.load_stats((self.season - 2) * 100 + 1, self.season * 100 + self.week - 1)
-        try:
-            corrections = pd.read_csv(
-                "https://raw.githubusercontent.com/"
-                + "tefirman/FantasySports/main/res/football/name_corrections.csv"
-            )
-        except:
-            corrections = [
-                player.split(",")
-                for player in requests.get(
-                    "https://raw.githubusercontent.com/"
-                    + "tefirman/FantasySports/main/res/football/name_corrections.csv",
-                    verify=False,
-                ).text.split("\r")
-            ]
-            corrections = pd.DataFrame(corrections[1:], columns=corrections[0])
+        corrections = pd.read_csv(
+            "https://raw.githubusercontent.com/"
+            + "tefirman/FantasySports/main/res/football/name_corrections.csv"
+        )
         self.players = pd.merge(
             left=self.players, right=corrections, how="left", on="name"
         )
@@ -652,21 +638,10 @@ class League:
             reference_games (int, optional): number of games to include the prior for rate calculation, defaults to None.
             basaloppqbtime (list, optional): list containing the basal factor, opponent elo factor, and QB elo factor, defaults to [].
         """
-        try:
-            params = pd.read_csv(
-                "https://raw.githubusercontent.com/"
-                + "tefirman/FantasySports/main/res/football/weighting_factors.csv"
-            )
-        except:
-            params = [
-                player.split(",")
-                for player in requests.get(
-                    "https://raw.githubusercontent.com/"
-                    + "tefirman/FantasySports/main/res/football/weighting_factors.csv",
-                    verify=False,
-                ).text.split("\r")
-            ]
-            params = pd.DataFrame(params[1:], columns=params[0])
+        params = pd.read_csv(
+            "https://raw.githubusercontent.com/"
+            + "tefirman/FantasySports/main/res/football/weighting_factors.csv"
+        )
         if earliest:
             self.earliest = earliest
         else:
@@ -716,21 +691,10 @@ class League:
                 elif self.season < self.latest_season:
                     self.players.loc[self.players.name == name, "until"] = 17
         if as_of // 100 == self.latest_season:
-            try:
-                inj_proj = pd.read_csv(
-                    "https://raw.githubusercontent.com/"
-                    + "tefirman/FantasySports/main/res/football/injured_list.csv"
-                )
-            except:
-                inj_proj = [
-                    player.split(",")
-                    for player in requests.get(
-                        "https://raw.githubusercontent.com/"
-                        + "tefirman/FantasySports/main/res/football/injured_list.csv",
-                        verify=False,
-                    ).text.split("\r")
-                ]
-                inj_proj = pd.DataFrame(inj_proj[1:], columns=inj_proj[0])
+            inj_proj = pd.read_csv(
+                "https://raw.githubusercontent.com/"
+                + "tefirman/FantasySports/main/res/football/injured_list.csv"
+            )
             inj_proj = inj_proj.loc[inj_proj.until >= self.lg.current_week()]
             self.players = pd.merge(
                 left=self.players.rename(columns={"until": "until_orig"}),
