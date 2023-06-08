@@ -305,7 +305,7 @@ def season_sim(rosters,current=None,pas_per_game=4,num_sims=1000):
             (standings['sim_IP'] + standings['IP'])*9
         else:
             standings['sim_' + stat] += standings[stat]
-        standings['points_' + stat] = standings.groupby(['sim'])['sim_' + stat].rank(ascending=True)
+        standings['points_' + stat] = standings.groupby(['sim'])['sim_' + stat].rank(ascending=stat not in ['WHIP','ERA'])
         standings = pd.merge(left=standings,right=standings.groupby('sim')['points_' + stat].max()\
         .reset_index().rename(columns={'points_' + stat:'max_points_' + stat}),how='inner',on='sim')
         standings['winner_' + stat] = standings['points_' + stat] == standings['max_points_' + stat]
@@ -905,7 +905,7 @@ def main():
     if not col.endswith('_rate') and not col.endswith('_per_game') \
     and col not in ['player_key','player_id','uniform_number']]],'Available',writer,pcts=['pct_owned'])
     writer.sheets['Available'].freeze_panes(1,1)
-    writer.sheets['Available'].conditional_format('P2:P' + str(available.shape[0] + 1),\
+    writer.sheets['Available'].conditional_format('Q2:Q' + str(available.shape[0] + 1),\
     {'type':'3_color_scale','min_color':'#FF6347','mid_color':'#FFD700','max_color':'#3CB371'})
     for col in standings_sim.columns:
         if standings_sim[col].dtype == float:
