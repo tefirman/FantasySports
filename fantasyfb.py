@@ -80,13 +80,14 @@ class League:
             basaloppqbtime (list, optional): list of the four weighting factors when calculating rates, defaults to an empty list.
         """
         self.latest_season = datetime.datetime.now().year - int(
-            datetime.datetime.now().month < 7
+            datetime.datetime.now().month < 6
         )
         self.season = season if type(season) == int else self.latest_season
         self.load_credentials()
         self.load_oauth()
         self.load_league(name)
-        self.week = week if type(week) == int else self.lg.current_week()
+        self.current_week = self.lg.current_week()
+        self.week = week if type(week) == int else self.current_week
         self.load_settings()
         self.load_fantasy_teams()
         self.load_nfl_abbrevs()
@@ -94,6 +95,7 @@ class League:
         self.get_yahoo_players(injurytries)
         self.get_fantasy_rosters()
         self.name_corrections()
+        self.get_player_ids()
         self.load_parameters(earliest, reference_games, basaloppqbtime)
         self.num_sims = num_sims if type(num_sims) == int else 10000
         self.get_rates()
@@ -510,34 +512,12 @@ class League:
         defenses["pos"] = "DEF"
         defenses = defenses[[col for col in stats.columns if col in defenses.columns]]
         stats = stats.loc[stats.pos.isin(["QB", "RB", "WR", "TE", "K"])]
-        self.stats = pd.concat([stats,defenses], ignore_index=True).rename(columns={'pos':'position','player':'name'})
+        self.stats = pd.concat([stats,defenses], ignore_index=True)\
+        .rename(columns={'pos':'position','player':'name','player_id':'player_id_sr'})
         self.stats["weeks_ago"] = (
             datetime.datetime.now()
             - pd.to_datetime(self.stats.game_id.str[:8], infer_datetime_format=True)
         ).dt.days / 7.0
-
-    def get_current_team(self):
-        """
-        Derives the current team of every player based on the season and week in question.
-        """
-        as_of = self.season * 100 + self.week
-        if (self.stats.season * 100 + self.stats.week).max() >= as_of:
-            teams_as_of = (
-                self.stats.loc[self.stats.season * 100 + self.stats.week >= as_of]
-                .sort_values(by="week")
-                .drop_duplicates(subset="player_id", keep="first")[
-                    ["player_id", "team"]
-                ]
-                .rename(columns={"team": "current_team"})
-            )
-        else:
-            teams_as_of = sr.get_bulk_rosters(self.season)[["player_id", "team"]].rename(columns={'team':'current_team'})
-        self.stats = pd.merge(
-            left=self.stats.loc[self.stats.season * 100 + self.stats.week < as_of],
-            right=teams_as_of,
-            how="left",
-            on="player_id",
-        )
 
     def add_points(self):
         """
@@ -600,7 +580,6 @@ class League:
     
     def load_stats(self, start: int, finish: int):
         self.pull_stats(start, finish)
-        self.get_current_team()
         self.add_points()
 
     def name_corrections(self):
@@ -626,6 +605,28 @@ class League:
                 "Need to reconcile player names... "
                 + ", ".join(self.players.loc[not_found, "name"])
             )
+
+    def get_player_ids(self):
+        self.nfl_rosters = pd.DataFrame()
+        for season in range(self.season - 1,self.latest_season + 1):
+            self.nfl_rosters = pd.concat([self.nfl_rosters,sr.get_bulk_rosters(season)],ignore_index=True)
+        self.nfl_rosters = self.nfl_rosters.rename(columns={'player':'name','player_id':'player_id_sr','team':'current_team'})
+        self.players = pd.merge(
+            left=self.players,right=self.nfl_teams[["real_abbrev", "yahoo"]].rename(
+                columns={"yahoo": "editorial_team_abbr", "real_abbrev": "current_team"}
+            ),
+            how="inner",
+            on="editorial_team_abbr",
+        )
+        self.players = pd.merge(left=self.players,right=self.nfl_rosters[['name','current_team','player_id_sr']].drop_duplicates()\
+        .rename(columns={'player':'name','player_id':'player_id_sr','team':'current_team'}),how='left',on=['name','current_team'])
+        defenses = self.players.position.isin(['DEF'])
+        self.players.loc[defenses,'player_id_sr'] = self.players.loc[defenses,'name']
+        missing = self.players.player_id_sr.isnull() & self.players.name.isin(self.nfl_rosters.name.unique())
+        closest = self.players[missing].reset_index(drop=True)
+        del closest['player_id_sr'], closest['current_team']
+        closest = pd.merge(left=closest,right=self.nfl_rosters[['name','current_team','player_id_sr']].drop_duplicates(subset=['name'],keep='last'),how='inner',on='name')
+        self.players = pd.concat([self.players[~missing],closest],ignore_index=True)
 
     def load_parameters(self, earliest=None, reference_games=None, basaloppqbtime=[]):
         """
@@ -673,7 +674,7 @@ class League:
         if "until" in self.players.columns:
             del self.players["until"]
         self.players["until"] = None
-        if as_of < self.latest_season * 100 + self.lg.current_week():
+        if as_of < self.latest_season * 100 + self.current_week:
             self.load_stats(self.season * 100 + 1, self.season * 100 + 17)
             self.stats = self.stats.loc[
                 self.stats.season * 100 + self.stats.week >= as_of
@@ -695,14 +696,14 @@ class League:
                 "https://raw.githubusercontent.com/"
                 + "tefirman/FantasySports/main/res/football/injured_list.csv"
             )
-            inj_proj = inj_proj.loc[inj_proj.until >= self.lg.current_week()]
+            inj_proj = inj_proj.loc[inj_proj.until >= self.current_week]
             self.players = pd.merge(
                 left=self.players.rename(columns={"until": "until_orig"}),
                 right=inj_proj,
                 how="left",
-                on=["name", "position", "current_team"],
+                on=["player_id_sr", "name", "position"],
             )
-            if as_of % 100 == self.lg.current_week():
+            if as_of % 100 == self.current_week:
                 newInjury = (
                     self.players.status.isin(
                         [
@@ -719,7 +720,7 @@ class League:
                     )
                     & (
                         self.players.until.isnull()
-                        | (self.players.until < self.lg.current_week())
+                        | (self.players.until < self.current_week)
                     )
                     & (~self.players.fantasy_team.isnull())
                 )  # | (self.players.WAR >= 0))
@@ -728,7 +729,8 @@ class League:
                         "Need to look up new injuries... "
                         + ", ".join(self.players.loc[newInjury, "name"].tolist())
                     )
-                    self.players.loc[newInjury, "until"] = self.lg.current_week()
+                    self.players.loc[newInjury, "until"] = self.current_week
+                    self.players.loc[newInjury,["player_id_sr","name","position","status"]].to_csv("NewInjuries.csv",index=False)
                 oldInjury = (
                     ~self.players.status.isin(
                         [
@@ -743,7 +745,7 @@ class League:
                             "COVID-19",
                         ]
                     )
-                    & (self.players.until >= self.lg.current_week())
+                    & (self.players.until >= self.current_week)
                     & (~self.players.fantasy_team.isnull())
                 )  # | (self.players.WAR >= 0))
                 if oldInjury.sum() > 0:
@@ -751,7 +753,8 @@ class League:
                         "Need to update old injuries... "
                         + ", ".join(self.players.loc[oldInjury, "name"].tolist())
                     )
-                    # self.players.loc[oldInjury,'until'] = self.lg.current_week()
+                    self.players.loc[oldInjury,["player_id_sr","name","position"]].to_csv("OldInjuries.csv",index=False)
+                    # self.players.loc[oldInjury,'until'] = self.current_week
             self.players["until"] = self.players[["until_orig", "until"]].min(axis=1)
             del self.players["until_orig"]
 
@@ -759,7 +762,7 @@ class League:
         """
         Derives bye weeks based on the current NFL schedule and merges them to the players dataframe.
         """
-        byes = pd.DataFrame(columns=["current_team", "bye_week"])
+        byes = pd.DataFrame()
         for team in self.nfl_schedule.team.unique():
             bye_week = 1
             while (
@@ -829,7 +832,7 @@ class League:
                     pd.DataFrame(
                         {
                             "player_id": player_id,
-                            "name": full_name,
+                            # "name": full_name,
                             "pct_rostered": pct_owned,
                         }
                     )],
@@ -837,7 +840,7 @@ class League:
                     sort=False,
                 )
         self.players = pd.merge(
-            left=self.players, right=roster_pcts, how="left", on=["player_id", "name"]
+            left=self.players, right=roster_pcts, how="left", on=["player_id"]#, "name"]
         )
         self.players.pct_rostered = self.players.pct_rostered.fillna(0.0)
 
@@ -872,8 +875,8 @@ class League:
             how="inner",
             on="position",
         )
-        by_pos["name"] = "Average_" + by_pos["position"]
-        self.stats = self.stats.groupby("player_id").head(self.reference_games)
+        by_pos["player_id_sr"] = "avg_" + by_pos["position"]
+        self.stats = self.stats.groupby(["player_id_sr","position"]).head(self.reference_games)
         self.stats["weeks_ago"] = (
             17 * (as_of // 100 - self.stats.season) + as_of % 100 - self.stats.week
         )
@@ -881,42 +884,42 @@ class League:
         self.stats = self.stats.loc[self.stats.time_factor > 0].reset_index(drop=True)
         self.stats = pd.merge(
             left=self.stats,
-            right=self.stats.groupby(["name", "position"])
-            .agg({"time_factor": sum, "player_id": "count"})
+            right=self.stats.groupby(["player_id_sr","position"])
+            .agg({"time_factor": sum, "name": "count"})
             .rename(
-                columns={"player_id": "num_games", "time_factor": "time_factor_sum"}
+                columns={"name": "num_games", "time_factor": "time_factor_sum"}
             )
             .reset_index(),
             how="inner",
-            on=["name", "position"],
+            on=["player_id_sr","position"],
         )
         self.stats.time_factor = (
             self.stats.time_factor * self.stats.num_games / self.stats.time_factor_sum
         )
         self.stats["weighted_points"] = self.stats.points * self.stats.time_factor
         by_player = pd.merge(
-            left=self.stats.groupby(["name", "position"])
+            left=self.stats.groupby(["player_id_sr","position"])
             .weighted_points.mean()
             .reset_index()
             .rename(columns={"weighted_points": "points_avg"}),
-            right=self.stats.groupby(["name", "position"])
+            right=self.stats.groupby(["player_id_sr","position"])
             .weighted_points.std()
             .reset_index()
             .rename(columns={"weighted_points": "points_stdev"}),
             how="inner",
-            on=["name", "position"],
+            on=["player_id_sr","position"],
         )
         by_player = pd.merge(
             left=by_player,
-            right=self.stats.groupby(["name", "position"])
+            right=self.stats.groupby(["player_id_sr","position"])
             .size()
             .to_frame("num_games")
             .reset_index(),
             how="inner",
-            on=["name", "position"],
+            on=["player_id_sr","position"],
         )
         by_player = pd.concat([by_player,
-            by_pos[["name", "position", "points_avg", "points_stdev"]]],
+            by_pos[["position", "points_avg", "points_stdev"]]],
             ignore_index=True,
             sort=False,
         )
@@ -951,33 +954,33 @@ class League:
             by_player.loc[inds, "points_squared"]
             - by_player.loc[inds, "points_avg"] ** 2
         ) ** 0.5
-        league_avg = by_player.loc[by_player.name.str.contains("Average_")]
+        by_player.player_id_sr = by_player.player_id_sr.fillna("")
+        league_avg = by_player.loc[by_player.player_id_sr.str.startswith("avg_")]
         by_player = pd.merge(
-            left=by_player,
+            left=by_player.sort_values(by='num_games',ascending=False)\
+            .drop_duplicates(subset=['player_id_sr'],keep='first',ignore_index=True),
             right=self.players[
                 [
-                    "name",
-                    "position",
+                    "player_id_sr",
                     "player_id",
                     "status",
                     "fantasy_team",
-                    "editorial_team_abbr",
+                    "current_team",
                     "selected_position",
                 ]
             ].drop_duplicates(),
             how="right",
-            on=["name", "position"],
+            on=["player_id_sr"],
         )
-        by_player = pd.concat([by_player,league_avg], ignore_index=True, sort=False)
         rookies = pd.merge(
             left=by_player.loc[
                 by_player.num_games.isnull(),
                 [
-                    "name",
+                    "player_id_sr",
                     "player_id",
                     "position",
                     "fantasy_team",
-                    "editorial_team_abbr",
+                    "current_team",
                     "selected_position",
                 ],
             ],
@@ -989,34 +992,43 @@ class League:
         by_player = pd.concat([by_player,
             rookies[
                 [
-                    "name",
+                    "player_id_sr",
                     "player_id",
                     "position",
                     "points_avg",
                     "points_stdev",
                     "fantasy_team",
-                    "editorial_team_abbr",
+                    "current_team",
                     "selected_position",
                 ]
-            ]],
+            ],
+            league_avg],
             ignore_index=True,
             sort=False,
         )
-        if as_of // 100 == self.latest_season:
-            """First week issues..."""
-            by_player = pd.merge(
-                left=by_player,
-                right=self.nfl_teams[["real_abbrev", "yahoo"]].rename(
-                    columns={"yahoo": "editorial_team_abbr"}
-                ),
-                how="left",
-                on="editorial_team_abbr",
-            )
-            by_player.loc[~by_player.real_abbrev.isnull(), "current_team"] = by_player.loc[
-                ~by_player.real_abbrev.isnull(), "real_abbrev"
+        by_player = pd.merge(left=by_player,right=self.nfl_rosters[['player_id_sr','name']]\
+        .drop_duplicates(subset=['player_id_sr'],keep='last'),how='left',on='player_id_sr')
+        defenses = by_player.player_id_sr.isin(self.nfl_teams.real_abbrev.tolist())
+        by_player.loc[defenses,'name'] = by_player.loc[defenses,'player_id_sr']
+        avgs = by_player.player_id_sr.str.startswith("avg_")
+        by_player.loc[avgs,"name"] = "Average_" + by_player.loc[avgs,"position"]
+        teams_as_of = (
+            self.stats.loc[self.stats.season * 100 + self.stats.week >= as_of]
+            .sort_values(by=["season","week"],ascending=True)
+            .drop_duplicates(subset="player_id_sr", keep="first")[
+                ["player_id_sr", "team"]
             ]
-            del by_player["real_abbrev"]
-            """ First week issues... """
+            .rename(columns={"team": "actual_team"})
+        )
+        by_player = pd.merge(
+            left=by_player,
+            right=teams_as_of,
+            how="left",
+            on="player_id_sr",
+        )
+        not_yet = ~by_player.actual_team.isnull()
+        by_player.loc[not_yet,'current_team'] = by_player.loc[not_yet,'actual_team']
+        del by_player['actual_team']
         self.players = by_player
 
     def get_schedule(self):
@@ -1136,7 +1148,7 @@ class League:
             schedule.loc[schedule.week > as_of % 100, "score_2"] = 0.0
             if (
                 self.latest_season > as_of // 100
-                or as_of % 100 < self.lg.current_week()
+                or as_of % 100 < self.current_week
             ):
                 schedule.loc[schedule.week == as_of % 100, "score_1"] = 0.0
                 schedule.loc[schedule.week == as_of % 100, "score_2"] = 0.0
@@ -1428,7 +1440,7 @@ class League:
         standings = (
             standings.loc[standings.week < self.settings["playoff_start_week"]]
             .groupby(["num_sim", "team"])
-            .sum()
+            .sum(numeric_only=True)
             .sort_values(by=["num_sim", "wins", "points"], ascending=False)
             .reset_index()
         )
@@ -1814,7 +1826,7 @@ class League:
                 columns=["team", "winner", "runner_up", "third", "many_mile"]
             )
         schedule = (
-            schedule_sims.groupby(["week", "team_1", "team_2"]).mean().reset_index()
+            schedule_sims.groupby(["week", "team_1", "team_2"]).mean(numeric_only=True).reset_index()
         )
         schedule["points_avg_1"] = round(schedule["points_avg_1"], 1)
         schedule["points_stdev_1"] = round(schedule["points_stdev_1"], 1)
@@ -1965,6 +1977,9 @@ class League:
         )
         """ Calculating the number of wins above replacement for each player """
         for player in sim_scores.columns[10:]:
+            if pd.isnull(player):
+                print("Null player name for some reason... Skipping...")
+                continue
             cols = sim_scores.columns[:9].tolist()
             pos = self.players.loc[self.players.name == player, "position"].values[0]
             if pos in ["RB", "WR"]:
@@ -2674,6 +2689,7 @@ def excelAutofit(df, name, writer):
             "runner_up",
             "third",
             "many_mile",
+            "pct_rostered",
         ]:
             writer.sheets[name].set_column(idx, idx, max_len, p)
         else:
@@ -2938,7 +2954,7 @@ def main():
                 "until",
                 "starter",
                 "injured",
-            ]
+            ] + (["pct_rostered"] if options.rosterpcts else [])
         ],
         "Rosters",
         writer,
@@ -2983,7 +2999,7 @@ def main():
                 "status",
                 "bye_week",
                 "until",
-            ]
+            ] + (["pct_rostered"] if options.rosterpcts else [])
         ],
         "Available",
         writer,
@@ -3396,7 +3412,7 @@ def main():
             },
         )
 
-    writer.save()
+    writer.close()
     os.system(
         'touch -t {} "{}"'.format(
             datetime.datetime.now().strftime("%Y%m%d%H%M"),
