@@ -828,6 +828,4 @@ def get_names():
                 "years_active": player.text.split(") ")[-1],
             }
             names = pd.concat([names, pd.DataFrame(entry, index=[names.shape[0]])])
-    names.loc[names.name == "Logan Thomas", "position"] = "TE"
-    names.loc[names.name == "Cordarrelle Patterson", "position"] = "RB"
     return names
