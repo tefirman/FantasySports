@@ -16,3 +16,4 @@ dependencies:
     - Unidecode
     - black
     - lxml
+    - scipy
