@@ -17,9 +17,9 @@ import pandas as pd
 import os
 import datetime
 from geopy.distance import geodesic
-from geopy.geocoders import Nominatim
+import shutil
+import gzip
 
-geocoder = Nominatim(user_agent="fff")
 base_url = "https://www.pro-football-reference.com/"
 
 
@@ -70,9 +70,9 @@ def parse_table(raw_text: str, table_name: str):
                     entry[new_col] = entry[new_col].split("/")[-1].split(".")[0]
             elif col == "player" and "data-append-csv" in entry[col].attrs:
                 entry["player_id"] = entry[col].attrs["data-append-csv"]
-            elif col in ["winner", "loser", "home_team", "visitor_team"]:
-                entry[col + "_abbrev"] = (
-                    entry[col].find("a").attrs["href"].split("/")[-2].upper()
+            elif col in ["winner", "loser", "home_team", "visitor_team","teams","team"] and entry[col].find("a") is not None:
+                entry[col + "_abbrev"] = ", ".join(
+                    [team.attrs["href"].split("/")[-2].upper() for team in entry[col].find_all("a")]
                 )
             entry[col] = entry[col].text
         stats = pd.concat([stats, pd.DataFrame(entry, index=[stats.shape[0]])])
@@ -106,7 +106,7 @@ def get_intl_games():
     intl_games["game_date"] = pd.to_datetime(
         intl_games.Date + ", " + intl_games.Year.astype(str), infer_datetime_format=True
     )
-    return intl_games[["game_date", "team1", "team2"]]
+    return intl_games[["game_date", "team1", "team2", "Stadium"]]
 
 
 def get_depth_chart(team_abbrev: str):
@@ -122,10 +122,11 @@ def get_depth_chart(team_abbrev: str):
             for string in range(num_strings):
                 depth = pd.concat([depth,pd.DataFrame({'player':[players[pos*num_strings + string]],\
                 'pos':[positions[pos]],'string':[string + 1]})],ignore_index=True)
+    depth.loc[depth.pos.isin(['PK']),'pos'] = 'K'
     wrs = depth.pos == 'WR'
     depth.loc[wrs,'string'] = 1 + (depth.loc[wrs].string.rank(method='first') - 1)/3
     depth = depth.loc[depth.player != '-'].reset_index(drop=True)
-    for status in ['Q']: # Need to expand this with possible values as the season goes on...
+    for status in ['Q','SUSP']: # Need to expand this with possible values as the season goes on...
         injured = depth.player.str.endswith(' ' + status)
         depth.loc[injured,'player'] = depth.loc[injured,'player'].str.split(' ').str[:-1].apply(' '.join)
     corrections = pd.read_csv("https://raw.githubusercontent.com/tefirman/FantasySports/main/res/football/name_corrections.csv")
@@ -174,19 +175,19 @@ def get_team_stadium(abbrev: str, season: int):
     stadium_info = [val for val in team_info if val.text.startswith("Stadium:")]
     if len(stadium_info) == 0:
         stadiums = get_stadiums()
-        stadiums.teams = stadiums.teams.str.split(", ")
-        stadiums = stadiums.explode("teams", ignore_index=True)
-        name = (
-            raw_text.find("div", attrs={"data-template": "Partials/Teams/Summary"})
-            .find_all("span")[1]
-            .text
-        )
+        stadiums.teams_abbrev = stadiums.teams_abbrev.str.split(", ")
+        stadiums = stadiums.explode("teams_abbrev", ignore_index=True)
         stadium_id = stadiums.loc[
-            (stadiums.teams == name)
+            (stadiums.teams_abbrev == abbrev)
             & (stadiums.year_min <= season)
             & (stadiums.year_max >= season),
             "stadium_abbrev",
-        ].values[0]
+        ]
+        if stadium_id.shape[0] > 0:
+            stadium_id = stadium_id.values[0]
+        else:
+            print("Can't find home stadium for {} {}...".format(season,abbrev))
+            stadium_id = None
     else:
         stadium_info = stadium_info[0]
         stadium_id = stadium_info.find("a").attrs["href"].split("/")[-1].split(".")[0]
@@ -232,35 +233,18 @@ def get_address(stadium_id: str):
     return address
 
 
-def try_geocoder(address: str, pause: int = 30, max_tries: int = 10):
-    """
-    Tries to pull address coordinates using geocoder while accounting for possible server crapouts.
-
-    Args:
-        address (str): physical address of interest.
-        pause (int, optional): number of seconds to wait between each try, defaults to 30.
-        max_tries (int, optional): maximum number of times to try, defaults to 10.
-
-    Returns:
-        geopy.location.Location: geopy object containing details about the location of interest.
-    """
-    num_tries = 0
-    while num_tries < max_tries:
-        try:
-            location = geocoder.geocode(address)
-            break
-        except:
-            num_tries += 1
-            if num_tries < max_tries:
-                print(f"Geocoder crapped out... Waiting {pause} seconds and trying again...")
-                time.sleep(pause)
-            else:
-                print("Geocoder keeps crapping out... Returning None for now...")
-                location = None
-    return location
+def download_zip_codes(url: str = "https://nominatim.org/data/us_postcodes.csv.gz"):
+    response = requests.get(url,stream=True)
+    with open(url.split('/')[-1],'wb') as out_file:
+        shutil.copyfileobj(response.raw,out_file)
+    with gzip.open(url.split('/')[-1], 'rb') as f_in:
+        with open(url.split('/')[-1][:-3], 'wb') as f_out:
+            shutil.copyfileobj(f_in, f_out)
+    zips = pd.read_csv(url.split('/')[-1][:-3],dtype={'postcode':str})
+    return zips
 
 
-def get_coordinates(address: str):
+def get_coordinates(address: str, zips: pd.DataFrame):
     """
     Provides the coordinates of the specified address. If no exact coordinates are available,
     city, state, and zip code are used for an approximate position.
@@ -271,20 +255,20 @@ def get_coordinates(address: str):
     Returns:
         str: latitudinal and longitudinal coordinates separated by a comma.
     """
-    location = try_geocoder(address)
-    if location:
-        coords = str(location.latitude) + "," + str(location.longitude)
+    stad_zip = address.split(' ')[-1]
+    stad_coords = zips.loc[zips.postcode == stad_zip,['lat','lon']].astype(str)
+    if stad_coords.shape[0] > 0:
+        coords = ",".join(stad_coords.values[0])
+    elif stad_zip == "Mexico":
+        coords = "19.3029,-99.1505"
+    elif stad_zip == "UK":
+        coords = "51.5072,-0.1276"
+    elif stad_zip == "Bavaria":
+        coords = "48.2188,11.6248"
     else:
-        print("Can't find location for: " + address)
-        print("Using city, state, and zip...")
-        address = ", ".join(address.split(", ")[-2:])
-        location = try_geocoder(address)
-        if location:
-            coords = str(location.latitude) + "," + str(location.longitude)
-        else:
-            print("Still can't find location for: " + address)
-            print("Using centerpoint of US...")
-            coords = "37.0902,-95.7129"
+        print("Can't find zip code provided: " + str(stad_zip))
+        print("Using centerpoint of US...")
+        coords = "37.0902,-95.7129"
     return coords
 
 
@@ -408,11 +392,12 @@ class Schedule:
                 ),
             ]
         ).drop_duplicates(ignore_index=True)
+        zips = download_zip_codes()
         for ind in range(teams.shape[0]):
             team = teams.iloc[ind]
             stadium_id = get_team_stadium(team["abbrev"], team["season"])
             address = get_address(stadium_id)
-            coords = get_coordinates(address)
+            coords = get_coordinates(address, zips)
             self.schedule.loc[
                 self.schedule.team1_abbrev == team["abbrev"], "coords1"
             ] = coords
@@ -425,13 +410,23 @@ class Schedule:
         self.schedule.loc[~neutral, "game_coords"] = self.schedule.loc[
             ~neutral, "coords1"
         ]
+        zips = download_zip_codes()
         for box in self.schedule.loc[neutral, "boxscore_abbrev"]:
             stadium_id = get_game_stadium(box)
+            if stadium_id == "":
+                stad_name = self.schedule.loc[self.schedule.boxscore_abbrev == box,"Stadium"].values[0]
+                if stad_name == "Wembley Stadium":
+                    stadium_id = "LON00"
+                elif stad_name == "Tottenham Hotspur Stadium":
+                    stadium_id = "LON02"
+                elif stad_name == "Deutsche Bank Park":
+                    stadium_id = "MUN01" # Not quite right, but close enough for now...
             address = get_address(stadium_id)
-            coords = get_coordinates(address)
+            coords = get_coordinates(address, zips)
             self.schedule.loc[
                 self.schedule.boxscore_abbrev == box, "game_coords"
             ] = coords
+        del self.schedule["Stadium"]
         self.schedule.game_coords = self.schedule.game_coords.str.split(",")
 
     def add_travel(self):
@@ -699,6 +694,8 @@ def get_bulk_stats(
             s.schedule.season * 100 + s.schedule.week
             <= finish_season * 100 + finish_week
         )
+        & ~s.schedule.score1.isnull()
+        & ~s.schedule.score2.isnull()
     ].reset_index(drop=True)
     if path and os.path.exists(str(path)):
         stats = pd.read_csv(path)
@@ -752,19 +749,41 @@ def get_roster(team: str, season: int):
     return roster
 
 
-def get_bulk_rosters(season: int):
-    s = Schedule(season,season)
-    teams = pd.DataFrame()
-    for team in s.schedule.team1_abbrev.unique():
-        roster = get_roster(team,season)
-        roster['team'] = team
-        roster['season'] = season
-        teams = pd.concat([teams,roster],ignore_index=True)
+def get_bulk_rosters(start_season: int, finish_season: int, path: str = None):
+    s = Schedule(start_season,finish_season)
+    # Need to delete and repull after every new week to account for trades, etc.
+    if path and os.path.exists(str(path)):
+        teams = pd.read_csv(path)
+    else:
+        teams = pd.DataFrame(columns=["season"])
+    new_games = any([season not in teams.season.unique() for season in range(start_season,finish_season + 1)])
+    for season in range(start_season,finish_season + 1):
+        if season not in teams.season.unique():
+            for team in s.schedule.loc[s.schedule.season == season,'team1_abbrev'].unique():
+                roster = get_roster(team,season)
+                roster['team'] = team
+                roster['season'] = season
+                teams = pd.concat([teams,roster],ignore_index=True)
+    if path and (new_games or finish_season == datetime.datetime.now().year):
+        teams.to_csv(path,index=False)
+    teams.player = teams.player.str.split(' (',regex=False).str[0]
     return teams
 
 
 def get_qb_elos(start, finish, regress_pct=0.25, qb_games=10, team_games=20, elo_adj=3.3):
-    stats = get_bulk_stats(start - 2,1,finish,50,True,"GameByGameFantasyFootballStats.csv")
+    stats = get_bulk_stats(start - 3,1,finish,50,True,"GameByGameFantasyFootballStats.csv")
+    if finish == datetime.datetime.now().year and datetime.datetime.now().month > 5:
+        # Accounting for current season
+        sched = Schedule(finish,finish).schedule.copy()
+        missing = pd.concat([sched.loc[sched.score1.isnull() & sched.score2.isnull(),\
+        ['season','week_num','boxscore_abbrev','team1_abbrev','team2_abbrev']]\
+        .rename(columns={'week_num':'week','boxscore_abbrev':'game_id','team1_abbrev':'team','team2_abbrev':'opponent'}),\
+        sched.loc[sched.score1.isnull() & sched.score2.isnull(),['season','week_num','boxscore_abbrev','team2_abbrev','team1_abbrev']]\
+        .rename(columns={'week_num':'week','boxscore_abbrev':'game_id','team2_abbrev':'team','team1_abbrev':'opponent'})],ignore_index=True)
+        current = get_all_depth_charts()
+        current = current.loc[(current.pos == 'QB') & (current.string == 1.0)]
+        missing = pd.merge(left=missing,right=current,how='inner',on='team')
+        stats = pd.concat([stats,missing],ignore_index=True)
     draft_pos = get_bulk_draft_pos(start - 10,finish,"NFLDraftPositions.csv")
     prev_all = stats.loc[(stats.season < stats.season.min() + 2) & \
     (stats.pos == 'QB') & (stats.string == 1)].reset_index(drop=True)
@@ -792,14 +811,19 @@ def get_qb_elos(start, finish, regress_pct=0.25, qb_games=10, team_games=20, elo
             if new.loc[ind,'season'] > prev_qb.iloc[-1]['season'] and prev_qb.shape[0] >= 10 and prev_qb.shape[0] <= 100:
                 new.loc[ind,'qb_value_pre'] = (1 - regress_pct)*new.loc[ind,'qb_value_pre'] + regress_pct*avg_value
             new.loc[ind,'num_games'] = prev_qb.shape[0]
-        new.loc[ind,'team_qbvalue_avg'] = by_team.loc[by_team.team == new.loc[ind,'team'],'VALUE'].values[0]
-        new.loc[ind,'opp_qbvalue_avg'] = by_opponent.loc[by_opponent.opponent == new.loc[ind,'opponent'],'VALUE'].values[0] - avg_value
-        new.loc[ind,'VALUE'] -= new.loc[ind,'opp_qbvalue_avg']
-        new.loc[ind,'qb_value_post'] = new.loc[ind,'qb_value_pre']*(1 - 1/qb_games) + new.loc[ind,'VALUE']/qb_games
-        by_opponent.loc[by_opponent.opponent == new.loc[ind,'opponent'],'VALUE'] *= (1 - 1/team_games)
-        by_opponent.loc[by_opponent.opponent == new.loc[ind,'opponent'],'VALUE'] += new.loc[ind,'VALUE']/team_games
-        by_team.loc[by_team.team == new.loc[ind,'team'],'VALUE'] *= (1 - 1/team_games)
-        by_team.loc[by_team.team == new.loc[ind,'team'],'VALUE'] += new.loc[ind,'VALUE']/team_games
+        if pd.isnull(new.loc[ind,'VALUE']):
+            # Game hasn't been played yet
+            new.loc[ind,'qb_value_post'] = new.loc[ind,'qb_value_pre']
+            new.loc[ind,'team_qbvalue_avg'] = by_team.loc[by_team.team == new.loc[ind,'team'],'VALUE'].values[0]
+        else:
+            new.loc[ind,'team_qbvalue_avg'] = by_team.loc[by_team.team == new.loc[ind,'team'],'VALUE'].values[0]
+            new.loc[ind,'opp_qbvalue_avg'] = by_opponent.loc[by_opponent.opponent == new.loc[ind,'opponent'],'VALUE'].values[0] - avg_value
+            new.loc[ind,'VALUE'] -= new.loc[ind,'opp_qbvalue_avg']
+            new.loc[ind,'qb_value_post'] = new.loc[ind,'qb_value_pre']*(1 - 1/qb_games) + new.loc[ind,'VALUE']/qb_games
+            by_opponent.loc[by_opponent.opponent == new.loc[ind,'opponent'],'VALUE'] *= (1 - 1/team_games)
+            by_opponent.loc[by_opponent.opponent == new.loc[ind,'opponent'],'VALUE'] += new.loc[ind,'VALUE']/team_games
+            by_team.loc[by_team.team == new.loc[ind,'team'],'VALUE'] *= (1 - 1/team_games)
+            by_team.loc[by_team.team == new.loc[ind,'team'],'VALUE'] += new.loc[ind,'VALUE']/team_games
     new['qb_adj'] = elo_adj*(new.qb_value_pre - new.team_qbvalue_avg)
     return new[['game_id','player','team','team_qbvalue_avg',\
     'opp_qbvalue_avg','qb_value_pre','qb_adj','qb_value_post','VALUE']]
