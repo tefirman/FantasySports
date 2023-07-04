@@ -48,7 +48,7 @@ class League:
         num_sims: integer specifying the number of Monte Carlo simulations to run
         earliest: integer describing the earliest week to pull statistics from (YYYYWW)
         reference_games: integer describing the number of games to use as a prior for rates
-        basaloppqbtime: list of the four weighting factors when calculating rates
+        basaloppstringtime: list of the four weighting factors when calculating rates
         schedule: dataframe containing the fantasy schedule for the league and season in question
     """
 
@@ -61,7 +61,7 @@ class League:
         num_sims=10000,
         earliest=None,
         reference_games=None,
-        basaloppqbtime=[],
+        basaloppstringtime=[],
         sfb=False
     ):
         """
@@ -75,7 +75,7 @@ class League:
             num_sims (int, optional): integer specifying the number of Monte Carlo simulations to run, defaults to 10000.
             earliest (int, optional): integer describing the earliest week to pull statistics from (YYYYWW), defaults to None.
             reference_games (int, optional): integer describing the number of games to use as a prior for rates, defaults to None.
-            basaloppqbtime (list, optional): list of the four weighting factors when calculating rates, defaults to an empty list.
+            basaloppstringtime (list, optional): list of the four weighting factors when calculating rates, defaults to an empty list.
             sfb (bool, optional): whether to implement SFB13 settings and scoring, defaults to False.
         """
         self.latest_season = datetime.datetime.now().year - int(
@@ -95,7 +95,7 @@ class League:
         self.get_fantasy_rosters()
         self.name_corrections()
         self.get_player_ids()
-        self.load_parameters(earliest, reference_games, basaloppqbtime)
+        self.load_parameters(earliest, reference_games, basaloppstringtime)
         self.num_sims = num_sims if type(num_sims) == int else 10000
         self.get_rates()
         self.war_sim()
@@ -227,9 +227,10 @@ class League:
             # Can't capture first downs in Pro Football Reference yet unfortunately...
             self.settings['playoff_start_week'] = 12
             self.settings['num_playoff_teams'] = 6
-            self.scoring = {'Pass Yds':0.04,'Pass Comp':0.1,'Pass TD':6.0,'Int Thrown':0.0,\
-            'Rush Yds':0.1,'Rush TD':6.0,'Rush Att':0.25,'Rec Yds':0.1,'Rec TD':6.0,'Rec':1.0,\
-            'Ret Yds':0.0,'Ret TD':6.0,'2-PT':2.0,'Fum Lost':0.0,'Fum Ret TD':6.0,\
+            self.scoring = {'Pass Yds':0.04,'Pass Comp':0.1,'Pass TD':6.0,'Pass 1D':0.1,\
+            'Int Thrown':0.0,'Rush Yds':0.1,'Rush Att':0.25,'Rush TD':6.0,'Rush 1D':1.0,\
+            'Rec Yds':0.1,'Rec':1.0,'Rec TD':6.0,'Rec 1D':1.0,'Ret Yds':0.0,'Ret TD':6.0,\
+            'TE Rec Bonus':1.0,'TE 1D Bonus':1.0,'2-PT':2.0,'Fum Lost':0.0,'Fum Ret TD':6.0,\
             'FG 0-19':2.0,'FG 20-29':2.5,'FG 30-39':3.5,'FG 40-49':4.5,'FG 50+':5.5,'PAT Made':3.3,\
             'Sack':0.0,'Int':0.0,'Fum Rec':0.0,'TD':0.0,'Safe':0.0,'Blk Kick':0.0,\
             'Pts Allow 0':0.0,'Pts Allow 1-6':0.0,'Pts Allow 7-13':0.0,'Pts Allow 14-20':0.0,\
@@ -243,7 +244,12 @@ class League:
             if "Ret Yds" not in self.scoring:
                 self.scoring["Ret Yds"] = 0
             self.scoring['Pass Comp'] = 0.0
+            self.scoring['Pass 1D'] = 0.0
             self.scoring['Rush Att'] = 0.0
+            self.scoring['Rush 1D'] = 0.0
+            self.scoring['Rec 1D'] = 0.0
+            self.scoring['TE Rec Bonus'] = 1.0
+            self.scoring['TE 1D Bonus'] = 1.0
 
     def load_fantasy_teams(self):
         """
@@ -280,7 +286,7 @@ class League:
         before = nfl_schedule.season*100 + nfl_schedule.week < self.season*100 + self.week
         missing = before & nfl_schedule.score1.isnull() & nfl_schedule.score2.isnull()
         if missing.any() or self.season not in nfl_schedule.season.unique():
-            s = sr.Schedule(self.season - 8,self.season,False,True,True)
+            s = sr.Schedule(self.season - 8,self.season,False,True,False)
             s.schedule.to_csv(path,index=False)
             nfl_schedule = s.schedule.copy()
         
@@ -293,8 +299,6 @@ class League:
                 "elo1_pre",
                 "elo2_pre",
                 "elo_diff",
-                "qb1_value_pre",
-                "qb2_value_pre",
             ]].rename(
             columns={
                 "game_date": "date",
@@ -303,32 +307,19 @@ class League:
                 "elo1_pre": "home_elo",
                 "elo2_pre": "away_elo",
                 "elo_diff": "home_elo_diff",
-                "qb1_value_pre": "home_qb",
-                "qb2_value_pre": "away_qb",
             },
         )
         nfl_schedule["away_elo_diff"] = -1*nfl_schedule["home_elo_diff"]
-        home = nfl_schedule[
-            ["season", "week", "date", "home_team", "home_elo_diff", "away_elo", "home_qb"]
-        ].rename(
-            columns={"home_team": "team", "home_elo_diff": "elo_diff", \
-                     "away_elo": "opp_elo", "home_qb": "qb_elo"}
-        )
+        home = nfl_schedule[["season", "week", "date", "home_team", "home_elo_diff", "away_elo"]]\
+        .rename(columns={"home_team": "team", "home_elo_diff": "elo_diff", "away_elo": "opp_elo"})
         home["home_away"] = "Home"
-        away = nfl_schedule[
-            ["season", "week", "date", "away_team", "away_elo_diff", "home_elo", "away_qb"]
-        ].rename(
-            columns={"away_team": "team", "away_elo_diff": "elo_diff", \
-                     "home_elo": "opp_elo", "away_qb": "qb_elo"}
-        )
+        away = nfl_schedule[["season", "week", "date", "away_team", "away_elo_diff", "home_elo"]]\
+        .rename(columns={"away_team": "team", "away_elo_diff": "elo_diff", "home_elo": "opp_elo"})
         away["home_away"] = "Away"
         nfl_schedule = pd.concat([home, away], ignore_index=True)
         nfl_schedule.elo_diff = nfl_schedule.elo_diff / 1500
         nfl_schedule.opp_elo = 1500 / nfl_schedule.opp_elo
-        nfl_schedule.qb_elo = nfl_schedule.qb_elo / nfl_schedule.qb_elo.mean()
-        self.nfl_schedule = nfl_schedule.sort_values(
-            by=["season", "week"], ignore_index=True
-        )
+        self.nfl_schedule = nfl_schedule.sort_values(by=["season", "week"], ignore_index=True)
 
     def refresh_oauth(self, threshold=59):
         """
@@ -551,12 +542,15 @@ class League:
             offense["rush_yds"] * self.scoring["Rush Yds"]
             + offense["rush_att"] * self.scoring["Rush Att"]
             + offense["rush_td"] * self.scoring["Rush TD"]
+            + offense["rush_first_down"] * self.scoring["Rush 1D"]
             + offense["rec"] * self.scoring["Rec"]
             + offense["rec_yds"] * self.scoring["Rec Yds"]
             + offense["rec_td"] * self.scoring["Rec TD"]
+            + offense["rec_first_down"] * self.scoring["Rec 1D"]
             + offense["pass_yds"] * self.scoring["Pass Yds"]
             + offense["pass_cmp"] * self.scoring["Pass Comp"]
             + offense["pass_td"] * self.scoring["Pass TD"]
+            + offense["pass_first_down"] * self.scoring["Pass 1D"]
             + offense["pass_int"] * self.scoring["Int Thrown"]
             + offense["fumbles_lost"] * self.scoring["Fum Lost"]
             + (offense["kick_ret_yds"] + offense["punt_ret_yds"]) * self.scoring["Ret Yds"]
@@ -564,6 +558,10 @@ class League:
             + offense["xpm"] * self.scoring["PAT Made"]
             + offense["fgm"] * self.scoring["FG 0-19"]
         )
+        tes = offense.position == 'TE'
+        offense.loc[tes,'points'] += offense.loc[tes,'rec'] * self.scoring['TE Rec Bonus'] + \
+        (offense.loc[tes,'rush_first_down'] + offense.loc[tes,'rec_first_down'] + \
+        offense.loc[tes,'pass_first_down']) * self.scoring['TE 1D Bonus']
         defense = self.stats.loc[self.stats.position == "DEF"].reset_index(drop=True)
         defense["points"] = (
             defense["sacks"] * self.scoring["Sack"]
@@ -645,7 +643,7 @@ class League:
         still_missing = self.players.player_id_sr.isnull()
         self.players.loc[still_missing,'player_id_sr'] = self.players.loc[still_missing,'player_id']
 
-    def load_parameters(self, earliest=None, reference_games=None, basaloppqbtime=[]):
+    def load_parameters(self, earliest=None, reference_games=None, basaloppstringtime=[]):
         """
         Initializes rate adjustment parameters for future season simulations. 
         If parameters are not manually, optimal values are chosen based on 
@@ -654,7 +652,7 @@ class League:
         Args:
             earliest (int, optional): year and number of the earliest week to be included in the prior for rate calculation, defaults to None.
             reference_games (int, optional): number of games to include the prior for rate calculation, defaults to None.
-            basaloppqbtime (list, optional): list containing the basal factor, opponent elo factor, and QB elo factor, defaults to [].
+            basaloppstringtime (list, optional): list containing the basal factor, opponent elo factor, and depth chart factor, defaults to [].
         """
         params = pd.read_csv(
             "https://raw.githubusercontent.com/"
@@ -671,10 +669,10 @@ class League:
             self.reference_games = reference_games
         else:
             self.reference_games = params.loc[params.week == self.week, "games"].values[0]
-        if basaloppqbtime:
-            self.basaloppqbtime = basaloppqbtime
+        if basaloppstringtime:
+            self.basaloppstringtime = basaloppstringtime
         else:
-            self.basaloppqbtime = list(
+            self.basaloppstringtime = list(
                 params.loc[
                     params.week == self.week, ["basal", "opp_elo", "string", "time_factor"]
                 ].values[0]
@@ -907,9 +905,9 @@ class League:
             rel_stats = self.stats.loc[(self.stats.season*100 + self.stats.week <= as_of - 1) & \
             (self.stats.season*100 + self.stats.week >= self.earliest)].reset_index()
         rel_stats["game_factor"] = (
-            self.basaloppqbtime[0]
-            + self.basaloppqbtime[1] * (rel_stats["elo_diff"])
-            + self.basaloppqbtime[2] * (1 - rel_stats["string"])
+            self.basaloppstringtime[0]
+            + self.basaloppstringtime[1] * (rel_stats["elo_diff"])
+            + self.basaloppstringtime[2] * (1 - rel_stats["string"])
         )
         rel_stats['rel_points'] = rel_stats.points/rel_stats.game_factor
         by_pos = pd.merge(
@@ -929,7 +927,7 @@ class League:
         rel_stats["weeks_ago"] = (
             17 * (as_of // 100 - rel_stats.season) + as_of % 100 - rel_stats.week
         )
-        rel_stats["time_factor"] = 1 - rel_stats.weeks_ago * self.basaloppqbtime[-1]
+        rel_stats["time_factor"] = 1 - rel_stats.weeks_ago * self.basaloppstringtime[-1]
         rel_stats = rel_stats.loc[rel_stats.time_factor > 0].reset_index(drop=True)
         rel_stats = pd.merge(
             left=rel_stats,
@@ -1231,10 +1229,10 @@ class League:
             right_on="team",
         )
         self.players.elo_diff = self.players.elo_diff.fillna(0.0)
-        self.players["opp_factor"] = (self.basaloppqbtime[1] * self.players["elo_diff"])
-        self.players["string_factor"] = self.basaloppqbtime[2] * (1 - self.players["string"])
+        self.players["opp_factor"] = (self.basaloppstringtime[1] * self.players["elo_diff"])
+        self.players["string_factor"] = self.basaloppstringtime[2] * (1 - self.players["string"])
         self.players["game_factor"] = (
-            self.basaloppqbtime[0]
+            self.basaloppstringtime[0]
             + self.players["opp_factor"]
             + self.players["string_factor"]
         )
@@ -2788,10 +2786,10 @@ def main():
         help="number of games to build each player's prior off of",
     )
     parser.add_option(
-        "--basaloppqbtime",
+        "--basaloppstringtime",
         action="store",
-        dest="basaloppqbtime",
-        help="scaling factors for basal/opponent/quarterback/time factors, comma-separated string of values",
+        dest="basaloppstringtime",
+        help="scaling factors for basal/opponent/depthchart/time factors, comma-separated string of values",
     )
     parser.add_option(
         "--sims", action="store", dest="sims", help="number of season simulations"
@@ -2861,12 +2859,12 @@ def main():
         options.season = int(options.season)
     if str(options.week).isnumeric():
         options.week = int(options.week)
-    if options.basaloppqbtime:
+    if options.basaloppstringtime:
         try:
-            options.basaloppqbtime = [float(val) for val in options.basaloppqbtime]
+            options.basaloppstringtime = [float(val) for val in options.basaloppstringtime]
         except:
             print("Invalid rate inference parameters, using defaults...")
-            options.basaloppqbtime = None
+            options.basaloppstringtime = None
     if str(options.injurytries).isnumeric():
         options.injurytries = int(options.injurytries)
     else:
@@ -2880,7 +2878,7 @@ def main():
         num_sims=options.sims,
         earliest=options.earliest,
         reference_games=options.games,
-        basaloppqbtime=options.basaloppqbtime,
+        basaloppstringtime=options.basaloppstringtime,
     )
 
     if options.payouts:
