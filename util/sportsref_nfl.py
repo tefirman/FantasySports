@@ -19,6 +19,7 @@ import datetime
 from geopy.distance import geodesic
 import shutil
 import gzip
+import sys
 
 base_url = "https://www.pro-football-reference.com/"
 
@@ -36,7 +37,12 @@ def get_page(endpoint: str):
         bs4.BeautifulSoup: parsed html of the specified endpoint.
     """
     time.sleep(4)
-    response = requests.get(base_url + endpoint).text
+    try:
+        response = requests.get(base_url + endpoint).text
+    except requests.exceptions.ConnectionError as e:
+        print('GETTING CONNECTION ERROR AGAIN!!!')
+        print(endpoint)
+        sys.exit(1)
     uncommented = response.replace("<!--", "").replace("-->", "")
     soup = BeautifulSoup(uncommented, "html.parser")
     return soup
@@ -548,6 +554,7 @@ class Boxscore:
         self.get_raw_text()
         self.get_details()
         self.get_stats()
+        self.get_advanced_stats()
         self.get_starters()
         self.get_snap_counts()
         self.add_depth_chart()
@@ -599,6 +606,23 @@ class Boxscore:
         self.game_stats.loc[
             self.game_stats.team == self.team2_abbrev, "opponent"
         ] = self.team1_abbrev
+
+    def get_advanced_stats(self):
+        if self.raw_text.find(id="passing_advanced"):
+            advanced = pd.concat(
+                [
+                    parse_table(self.raw_text, "passing_advanced"),
+                    parse_table(self.raw_text, "rushing_advanced"),
+                    parse_table(self.raw_text, "receiving_advanced"),
+                ]
+            )
+            advanced = advanced.fillna(0.0).groupby(["player", "player_id", "team"]).sum().reset_index()
+        else:
+            advanced = pd.DataFrame(columns=['player_id','pass_first_down','rush_first_down','rec_first_down'])
+        self.game_stats = pd.merge(left=self.game_stats,right=advanced[['player_id',\
+        'pass_first_down','rush_first_down','rec_first_down']],how='left',on='player_id')
+        for col in ['pass_first_down','rush_first_down','rec_first_down']:
+            self.game_stats[col] = self.game_stats[col].fillna(0.0)
 
     def get_starters(self):
         self.starters = pd.concat(
@@ -697,11 +721,11 @@ def get_bulk_stats(
         & ~s.schedule.score1.isnull()
         & ~s.schedule.score2.isnull()
     ].reset_index(drop=True)
-    if path and os.path.exists(str(path)):
+    if path is not None and os.path.exists(str(path)):
         stats = pd.read_csv(path)
     else:
         stats = pd.DataFrame(columns=["season", "week", "game_id"])
-    new_games = (~s.schedule.boxscore_abbrev.isin(stats.game_id.unique())).any()
+    to_save = path is not None and (~s.schedule.boxscore_abbrev.isin(stats.game_id.unique())).any()
     for ind in range(s.schedule.shape[0]):
         if s.schedule.iloc[ind]["boxscore_abbrev"] not in stats.game_id.unique():
             print(s.schedule.iloc[ind]["boxscore_abbrev"])
@@ -710,7 +734,9 @@ def get_bulk_stats(
             stats.season = stats.season.fillna(b.season)
             stats.week = stats.week.fillna(b.week)
             stats.game_id = stats.game_id.fillna(b.game_id)
-    if path and new_games:
+            if to_save and b.season not in s.schedule.iloc[ind + 1:].season.unique():
+                stats.to_csv(path,index=False)
+    if to_save:
         stats.to_csv(path,index=False)
     stats = stats.loc[stats.game_id.isin(s.schedule.boxscore_abbrev.tolist())].reset_index(drop=True)
     return stats
