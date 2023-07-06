@@ -24,7 +24,8 @@ def provide_pick_order(league,customize=False):
     my_team = [team for team in league.teams if team['name'] == league.name]
     other_teams = [team for team in league.teams if team['name'] != league.name]
     league.teams = other_teams[:my_pick - 1] + my_team + other_teams[my_pick - 1:]
-    avg_team = pd.concat(3*[league.players.loc[league.players.player_id_sr.astype(str).str.startswith('avg_')]],ignore_index=True,sort=False)
+    avg_team = pd.concat(3*[league.players.loc[league.players.player_id_sr.astype(str).str.startswith('avg_') \
+    & ~league.players.player_id_sr.isin(['avg_QB','avg_TE'])]],ignore_index=True,sort=False)
     for pick in range(len(league.teams)):
         if pick + 1 == my_pick:
             pick_name = "My Team"
@@ -75,7 +76,7 @@ def main():
     )
     options, args = parser.parse_args()
     league = fb.League(options.teamname,num_sims=10000,sfb=options.sfb)
-    num_spots = sum([pos["roster_position"]["count"] for pos in league.settings["roster_positions"] if pos["roster_position"]["position"] != "IR"])
+    num_spots = league.roster_spots['count'].sum()
     num_teams = len(league.teams)
     if options.sfb and num_teams != 12:
         print("SFB13 uses 12 team divisions!!! Pick a different league!!!")
@@ -168,7 +169,7 @@ def main():
             while focus is None:
                 focus = check_pick_name(league,input("Which player would you like to check? "),["nevermind"])
             if focus != "nevermind":
-                lookup = league.possible_adds([pick_name],exclude,team_name="My Team",verbose=False,payouts=options.payouts)
+                lookup = league.possible_adds([focus],exclude,team_name="My Team",verbose=False,payouts=options.payouts)
                 lookup = pd.merge(left=lookup,right=adp[['name','position','avg_pick','avg_round']]\
                 .rename(columns={'name':'player_to_add'}),how='inner',on=['player_to_add','position'])
                 print("Player of interest:")
@@ -180,7 +181,7 @@ def main():
             if ignore != "nevermind":
                 exclude.append(ignore)
         elif pick_name.lower() == "go back":
-            league.players.loc[league.players.name == progress.iloc[-1].name,'fantasy_team'] = None
+            league.players.loc[league.players.name == progress.iloc[-1]['name'],'fantasy_team'] = None
             progress = progress.iloc[:-1].reset_index(drop=True)
             progress.to_csv("DraftProgress.csv",index=False)
             pick_num -= 1
