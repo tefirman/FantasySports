@@ -5,6 +5,7 @@ import fantasyfb as fb
 import numpy as np
 from difflib import SequenceMatcher
 import sys
+import os
 
 def check_pick_value(league, pick):
     pick = str(pick)
@@ -17,10 +18,13 @@ def check_pick_value(league, pick):
     else:
         return int(pick.strip())
 
-def provide_pick_order(league,customize=False):
-    my_pick = check_pick_value(league,input("Which pick are you? "))
-    while my_pick is None:
+def provide_pick_order(league, customize=False, already=[]):
+    if "My Team" in already and len(already) == len(league.teams):
+        my_pick = already.index("My Team")
+    else:
         my_pick = check_pick_value(league,input("Which pick are you? "))
+        while my_pick is None:
+            my_pick = check_pick_value(league,input("Which pick are you? "))
     my_team = [team for team in league.teams if team['name'] == league.name]
     other_teams = [team for team in league.teams if team['name'] != league.name]
     league.teams = other_teams[:my_pick - 1] + my_team + other_teams[my_pick - 1:]
@@ -31,6 +35,8 @@ def provide_pick_order(league,customize=False):
             pick_name = "My Team"
         elif customize:
             pick_name = input("Who has pick #{}? ".format(pick + 1))
+        elif len(already) == len(league.teams):
+            pick_name = str(already[pick])
         else:
             pick_name = "Team #" + str(pick + 1)
         league.schedule.loc[league.schedule.team_1 == league.teams[pick]['name'],'team_1'] = pick_name
@@ -67,6 +73,18 @@ def main():
         action="store",
         dest="payouts",
         help="comma separated string containing integer payouts for 1st, 2nd, and 3rd",
+    )
+    parser.add_option(
+        "--exclude",
+        action="store",
+        dest="exclude",
+        help="comma separated string containing players to exclude from consideration",
+    )
+    parser.add_option(
+        "--inprogress",
+        action="store",
+        dest="inprogress",
+        help="location of the csv containing details about a draft already in progress",
     )
     parser.add_option(
         "--sfb",
@@ -127,11 +145,24 @@ def main():
     # SFB13 ADP Source: https://goingfor2.com/the-best-only-scott-fish-bowl-sfb13-sleeper-adp/
 
     tot_picks = num_teams*num_spots
-    custom_order = input("Would you like to provide a custom draft order? ")
-    league = provide_pick_order(league,custom_order.lower() in ["yes","y"])
-    exclude = []
-    pick_num = 0
-    progress = pd.DataFrame()
+    exclude = [val.strip() for val in options.exclude.split(',')] if options.exclude else []
+    if options.sfb:
+        exclude += league.players.loc[league.players.position == 'DEF','name'].tolist()
+    if os.path.exists(str(options.inprogress)):
+        progress = pd.read_csv(options.inprogress)
+        pick_num = progress.shape[0]
+        given_order = progress.iloc[:progress.fantasy_team.nunique()].fantasy_team.tolist()
+        league = provide_pick_order(league, already=given_order)
+        league.players = pd.merge(left=league.players,right=progress[['player_id_sr','fantasy_team']],how='left',on='player_id_sr',suffixes=('','_prev'))
+        picked = ~league.players.fantasy_team_prev.isnull()
+        league.players.loc[picked,'fantasy_team'] = league.players.loc[picked,'fantasy_team_prev']
+        del league.players['fantasy_team_prev']
+    else:
+        custom_order = input("Would you like to provide a custom draft order? ")
+        league = provide_pick_order(league,custom_order.lower() in ["yes","y"])
+        pick_num = 0
+        progress = pd.DataFrame()
+
     while pick_num < tot_picks:
         round_num = pick_num//num_teams + 1
         rel_pick = pick_num%num_teams
@@ -154,14 +185,14 @@ def main():
         elif pick_name.lower() == "best":
             best = league.possible_adds([pick_name],exclude,limit_per=5,team_name="My Team",verbose=False,payouts=options.payouts)
             best = pd.merge(left=best,right=adp[['name','position','avg_pick','avg_round']]\
-            .rename(columns={'name':'player_to_add'}),how='inner',on=['player_to_add','position'])
+            .rename(columns={'name':'player_to_add'}),how='left',on=['player_to_add','position'])
             print("Best players according to the Algorithm:")
             print(best[display_cols].to_string(index=False))
         elif pick_name.lower() == "nearest":
             nearby = league.players.loc[league.players.avg_pick <= pick_num + 2*num_teams,'name'].tolist()
             nearest = league.possible_adds(nearby,exclude,limit_per=5,team_name="My Team",verbose=False,payouts=options.payouts)
             nearest = pd.merge(left=nearest,right=adp[['name','position','avg_pick','avg_round']]\
-            .rename(columns={'name':'player_to_add'}),how='inner',on=['player_to_add','position'])
+            .rename(columns={'name':'player_to_add'}),how='left',on=['player_to_add','position'])
             print("Best players in terms of ADP:")
             print(nearest[display_cols].to_string(index=False))
         elif pick_name.lower() == "lookup":
@@ -171,7 +202,7 @@ def main():
             if focus != "nevermind":
                 lookup = league.possible_adds([focus],exclude,team_name="My Team",verbose=False,payouts=options.payouts)
                 lookup = pd.merge(left=lookup,right=adp[['name','position','avg_pick','avg_round']]\
-                .rename(columns={'name':'player_to_add'}),how='inner',on=['player_to_add','position'])
+                .rename(columns={'name':'player_to_add'}),how='left',on=['player_to_add','position'])
                 print("Player of interest:")
                 print(lookup[display_cols].to_string(index=False))
         elif pick_name.lower() == "exclude":
