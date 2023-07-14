@@ -14,6 +14,7 @@ import datetime
 from bs4 import BeautifulSoup
 from math import factorial
 import optparse
+import sys
 
 
 def n_choose_k(n: int, k: int) -> float:
@@ -98,6 +99,7 @@ def load_elos(elo_loc: str = "TennisElo.csv") -> pd.DataFrame:
     corrections = pd.read_csv(
         "https://raw.githubusercontent.com/tefirman/FantasySports/main/res/tennis/name_corrections.csv"
     )
+    # corrections = pd.read_csv("res/tennis/name_corrections.csv")
     elo = pd.merge(left=elo, right=corrections, how="left", on="Player")
     elo.loc[~elo.NewPlayer.isnull(), "Player"] = elo.loc[
         ~elo.NewPlayer.isnull(), "NewPlayer"
@@ -295,8 +297,17 @@ def set_probabilities(p, scoring):
         + set_probs.sets_won * scoring["set_won"]
         + set_probs.sets_lost * scoring["set_lost"]
     )
+    set_probs["DKFP_opp"] = (
+        set_probs.games_lost * scoring["game_won"]
+        + set_probs.games_won * scoring["game_lost"]
+        + set_probs.sets_lost * scoring["set_won"]
+        + set_probs.sets_won * scoring["set_lost"]
+    )
     set_probs.loc[
         (set_probs.games_won == 6) & (set_probs.games_lost == 0), "DKFP"
+    ] += scoring["clean_set"]
+    set_probs.loc[
+        (set_probs.games_won == 0) & (set_probs.games_lost == 6), "DKFP_opp"
     ] += scoring["clean_set"]
     return set_probs
 
@@ -317,19 +328,26 @@ def match_probabilities(p, scoring, major=False):
         on="dummy",
     )
     match_combos["DKFP"] = match_combos["DKFP_1"] + match_combos["DKFP_2"]
+    match_combos["DKFP_opp"] = match_combos["DKFP_opp_1"] + match_combos["DKFP_opp_2"]
     match_combos["prob"] = match_combos["prob_1"] * match_combos["prob_2"]
     if not major:
         match_combos["sets_won"] = match_combos[
             [col for col in match_combos.columns if col.startswith("sets_won_")]
         ].sum(axis=1)
+        match_combos["sets_lost"] = match_combos[
+            [col for col in match_combos.columns if col.startswith("sets_lost_")]
+        ].sum(axis=1)
         match_combos.loc[match_combos.sets_won == 2, "DKFP"] += (
+            scoring["straight_sets"] + scoring["match_won"]
+        )
+        match_combos.loc[match_combos.sets_lost == 2, "DKFP_opp"] += (
             scoring["straight_sets"] + scoring["match_won"]
         )
         wins = pd.concat(
             [wins, match_combos.loc[match_combos.sets_won == 2]], ignore_index=True
         )
         losses = pd.concat(
-            [losses, match_combos.loc[match_combos.sets_won == 0]], ignore_index=True
+            [losses, match_combos.loc[match_combos.sets_lost == 2]], ignore_index=True
         )
         match_combos = match_combos.loc[match_combos.sets_won == 1].reset_index(
             drop=True
@@ -343,23 +361,30 @@ def match_probabilities(p, scoring, major=False):
         on="dummy",
     )
     match_combos["DKFP"] += match_combos["DKFP_3"]
+    match_combos["DKFP_opp"] += match_combos["DKFP_opp_3"]
     match_combos["prob"] *= match_combos["prob_3"]
     match_combos["sets_won"] = match_combos[
         [col for col in match_combos.columns if col.startswith("sets_won_")]
     ].sum(axis=1)
+    match_combos["sets_lost"] = match_combos[
+        [col for col in match_combos.columns if col.startswith("sets_lost_")]
+    ].sum(axis=1)
     winner = 3 if major else 2
     match_combos.loc[match_combos.sets_won == winner, "DKFP"] += scoring[
+        "match_won"
+    ] + (scoring["straight_sets"] if major else 0)
+    match_combos.loc[match_combos.sets_lost == winner, "DKFP_opp"] += scoring[
         "match_won"
     ] + (scoring["straight_sets"] if major else 0)
     wins = pd.concat(
         [wins, match_combos.loc[match_combos.sets_won == winner]], ignore_index=True
     )
     losses = pd.concat(
-        [losses, match_combos.loc[match_combos.sets_won == 3 - winner]],
+        [losses, match_combos.loc[match_combos.sets_lost == winner]],
         ignore_index=True,
     )
     match_combos = match_combos.loc[
-        ~match_combos.sets_won.isin([winner, 3 - winner])
+        ~match_combos.sets_won.isin([winner]) & ~match_combos.sets_lost.isin([winner])
     ].reset_index(drop=True)
     if major:
         match_combos = pd.merge(
@@ -371,16 +396,21 @@ def match_probabilities(p, scoring, major=False):
             on="dummy",
         )
         match_combos["DKFP"] += match_combos["DKFP_4"]
+        match_combos["DKFP_opp"] += match_combos["DKFP_opp_4"]
         match_combos["prob"] *= match_combos["prob_4"]
         match_combos["sets_won"] = match_combos[
             [col for col in match_combos.columns if col.startswith("sets_won_")]
         ].sum(axis=1)
+        match_combos["sets_lost"] = match_combos[
+            [col for col in match_combos.columns if col.startswith("sets_lost_")]
+        ].sum(axis=1)
         match_combos.loc[match_combos.sets_won == 3, "DKFP"] += scoring["match_won"]
+        match_combos.loc[match_combos.sets_lost == 3, "DKFP_opp"] += scoring["match_won"]
         wins = pd.concat(
             [wins, match_combos.loc[match_combos.sets_won == 3]], ignore_index=True
         )
         losses = pd.concat(
-            [losses, match_combos.loc[match_combos.sets_won == 1]], ignore_index=True
+            [losses, match_combos.loc[match_combos.sets_lost == 3]], ignore_index=True
         )
         match_combos = pd.merge(
             left=match_combos.loc[match_combos.sets_won == 2],
@@ -391,16 +421,21 @@ def match_probabilities(p, scoring, major=False):
             on="dummy",
         )
         match_combos["DKFP"] += match_combos["DKFP_5"]
+        match_combos["DKFP_opp"] += match_combos["DKFP_opp_5"]
         match_combos["prob"] *= match_combos["prob_5"]
         match_combos["sets_won"] = match_combos[
             [col for col in match_combos.columns if col.startswith("sets_won_")]
         ].sum(axis=1)
+        match_combos["sets_lost"] = match_combos[
+            [col for col in match_combos.columns if col.startswith("sets_lost_")]
+        ].sum(axis=1)
         match_combos.loc[match_combos.sets_won == 3, "DKFP"] += scoring["match_won"]
+        match_combos.loc[match_combos.sets_lost == 3, "DKFP_opp"] += scoring["match_won"]
     outcomes = pd.concat(
         [
-            match_combos[["DKFP", "prob"]],
-            wins[["DKFP", "prob"]],
-            losses[["DKFP", "prob"]],
+            match_combos[["DKFP", "DKFP_opp", "prob"]],
+            wins[["DKFP", "DKFP_opp", "prob"]],
+            losses[["DKFP", "DKFP_opp", "prob"]],
         ],
         ignore_index=True,
     )
@@ -415,6 +450,7 @@ def project_points(matchups, major=False, verbose=False):
         .set_index("stat")
         .to_dict()
     )
+    # scoring = pd.read_csv("res/tennis/scoring.csv").set_index("stat").to_dict()
     for ind in range(matchups.shape[0]):
         if verbose:
             print(matchups.loc[ind, "Name"])
@@ -432,16 +468,50 @@ def project_points(matchups, major=False, verbose=False):
     return players
 
 
-def compile_teams(
-    salaries, salary_cap=50000, same_match=False, fixed=None, verbose=False
-):
+def simulate_points(matchups, num_sims=1000, major=False, verbose=False):
+    scoring = (
+        pd.read_csv(
+            "https://raw.githubusercontent.com/tefirman/FantasySports/main/res/tennis/scoring.csv"
+        )
+        .set_index("stat")
+        .to_dict()
+    )
+    # scoring = pd.read_csv("res/tennis/scoring.csv").set_index("stat").to_dict()
+    sim_matches = pd.DataFrame(columns=['Name','OppName'])
+    for ind in range(matchups.shape[0]):
+        if matchups.iloc[ind]["Name"] in matchups.iloc[:ind]["OppName"].unique():
+            continue
+        if verbose:
+            print(matchups.iloc[ind]["Name"] + ' vs. ' + matchups.iloc[ind]["OppName"])
+        p = matchups.iloc[ind]["game_prob"]
+        num_sets = (
+            "three_set"
+            if matchups.iloc[ind]["Tour"] == "WTA" or not major
+            else "five_set"
+        )
+        outcomes = match_probabilities(p, scoring[num_sets], major)
+        outcomes['Name'] = matchups.iloc[ind]['Name']
+        outcomes['OppName'] = matchups.iloc[ind]['OppName']
+        sim_matches = pd.concat([sim_matches,outcomes.sample(n=num_sims,weights='prob',replace=True)],ignore_index=True,sort=False)
+    sim_matches = pd.concat([sim_matches[['Name','DKFP']],sim_matches[['OppName','DKFP_opp']]\
+    .rename(columns={'OppName':'Name','DKFP_opp':'DKFP'})],ignore_index=True)
+    sim_matches = sim_matches.rename(columns={'DKFP':'DKFP_sim'})
+    sim_matches['num_sim'] = sim_matches.index%num_sims
+    return sim_matches
+
+
+def compile_teams(salaries, salary_cap=50000, same_match=False, fixed=None, \
+verbose=False, shortslate=False, salary_rate=-0.003125):
     salaries["dummy"] = 1
     teams = pd.DataFrame({"dummy": [1], "Name": [""], "DKFP": [0], "Salary": [0]})
-    spots = 6
+    spots = 3 if shortslate else 6
     for ind in range(spots):
+        pos = ['CPT','A-CPT','P'][ind] if shortslate else 'P'
+        multiplier = [1.5,1.25,1.0][ind] if shortslate else 1.0
         teams = pd.merge(
             left=teams,
-            right=salaries[["dummy", "Name", "DKFP", "Salary", "OppName"]].rename(
+            right=salaries.loc[salaries['Roster Position'] == pos,\
+            ["dummy", "Name", "DKFP", "Salary", "OppName"]].rename(
                 columns={
                     "Name": "Name_" + str(ind + 1),
                     "DKFP": "DKFP_" + str(ind + 1),
@@ -458,8 +528,8 @@ def compile_teams(
             teams["Salary"] + teams["Salary_" + str(ind + 1)]
             < salary_cap - (3500 * (spots - ind) if ind < spots - 2 else 0)
         ]
-        teams.Name += "_" + teams["Name_" + str(ind + 1)]
-        teams.DKFP += teams["DKFP_" + str(ind + 1)]
+        teams.Name += "_" + teams["Name_" + str(ind + 1)] + '-' + pos
+        teams.DKFP += teams["DKFP_" + str(ind + 1)]*multiplier
         teams.Salary += teams["Salary_" + str(ind + 1)]
         teams.Name = teams.Name.apply(lambda x: "_".join(sorted(x.split("_"))))
         """ Eliminating lineups with match opponents """
@@ -491,6 +561,82 @@ def compile_teams(
     teams.Name = teams.Name.str[1:].str.replace("_", ", ")
     teams.DKFP = round(teams.DKFP, 2)
     teams = teams[["Name", "DKFP", "Salary"]]
+    q = sum(np.exp(salary_rate*(50000 - np.arange(0,50001,100))))
+    for salary in range(10000,50001,100):
+        sal_teams = teams.Salary == salary
+        if sal_teams.any():
+            teams.loc[sal_teams,'Probability'] = np.exp(salary_rate*(50000 - salary))/(q*sal_teams.sum())
+    return teams
+
+
+def simulate_contest(teams, matchups, contest_type, num_sims=1000, major=False, verbose=False):
+    if contest_type == 'QuarterJukebox':
+        num_entries = 1400
+        max_entries = 20
+        payouts = [25,10,5,4,3,2,1]
+    elif contest_type == 'DimeTime':
+        num_entries = 5000
+        max_entries = 20
+        payouts = [25,10,5,4,3,2,1]
+    elif contest_type == 'Satellite':
+        num_entries = 250
+        max_entries = 7
+        payouts = [20]
+    else:
+        print("Don't recognize the contest type provided, assuming Quarter Jukebox...")
+        num_entries = 1400
+        payouts = [25,10,5,4,3,2,1]
+    payouts = payouts + [0]*(num_entries - len(payouts))
+    if 'my_entries' not in teams.columns:
+        teams['my_entries'] = 0.0
+    sims = teams.sample(n=int((num_entries - teams.my_entries.sum())*num_sims),replace=True,weights="Probability")
+    my_entries = teams.loc[teams.my_entries > 0].reset_index(drop=True)
+    if my_entries.my_entries.sum() > max_entries:
+        print("Too many entries for this contest!!! Only using the first {}...".format(max_entries))
+        while my_entries.my_entries.sum() > max_entries:
+            my_entries.loc[my_entries.shape[0] - 1,'my_entries'] -= 1
+            my_entries = my_entries.loc[my_entries.my_entries > 0].reset_index(drop=True)
+    for ind in range(my_entries.shape[0]):
+        this_entry = pd.concat(int(my_entries.iloc[ind]['my_entries']*num_sims)*[my_entries.iloc[ind:ind + 1]],ignore_index=True)
+        sims = pd.concat([sims,this_entry],ignore_index=True)
+    sims['num_sim'] = sims.index%num_sims
+    sims['num_entry'] = sims.index//num_sims
+    sims.Name = sims.Name.str[:-2].str.split('-P, ') # Only applies to non-shortstack for now...
+    sims = sims.explode('Name',ignore_index=True)
+    sim_matches = simulate_points(matchups, num_sims, major, verbose)
+    sims = pd.merge(left=sims,right=sim_matches[['num_sim','Name','DKFP_sim']],how='inner',on=['num_sim','Name'])
+    sims = sims.groupby(['num_sim','num_entry']).DKFP_sim.sum().reset_index()
+    sims = sims.sort_values(by=['num_sim','DKFP_sim'],ascending=[True,False],ignore_index=True)
+    # sims['ranking'] = sims.groupby(['num_sim']).DKFP_sim.rank()
+    sims['projected_payout'] = payouts*num_sims
+    payouts = sims.groupby(['num_sim','DKFP_sim']).projected_payout.mean()\
+    .reset_index().rename(columns={'projected_payout':'actual_payout'})
+    sims = pd.merge(left=sims,right=payouts,how='inner',on=['num_sim','DKFP_sim'])
+    sims['my_entry'] = sims.num_entry >= num_entries - teams.my_entries.sum()
+    return sims
+
+
+def best_lineups(teams, matchups, contest_type, limit=5, num_sims=1000, major=False, verbose=False, shortslate=False):
+    if 'my_entries' not in teams.columns:
+        teams['my_entries'] = 0.0
+    
+    if shortslate:
+        teams['captain'] = teams.Name.str.replace('-A-CPT','-ACPT').str.split('-CPT').str[0].str.split(', ').str[-1]
+    else:
+        teams['captain'] = teams['Name']
+        teams.captain = teams.captain.str[:-2].str.split('-P, ') # Only applies to non-shortstack for now...
+        teams = teams.explode('captain',ignore_index=True)
+        teams = pd.merge(left=teams,right=matchups[['Name','Salary']].rename(columns={'Name':'captain','Salary':'cpt_salary'}),how='inner',on='captain')
+        teams = teams.sort_values(by=['DKFP','cpt_salary'],ascending=False).drop_duplicates(subset=['Name'],keep='first',ignore_index=True)
+
+    cpt_inds = teams.groupby('captain').head(limit).index.tolist()
+    for ind in cpt_inds:
+        teams.loc[ind,'my_entries'] += 1.0
+        contest_sims = simulate_contest(teams, matchups, contest_type, num_sims=1000, major=False, verbose=False)
+        teams.loc[ind,'earnings'] = contest_sims.loc[contest_sims.my_entry,'actual_payout'].mean()
+        teams.loc[ind,'win_prob'] = contest_sims.loc[contest_sims.my_entry & contest_sims.actual_payout > 0].shape[0]/num_sims
+        teams.loc[ind,'my_entries'] -= 1.0
+        print("{} out of {}, {}".format((~teams.win_prob.isnull()).sum(),cpt_inds.sum(),datetime.datetime.now()))
     return teams
 
 
@@ -590,6 +736,12 @@ def main():
         help="comma separated list of players to force into every lineup",
     )
     parser.add_option(
+        "--shortstack",
+        action="store_true",
+        dest="shortstack",
+        help="assembles teams based on short-stack rules",
+    )
+    parser.add_option(
         "--verbose",
         action="store_true",
         dest="verbose",
@@ -613,10 +765,10 @@ def main():
 
     elo = load_elos(options.elos)
     matchups = add_match_details(elo, options.salaries, options.court[0])
-    players = project_points(matchups, options.major, options.verbose)
-    teams = compile_teams(
-        matchups, options.salarycap, options.samematch, options.fixed, options.verbose
-    )
+    players = project_points(matchups, options.major, options.verbose) # Alters matchups somehow... Object-based coding...
+    teams = compile_teams(matchups, options.salarycap, options.samematch, options.fixed, options.verbose, options.shortstack)
+    teams = best_lineups(teams, matchups, options.contest_type, limit=5, num_sims=1000, major=options.major, verbose=options.verbose)
+
     write_to_spreadsheet(teams.iloc[:20000], options.output)
 
 
