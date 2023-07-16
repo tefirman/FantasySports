@@ -87,6 +87,12 @@ def main():
         help="location of the csv containing details about a draft already in progress",
     )
     parser.add_option(
+        "--output",
+        action="store",
+        dest="output",
+        help="where to save the draft progress csv",
+    )
+    parser.add_option(
         "--sfb",
         action="store_true",
         dest="sfb",
@@ -141,7 +147,7 @@ def main():
     adp['avg_round'] = round(1.0 + adp.avg_pick/num_teams,1)
     adp['avg_pick'] = round(adp.avg_pick,1)
     league.players = pd.merge(left=league.players,right=adp[['name','position','avg_pick','avg_round']],how='left',on=['name','position'])
-    display_cols = ['player_to_add','position','current_team','wins_avg','points_avg','playoffs','winner','earnings','avg_pick','avg_round']
+    display_cols = ['player_to_add','position','current_team','WAR','wins_avg','points_avg','playoffs','winner','earnings','avg_pick','avg_round']
     # SFB13 ADP Source: https://goingfor2.com/the-best-only-scott-fish-bowl-sfb13-sleeper-adp/
 
     tot_picks = num_teams*num_spots
@@ -157,7 +163,10 @@ def main():
         picked = ~league.players.fantasy_team_prev.isnull()
         league.players.loc[picked,'fantasy_team'] = league.players.loc[picked,'fantasy_team_prev']
         del league.players['fantasy_team_prev']
+        if not options.output:
+            options.output = options.inprogress
     else:
+        options.output = "DraftProgress.csv"
         custom_order = input("Would you like to provide a custom draft order? ")
         league = provide_pick_order(league,custom_order.lower() in ["yes","y"])
         pick_num = 0
@@ -180,11 +189,13 @@ def main():
             # What about players with the same name???
             league.players.loc[league.players.name == pick_name,'fantasy_team'] = league.teams[rel_pick]['name']
             progress = pd.concat([progress,league.players.loc[league.players.name == pick_name]],ignore_index=True,sort=False)
-            progress.to_csv("DraftProgress.csv",index=False)
+            progress.to_csv(options.output,index=False)
             pick_num += 1
         elif pick_name.lower() == "best":
             best = league.possible_adds([pick_name],exclude,limit_per=5,team_name="My Team",verbose=False,payouts=options.payouts)
             best = pd.merge(left=best,right=adp[['name','position','avg_pick','avg_round']]\
+            .rename(columns={'name':'player_to_add'}),how='left',on=['player_to_add','position'])
+            best = pd.merge(left=best,right=league.players[['name','position','WAR']]\
             .rename(columns={'name':'player_to_add'}),how='left',on=['player_to_add','position'])
             print("Best players according to the Algorithm:")
             print(best[display_cols].to_string(index=False))
@@ -192,6 +203,8 @@ def main():
             nearby = league.players.loc[league.players.avg_pick <= pick_num + 2*num_teams,'name'].tolist()
             nearest = league.possible_adds(nearby,exclude,limit_per=5,team_name="My Team",verbose=False,payouts=options.payouts)
             nearest = pd.merge(left=nearest,right=adp[['name','position','avg_pick','avg_round']]\
+            .rename(columns={'name':'player_to_add'}),how='left',on=['player_to_add','position'])
+            nearest = pd.merge(left=nearest,right=league.players[['name','position','WAR']]\
             .rename(columns={'name':'player_to_add'}),how='left',on=['player_to_add','position'])
             print("Best players in terms of ADP:")
             print(nearest[display_cols].to_string(index=False))
@@ -202,6 +215,8 @@ def main():
             if focus != "nevermind":
                 lookup = league.possible_adds([focus],exclude,team_name="My Team",verbose=False,payouts=options.payouts)
                 lookup = pd.merge(left=lookup,right=adp[['name','position','avg_pick','avg_round']]\
+                .rename(columns={'name':'player_to_add'}),how='left',on=['player_to_add','position'])
+                lookup = pd.merge(left=lookup,right=league.players[['name','position','WAR']]\
                 .rename(columns={'name':'player_to_add'}),how='left',on=['player_to_add','position'])
                 print("Player of interest:")
                 print(lookup[display_cols].to_string(index=False))
@@ -214,7 +229,7 @@ def main():
         elif pick_name.lower() == "go back":
             league.players.loc[league.players.name == progress.iloc[-1]['name'],'fantasy_team'] = None
             progress = progress.iloc[:-1].reset_index(drop=True)
-            progress.to_csv("DraftProgress.csv",index=False)
+            progress.to_csv(options.output,index=False)
             pick_num -= 1
         elif pick_name.lower() == "sim":
             standings_sim = league.season_sims(payouts=options.payouts)[1]
