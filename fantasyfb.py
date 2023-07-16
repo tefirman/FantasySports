@@ -224,7 +224,6 @@ class League:
         self.scoring.loc[(self.scoring.display_name == "Int") & (self.scoring.value <= 0),"display_name"] = "Int Thrown"
         self.scoring = self.scoring.drop_duplicates(subset=["display_name"]).set_index("display_name")['value'].to_dict()
         if sfb:
-            # Can't capture first downs in Pro Football Reference yet unfortunately...
             self.settings['playoff_start_week'] = 12
             self.settings['num_playoff_teams'] = 6
             self.scoring = {'Pass Yds':0.04,'Pass Comp':0.1,'Pass TD':6.0,'Pass 1D':0.1,\
@@ -235,7 +234,7 @@ class League:
             'Sack':0.0,'Int':0.0,'Fum Rec':0.0,'TD':0.0,'Safe':0.0,'Blk Kick':0.0,\
             'Pts Allow 0':0.0,'Pts Allow 1-6':0.0,'Pts Allow 7-13':0.0,'Pts Allow 14-20':0.0,\
             'Pts Allow 21-27':0.0,'Pts Allow 28-34':0.0,'Pts Allow 35+':0.0,'XPR':0.0}
-            self.roster_spots = pd.DataFrame({'position':['QB','RB','WR','TE','W/R/T','K','BN'],'count':[2,2,3,1,2,1,11]})
+            self.roster_spots = pd.DataFrame({'position':['QB','RB','WR','TE','W/R/T','W/R/T/Q','K','BN'],'count':[1,2,3,1,2,1,1,11]})
         else:
             if "FG 0-19" not in self.scoring:
                 self.scoring["FG 0-19"] = 3
@@ -450,14 +449,8 @@ class League:
         rosters.loc[~rosters.real_abbrev.isnull(), "name"] = rosters.loc[
             ~rosters.real_abbrev.isnull(), "real_abbrev"
         ]
-        """ CONVERT THIS LATER TO USE W/R/T ITSELF!!! """
-        rosters["position"] = rosters.eligible_positions.apply(
-            lambda x: [pos for pos in x if pos not in ["W/R/T", "W/T"]]
-        )
-        inds = rosters.position.apply(len) == 0
-        rosters.loc[inds, "position"] = "TE"
-        rosters.loc[~inds, "position"] = rosters.loc[~inds, "position"].apply(
-            lambda x: x[0]
+        rosters["position"] = rosters.display_position.apply(
+            lambda x: [pos for pos in x.split(',') if pos in ['QB','WR','TE','K','RB','DEF']][0]
         )
         self.players = rosters[
             [
@@ -626,6 +619,11 @@ class League:
         )
         self.players = pd.merge(left=self.players,right=self.nfl_rosters[['name','current_team','player_id_sr']].drop_duplicates()\
         .rename(columns={'player':'name','player_id':'player_id_sr','team':'current_team'}),how='left',on=['name','current_team'])
+        # Two Michael Carter's on the same team. What are the odds...
+        self.players = self.players.loc[~self.players.player_id_sr.isin(['CartMi02'])].reset_index(drop=True)
+        id_check = self.players.groupby('player_id_sr').size().to_frame('freq').reset_index()
+        if id_check.freq.max() > 1:
+            print('Found the same player ID on multiple players: ' + ', '.join(id_check.loc[id_check.freq > 1,'player_id_sr'].tolist()))
         defenses = self.players.position.isin(['DEF'])
         self.players.loc[defenses,'player_id_sr'] = self.players.loc[defenses,'name']
         latest_draft = sr.get_draft(self.latest_season)[['player','player_id','team_abbrev']]\
@@ -1272,7 +1270,7 @@ class League:
                 lineup = pd.merge(left=self.roster_spots,right=started.groupby('selected_position').size()\
                 .to_frame('num_started').reset_index().rename(columns={'selected_position':'pos'}),how='left',on='pos')
                 lineup['count'] -= lineup.num_started.fillna(0.0)
-                num_pos = lineup.loc[~lineup.position.isin(["W/R/T", "W/T", "BN", "IR"])].set_index('position').to_dict()['count']
+                num_pos = lineup.loc[~lineup.position.isin(["W/T", "W/R/T", "W/R/T/Q", "BN", "IR"])].set_index('position').to_dict()['count']
                 for pos in num_pos:
                     for num in range(num_pos[pos]):
                         self.players.loc[
@@ -1289,24 +1287,26 @@ class League:
                             .index,
                             "starter",
                         ] = True
-                num_flex = lineup.loc[lineup.position.isin(["W/R/T", "W/T"]),'count'].sum()
-                for flex in range(num_flex):
-                    self.players.loc[
+                flex_pos = {"W/T":['WR','TE'],"W/R/T":['WR','RB','TE'],"W/R/T/Q":['WR','RB','TE','QB']}
+                for pos in flex_pos:
+                    num_flex = lineup.loc[lineup.position == pos,'count'].sum()
+                    for flex in range(num_flex):
                         self.players.loc[
-                            (self.players.fantasy_team == team["name"])
-                            & ~self.players.starter
-                            & ~self.players.injured
-                            & (self.players.bye_week != week)
-                            & self.players.position.isin(["WR", "RB", "TE"])
-                            & ~self.players.player_id.isin(started.player_id)
-                            & ~self.players.player_id.isin(not_available.player_id)
-                        ]
-                        .iloc[:1]
-                        .index,
-                        "starter",
-                    ] = True
+                            self.players.loc[
+                                (self.players.fantasy_team == team["name"])
+                                & ~self.players.starter
+                                & ~self.players.injured
+                                & (self.players.bye_week != week)
+                                & self.players.position.isin(flex_pos[pos])
+                                & ~self.players.player_id.isin(started.player_id)
+                                & ~self.players.player_id.isin(not_available.player_id)
+                            ]
+                            .iloc[:1]
+                            .index,
+                            "starter",
+                        ] = True
         elif week >= as_of % 100:
-            num_pos = self.roster_spots.loc[~self.roster_spots.position.isin(["W/R/T", "W/T", "BN", "IR"])].set_index('position').to_dict()['count']
+            num_pos = self.roster_spots.loc[~self.roster_spots.position.isin(["W/T", "W/R/T", "W/R/T/Q", "BN", "IR"])].set_index('position').to_dict()['count']
             for pos in num_pos:
                 for num in range(num_pos[pos]):
                     self.players.loc[
@@ -1320,19 +1320,21 @@ class League:
                         .index,
                         "starter",
                     ] = True
-            num_flex = self.roster_spots.loc[self.roster_spots.position.isin(["W/R/T", "W/T"]),'count'].sum()
-            for flex in range(num_flex):
-                self.players.loc[
+            flex_pos = {"W/T":['WR','TE'],"W/R/T":['WR','RB','TE'],"W/R/T/Q":['WR','RB','TE','QB']}
+            for pos in flex_pos:
+                num_flex = self.roster_spots.loc[self.roster_spots.position == pos,'count'].sum()
+                for flex in range(num_flex):
                     self.players.loc[
-                        ~self.players.starter
-                        & ~self.players.injured
-                        & (self.players.bye_week != week)
-                        & self.players.position.isin(["WR", "RB", "TE"])
-                    ]
-                    .drop_duplicates(subset=["fantasy_team"], keep="first")
-                    .index,
-                    "starter",
-                ] = True
+                        self.players.loc[
+                            ~self.players.starter
+                            & ~self.players.injured
+                            & (self.players.bye_week != week)
+                            & self.players.position.isin(flex_pos[pos])
+                        ]
+                        .drop_duplicates(subset=["fantasy_team"], keep="first")
+                        .index,
+                        "starter",
+                    ] = True
 
     def season_sims(
         self, verbose=False, postseason=True, payouts=[800, 300, 100], fixed_winner=None
