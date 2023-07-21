@@ -238,6 +238,22 @@ def main():
             print(league.players.loc[league.players.fantasy_team == "My Team",\
             ['name','position','current_team','points_avg','points_stdev','WAR']].to_string(index=False))
 
+    # Simulate the entire season and print the final results
+    standings_sim = league.season_sims(payouts=options.payouts)[1]
+    print(standings_sim[['team','points_avg','wins_avg','playoffs','winner','earnings']].to_string(index=False))
+    standings_sim.to_csv('DraftResults.csv',index=False)
+    my_results = standings_sim.loc[standings_sim.team == 'My Team']
+    if my_results.index[0] < standings_sim.shape[0]/4:
+        print("You crushed it!!! Way to go!!!")
+    elif my_results.index[0] >= standings_sim.shape[0]/4 \
+    and my_results.index[0] < standings_sim.shape[0]/2:
+        print("Pretty darn good, but we'll see... Good luck!!!")
+    elif my_results.index[0] >= standings_sim.shape[0]/2 \
+    and my_results.index[0] < 3*standings_sim.shape[0]/4:
+        print("Not great, but you can recover... Hit the waiver wire hard!!!")
+    else:
+        print("Less than ideal... but you have so many other redeeming qualities!!!")
+
 
 if __name__ == "__main__":
     main()
