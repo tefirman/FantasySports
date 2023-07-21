@@ -327,8 +327,8 @@ def match_probabilities(p, scoring, major=False):
         how="inner",
         on="dummy",
     )
-    match_combos["DKFP"] = match_combos["DKFP_1"] + match_combos["DKFP_2"]
-    match_combos["DKFP_opp"] = match_combos["DKFP_opp_1"] + match_combos["DKFP_opp_2"]
+    match_combos["DKFP"] = 30 + match_combos["DKFP_1"] + match_combos["DKFP_2"]
+    match_combos["DKFP_opp"] = 30 + match_combos["DKFP_opp_1"] + match_combos["DKFP_opp_2"]
     match_combos["prob"] = match_combos["prob_1"] * match_combos["prob_2"]
     if not major:
         match_combos["sets_won"] = match_combos[
@@ -566,21 +566,39 @@ verbose=False, shortslate=False, salary_rate=-0.003125):
         sal_teams = teams.Salary == salary
         if sal_teams.any():
             teams.loc[sal_teams,'Probability'] = np.exp(salary_rate*(50000 - salary))/(q*sal_teams.sum())
+    
+    if shortslate:
+        teams['captain'] = teams.Name.str.replace('-A-CPT','-ACPT').str.split('-CPT').str[0].str.split(', ').str[-1]
+    else:
+        teams['captain'] = teams['Name']
+        teams.captain = teams.captain.str[:-2].str.split('-P, ') # Only applies to non-shortstack for now...
+        teams = teams.explode('captain',ignore_index=True)
+        teams = pd.merge(left=teams,right=salaries[['Name','Salary']].rename(columns={'Name':'captain','Salary':'cpt_salary'}),how='inner',on='captain')
+        teams = teams.sort_values(by=['DKFP','cpt_salary'],ascending=False).drop_duplicates(subset=['Name'],keep='first',ignore_index=True)
+
     return teams
 
 
 def simulate_contest(teams, matchups, contest_type, num_sims=1000, major=False, verbose=False):
-    if contest_type == 'QuarterJukebox':
-        num_entries = 1400
+    if contest_type == 'QuarterJukebox50':
+        num_entries = 237
+        max_entries = 7
+        entry_fee = 0.25
+        payouts = [5,4,3,2,2,1.5,1.5,1.5] + 6*[1.0] + 12*[0.75] + 29*[0.5]
+    elif contest_type == 'QuarterJukebox400':
+        num_entries = 1902
         max_entries = 20
-        payouts = [25,10,5,4,3,2,1]
-    elif contest_type == 'DimeTime':
-        num_entries = 5000
-        max_entries = 20
-        payouts = [25,10,5,4,3,2,1]
+        entry_fee = 0.25
+        payouts = [40,20,15,10,8,6,5,4,3,3] + 5*[2.0] + 15*[1.5] + 40*[1.0] + 110*[0.75] + 262*[0.5]
+    elif contest_type == 'DoubleUp':
+        num_entries = 23
+        max_entries = 1
+        entry_fee = 1.0
+        payouts = [2.0]*10
     elif contest_type == 'Satellite':
         num_entries = 250
         max_entries = 7
+        entry_fee = 0.25
         payouts = [20]
     else:
         print("Don't recognize the contest type provided, assuming Quarter Jukebox...")
@@ -613,31 +631,40 @@ def simulate_contest(teams, matchups, contest_type, num_sims=1000, major=False, 
     .reset_index().rename(columns={'projected_payout':'actual_payout'})
     sims = pd.merge(left=sims,right=payouts,how='inner',on=['num_sim','DKFP_sim'])
     sims['my_entry'] = sims.num_entry >= num_entries - teams.my_entries.sum()
+    sims['entry_fee'] = entry_fee
     return sims
 
 
 def best_lineups(teams, matchups, contest_type, limit=5, num_sims=1000, major=False, verbose=False, shortslate=False):
     if 'my_entries' not in teams.columns:
         teams['my_entries'] = 0.0
-    
-    if shortslate:
-        teams['captain'] = teams.Name.str.replace('-A-CPT','-ACPT').str.split('-CPT').str[0].str.split(', ').str[-1]
-    else:
-        teams['captain'] = teams['Name']
-        teams.captain = teams.captain.str[:-2].str.split('-P, ') # Only applies to non-shortstack for now...
-        teams = teams.explode('captain',ignore_index=True)
-        teams = pd.merge(left=teams,right=matchups[['Name','Salary']].rename(columns={'Name':'captain','Salary':'cpt_salary'}),how='inner',on='captain')
-        teams = teams.sort_values(by=['DKFP','cpt_salary'],ascending=False).drop_duplicates(subset=['Name'],keep='first',ignore_index=True)
-
-    cpt_inds = teams.groupby('captain').head(limit).index.tolist()
+    teams['earnings'] = None
+    teams['win_prob'] = None
+    cpt_inds = teams.groupby('captain').head(limit).index.tolist()[:50]
     for ind in cpt_inds:
         teams.loc[ind,'my_entries'] += 1.0
-        contest_sims = simulate_contest(teams, matchups, contest_type, num_sims=1000, major=False, verbose=False)
-        teams.loc[ind,'earnings'] = contest_sims.loc[contest_sims.my_entry,'actual_payout'].mean()
-        teams.loc[ind,'win_prob'] = contest_sims.loc[contest_sims.my_entry & contest_sims.actual_payout > 0].shape[0]/num_sims
+        contest_sims = simulate_contest(teams, matchups, contest_type, num_sims=num_sims, major=False)
+        payouts = contest_sims.loc[contest_sims.my_entry].groupby('num_sim')[['actual_payout','entry_fee']].sum().reset_index()
+        teams.loc[ind,'earnings'] = payouts.actual_payout.mean()
+        teams.loc[ind,'win_prob'] = payouts.loc[payouts.actual_payout > payouts.entry_fee].shape[0]/num_sims
         teams.loc[ind,'my_entries'] -= 1.0
-        print("{} out of {}, {}".format((~teams.win_prob.isnull()).sum(),cpt_inds.sum(),datetime.datetime.now()))
+        if verbose:
+            print("{} out of {}, {}".format((~teams.win_prob.isnull()).sum(),len(cpt_inds),datetime.datetime.now()))
     return teams
+
+
+def best_combos(teams, matchups, contest_type, limit=5, num_sims=1000, major=False, verbose=False):
+    best = pd.DataFrame()
+    for num_entry in range(limit):
+        print('Simulating {} entr'.format(num_entry + 1) + ('ies' if num_entry > 0 else 'y'))
+        teams = best_lineups(teams, matchups, contest_type, num_sims=num_sims, major=major, verbose=verbose)
+        teams = teams.sort_values(by='earnings',ascending=False).reset_index(drop=True)
+        if verbose:
+            print(teams.iloc[0].Name)
+            print(teams.iloc[0])
+        best = pd.concat([best,teams.iloc[:1]],ignore_index=True,sort=False)
+        teams.loc[0,'my_entries'] += 1
+    return best
 
 
 def excel_autofit(df, name, writer):
@@ -667,7 +694,7 @@ def excel_autofit(df, name, writer):
     return writer
 
 
-def write_to_spreadsheet(teams, output=""):
+def write_to_spreadsheet(teams, combos, output=""):
     writer = pd.ExcelWriter(
         output + "DFS_Tennis_{}.xlsx".format(datetime.datetime.now().strftime("%m%d%y")),
         engine="xlsxwriter",
@@ -675,6 +702,16 @@ def write_to_spreadsheet(teams, output=""):
     writer.book.add_format({"align": "vcenter"})
     writer = excel_autofit(teams, "Teams", writer)
     writer.sheets["Teams"].conditional_format(
+        "B2:B" + str(teams.shape[0] + 1),
+        {
+            "type": "3_color_scale",
+            "min_color": "#FF6347",
+            "mid_color": "#FFD700",
+            "max_color": "#3CB371",
+        },
+    )
+    writer = excel_autofit(combos, "Combos", writer)
+    writer.sheets["Combos"].conditional_format(
         "B2:B" + str(teams.shape[0] + 1),
         {
             "type": "3_color_scale",
@@ -767,9 +804,14 @@ def main():
     matchups = add_match_details(elo, options.salaries, options.court[0])
     players = project_points(matchups, options.major, options.verbose) # Alters matchups somehow... Object-based coding...
     teams = compile_teams(matchups, options.salarycap, options.samematch, options.fixed, options.verbose, options.shortstack)
-    teams = best_lineups(teams, matchups, options.contest_type, limit=5, num_sims=1000, major=options.major, verbose=options.verbose)
+    teams = best_lineups(teams, matchups, "DoubleUp", limit=5, num_sims=10000, major=options.major, verbose=options.verbose)
+    print('Double Up')
+    print(teams.sort_values(by='earnings',ascending=False).iloc[0].Name)
+    print(teams.sort_values(by='earnings',ascending=False).iloc[0])
+    print('Quarter Jukebox')
+    combos = best_combos(teams.copy(), matchups, "QuarterJukebox400", limit=10, num_sims=1000, major=options.major, verbose=options.verbose)
 
-    write_to_spreadsheet(teams.iloc[:20000], options.output)
+    write_to_spreadsheet(teams.iloc[:20000], combos, options.output)
 
 
 if __name__ == "__main__":
