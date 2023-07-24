@@ -743,7 +743,6 @@ def main():
         "--court",
         action="store",
         dest="court",
-        default="hard",
         help="type of court being played on (hard, clay, or grass)",
     )
     parser.add_option(
@@ -801,7 +800,7 @@ def main():
     options.output += 'DFS/Tennis/'
 
     elo = load_elos(options.elos)
-    matchups = add_match_details(elo, options.salaries, options.court[0])
+    matchups = add_match_details(elo, options.salaries, options.court[0] if options.court else "")
     players = project_points(matchups, options.major, options.verbose) # Alters matchups somehow... Object-based coding...
     teams = compile_teams(matchups, options.salarycap, options.samematch, options.fixed, options.verbose, options.shortstack)
     teams = best_lineups(teams, matchups, "DoubleUp", limit=5, num_sims=10000, major=options.major, verbose=options.verbose)
