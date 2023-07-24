@@ -62,7 +62,8 @@ class League:
         earliest=None,
         reference_games=None,
         basaloppstringtime=[],
-        sfb=False
+        sfb=False,
+        bestball=False,
     ):
         """
         Initializes a League object using the parameters provided and class functions defined below.
@@ -77,6 +78,7 @@ class League:
             reference_games (int, optional): integer describing the number of games to use as a prior for rates, defaults to None.
             basaloppstringtime (list, optional): list of the four weighting factors when calculating rates, defaults to an empty list.
             sfb (bool, optional): whether to implement SFB13 settings and scoring, defaults to False.
+            bestball (bool, optional): whether to implement best ball settings and scoring, defaults to False.
         """
         self.latest_season = datetime.datetime.now().year - int(
             datetime.datetime.now().month < 6
@@ -87,7 +89,7 @@ class League:
         self.load_league(name)
         self.current_week = self.lg.current_week()
         self.week = week if type(week) == int else self.current_week
-        self.load_settings(sfb)
+        self.load_settings(sfb, bestball)
         self.load_fantasy_teams()
         self.load_nfl_abbrevs()
         self.load_nfl_schedule()
@@ -199,7 +201,7 @@ class League:
         # Creating league object
         self.lg = self.gm.to_league(self.lg_id)
 
-    def load_settings(self, sfb: bool = False):
+    def load_settings(self, sfb: bool = False, bestball: bool = False):
         """
         Pulls league roster/schedule settings and scoring modifiers
         """
@@ -226,15 +228,27 @@ class League:
         if sfb:
             self.settings['playoff_start_week'] = 12
             self.settings['num_playoff_teams'] = 6
-            self.scoring = {'Pass Yds':0.04,'Pass Comp':0.1,'Pass TD':6.0,'Pass 1D':0.1,\
-            'Int Thrown':0.0,'Rush Yds':0.1,'Rush Att':0.25,'Rush TD':6.0,'Rush 1D':1.0,\
-            'Rec Yds':0.1,'Rec':1.0,'Rec TD':6.0,'Rec 1D':1.0,'Ret Yds':0.0,'Ret TD':6.0,\
+            self.scoring = {'Pass Yds':0.04,'Pass Comp':0.1,'Pass TD':6.0,'Pass 1D':0.1,'Pass 300+':0.0,\
+            'Int Thrown':0.0,'Rush Yds':0.1,'Rush Att':0.25,'Rush TD':6.0,'Rush 1D':1.0,'Rush 100+':0.0,\
+            'Rec Yds':0.1,'Rec':1.0,'Rec TD':6.0,'Rec 1D':1.0,'Rec 100+':0.0,'Ret Yds':0.0,'Ret TD':6.0,\
             'TE Rec Bonus':1.0,'TE 1D Bonus':1.0,'2-PT':2.0,'Fum Lost':0.0,'Fum Ret TD':6.0,\
             'FG 0-19':2.0,'FG 20-29':2.5,'FG 30-39':3.5,'FG 40-49':4.5,'FG 50+':5.5,'PAT Made':3.3,\
             'Sack':0.0,'Int':0.0,'Fum Rec':0.0,'TD':0.0,'Safe':0.0,'Blk Kick':0.0,\
             'Pts Allow 0':0.0,'Pts Allow 1-6':0.0,'Pts Allow 7-13':0.0,'Pts Allow 14-20':0.0,\
             'Pts Allow 21-27':0.0,'Pts Allow 28-34':0.0,'Pts Allow 35+':0.0,'XPR':0.0}
             self.roster_spots = pd.DataFrame({'position':['QB','RB','WR','TE','W/R/T','W/R/T/Q','K','BN'],'count':[1,2,3,1,2,1,1,11]})
+        elif bestball:
+            self.settings['playoff_start_week'] = 14
+            self.settings['num_playoff_teams'] = 2
+            self.scoring = {'Pass Yds':0.04,'Pass Comp':0.0,'Pass TD':4.0,'Pass 1D':0.0,'Pass 300+':3.0,\
+            'Int Thrown':-1.0,'Rush Yds':0.1,'Rush Att':0.0,'Rush TD':6.0,'Rush 1D':0.0,'Rush 100+':3.0,\
+            'Rec Yds':0.1,'Rec':1.0,'Rec TD':6.0,'Rec 1D':0.0,'Rec 100+':3.0,'Ret Yds':0.0,'Ret TD':6.0,\
+            'TE Rec Bonus':0.0,'TE 1D Bonus':0.0,'2-PT':2.0,'Fum Lost':-1.0,'Fum Ret TD':6.0,\
+            'FG 0-19':0.0,'FG 20-29':0.0,'FG 30-39':0.0,'FG 40-49':0.0,'FG 50+':0.0,'PAT Made':0.0,\
+            'Sack':0.0,'Int':0.0,'Fum Rec':0.0,'TD':0.0,'Safe':0.0,'Blk Kick':0.0,\
+            'Pts Allow 0':0.0,'Pts Allow 1-6':0.0,'Pts Allow 7-13':0.0,'Pts Allow 14-20':0.0,\
+            'Pts Allow 21-27':0.0,'Pts Allow 28-34':0.0,'Pts Allow 35+':0.0,'XPR':0.0}
+            self.roster_spots = pd.DataFrame({'position':['QB','RB','WR','TE','W/R/T','W/R/T/Q','K','BN'],'count':[1,2,3,1,1,0,0,12]})
         else:
             if "FG 0-19" not in self.scoring:
                 self.scoring["FG 0-19"] = 3
@@ -242,13 +256,9 @@ class League:
                 self.scoring["Rec"] = 0
             if "Ret Yds" not in self.scoring:
                 self.scoring["Ret Yds"] = 0
-            self.scoring['Pass Comp'] = 0.0
-            self.scoring['Pass 1D'] = 0.0
-            self.scoring['Rush Att'] = 0.0
-            self.scoring['Rush 1D'] = 0.0
-            self.scoring['Rec 1D'] = 0.0
-            self.scoring['TE Rec Bonus'] = 1.0
-            self.scoring['TE 1D Bonus'] = 1.0
+            for stat in ['Pass Comp','Pass 1D','Rush Att','Rush 1D','Rec 1D',\
+            'TE Rec Bonus','TE 1D Bonus','Pass 300+','Rush 100+','Rec 100+']:
+                self.scoring[stat] = 0.0
 
     def load_fantasy_teams(self):
         """
@@ -555,6 +565,9 @@ class League:
         offense.loc[tes,'points'] += offense.loc[tes,'rec'] * self.scoring['TE Rec Bonus'] + \
         (offense.loc[tes,'rush_first_down'] + offense.loc[tes,'rec_first_down'] + \
         offense.loc[tes,'pass_first_down']) * self.scoring['TE 1D Bonus']
+        offense.loc[offense.pass_yds >= 300,'points'] += self.scoring['Pass 300+']
+        offense.loc[offense.rush_yds >= 100,'points'] += self.scoring['Rush 100+']
+        offense.loc[offense.rec_yds >= 100,'points'] += self.scoring['Rec 100+']
         defense = self.stats.loc[self.stats.position == "DEF"].reset_index(drop=True)
         defense["points"] = (
             defense["sacks"] * self.scoring["Sack"]
@@ -1336,6 +1349,53 @@ class League:
                         "starter",
                     ] = True
 
+    def bestball_sims(self, payouts=[20,20,20]):
+        self.refresh_oauth()
+        projections = pd.DataFrame(columns=["fantasy_team", "week", "points_avg", "points_stdev"])
+        for week in range(self.week,self.settings['playoff_start_week']):
+            self.starters(week)
+            projections = pd.concat([projections,self.players.loc[~self.players.fantasy_team.isnull(),\
+            ['player_id_sr','name','position','fantasy_team','points_avg','points_stdev']].reset_index(drop=True)],ignore_index=True,sort=False)
+            projections.loc[projections.week.isnull(), "week"] = week
+        season_sims = pd.concat([projections] * self.num_sims, ignore_index=True)
+        season_sims["num_sim"] = season_sims.index // projections.shape[0]
+        season_sims["points_sim"] = (
+            np.random.normal(loc=0, scale=1, size=season_sims.shape[0])
+            * season_sims["points_stdev"]
+            + season_sims["points_avg"]
+        ).astype(float)
+        season_sims = season_sims.sort_values(by='points_sim',ascending=False,ignore_index=True)
+        season_sims['injured'] = np.random.rand(season_sims.shape[0]) < 0.1
+        season_sims['starter'] = False
+        num_pos = self.roster_spots.loc[~self.roster_spots.position.isin(["W/T", "W/R/T", "W/R/T/Q", "BN", "IR"])].set_index('position').to_dict()['count']
+        for pos in num_pos:
+            inds = season_sims.loc[(season_sims.position == pos) & ~season_sims.injured]\
+            .groupby(['num_sim','week','fantasy_team']).head(num_pos[pos]).index
+            season_sims.loc[inds,'starter'] = True
+        flex_pos = {"W/T":['WR','TE'],"W/R/T":['WR','RB','TE'],"W/R/T/Q":['WR','RB','TE','QB']}
+        for pos in flex_pos:
+            num_flex = self.roster_spots.loc[self.roster_spots.position == pos,'count'].sum()
+            inds = season_sims.loc[season_sims.position.isin(flex_pos[pos]) & ~season_sims.injured & ~season_sims.starter]\
+            .groupby(['num_sim','week','fantasy_team']).head(num_flex).index
+            season_sims.loc[inds,'starter'] = True
+        standings_sims = season_sims.loc[season_sims.starter].groupby(['num_sim','fantasy_team']).points_sim.sum().reset_index()
+        standings_sims = standings_sims.sort_values(by=['num_sim','points_sim'],ascending=[True,False],ignore_index=True)
+        standings_sims['place'] = standings_sims.index%len(self.teams) + 1
+        standings_sims["playoffs"] = (standings_sims['place'] <= self.settings["num_playoff_teams"]).astype(float)
+        standings_sims["winner"] = (standings_sims['place'] == 1).astype(float)
+        standings_sims["runner_up"] = (standings_sims['place'] == 2).astype(float)
+        standings_sims["third"] = (standings_sims['place'] == 3).astype(float)
+        payouts += [0]*(len(self.teams) - len(payouts))
+        standings_sims['earnings'] = payouts*self.num_sims
+        standings = standings_sims.groupby('fantasy_team').mean().reset_index()
+        standings = pd.merge(left=standings,right=standings_sims.groupby('fantasy_team').points_sim.std()\
+        .reset_index().rename(columns={'points_sim':'points_stdev'}),how='inner',on='fantasy_team')
+        standings = standings.rename(columns={'fantasy_team':'team','points_sim':'points_avg','place':'avg_place'})
+        standings = standings.sort_values(by='playoffs',ascending=False,ignore_index=True)
+        del standings['num_sim']
+        standings[["wins_avg","wins_stdev","playoff_bye"]] = 0.0
+        return standings
+
     def season_sims(
         self, verbose=False, postseason=True, payouts=[800, 300, 100], fixed_winner=None
     ):
@@ -1353,7 +1413,6 @@ class League:
             schedule (pd.DataFrame): simulated results for each matchup throughout the season in question
             standings (pd.DataFrame): simulated results for the final season standings and playoff projections
         """
-        as_of = self.season * 100 + self.week
         self.refresh_oauth()
         self.players["points_var"] = self.players.points_stdev**2
         projections = pd.DataFrame(
@@ -2032,6 +2091,7 @@ class League:
         postseason=True,
         verbose=True,
         payouts=[800, 300, 100],
+        bestball=False,
     ):
         """
         Simulates the remainder of the season with the current roster and compares it to 
@@ -2051,7 +2111,10 @@ class League:
         """
         as_of = self.season * 100 + self.week
         self.refresh_oauth()
-        orig_standings = self.season_sims(False, postseason, payouts)[1]
+        if bestball:
+            orig_standings = self.bestball_sims(payouts)
+        else:
+            orig_standings = self.season_sims(False, postseason, payouts)[1]
         added_value = pd.DataFrame(
             columns=[
                 "player_to_drop",
@@ -2070,9 +2133,9 @@ class League:
                 ["winner", "runner_up", "third", "earnings"]
                 + (
                     ["many_mile"]
-                    if self.schedule.team_1.isin(["The Algorithm"]).any()
-                    or self.schedule.team_2.isin(["The Algorithm"]).any()
-                    else []
+                    if (self.schedule.team_1.isin(["The Algorithm"]).any()
+                    or self.schedule.team_2.isin(["The Algorithm"]).any()) \
+                    and not bestball else []
                 )
                 if postseason
                 else []
@@ -2125,7 +2188,10 @@ class League:
                 self.players.loc[
                     self.players.name == free_agent, "fantasy_team"
                 ] = team_name
-                new_standings = self.season_sims(False, postseason, payouts)[1]
+                if bestball:
+                    new_standings = self.bestball_sims(payouts)
+                else:
+                    new_standings = self.season_sims(False, postseason, payouts)[1]
                 added_value = pd.concat([added_value,
                     new_standings.loc[new_standings.team == team_name]],
                     ignore_index=True,
@@ -2163,9 +2229,9 @@ class League:
                 ["winner", "runner_up", "third", "earnings"]
                 + (
                     ["many_mile"]
-                    if self.schedule.team_1.isin(["The Algorithm"]).any()
-                    or self.schedule.team_2.isin(["The Algorithm"]).any()
-                    else []
+                    if (self.schedule.team_1.isin(["The Algorithm"]).any()
+                    or self.schedule.team_2.isin(["The Algorithm"]).any()) \
+                    and not bestball else []
                 )
                 if postseason
                 else []
@@ -2188,6 +2254,7 @@ class League:
         postseason=True,
         verbose=True,
         payouts=[800, 300, 100],
+        bestball=False,
     ):
         """
         Simulates the remainder of the season with the current roster and compares it to 
@@ -2207,7 +2274,10 @@ class League:
         """
         as_of = self.season * 100 + self.week
         self.refresh_oauth()
-        orig_standings = self.season_sims(False, postseason, payouts)[1]
+        if bestball:
+            orig_standings = self.bestball_sims(payouts)
+        else:
+            orig_standings = self.season_sims(False, postseason, payouts)[1]
         added_value = pd.DataFrame(
             columns=[
                 "player_to_add",
@@ -2225,9 +2295,9 @@ class League:
                 ["winner", "runner_up", "third", "earnings"]
                 + (
                     ["many_mile"]
-                    if self.schedule.team_1.isin(["The Algorithm"]).any()
-                    or self.schedule.team_2.isin(["The Algorithm"]).any()
-                    else []
+                    if (self.schedule.team_1.isin(["The Algorithm"]).any()
+                    or self.schedule.team_2.isin(["The Algorithm"]).any()) \
+                    and not bestball else []
                 )
                 if postseason
                 else []
@@ -2249,10 +2319,15 @@ class League:
             possible = possible.loc[~possible.name.isin(exclude)]
         possible = possible.groupby("position").head(limit_per)
         for free_agent in possible.name:
+            if verbose:
+                print("{}, {}".format(free_agent, datetime.datetime.now()))
             self.players.loc[
                 self.players.name == free_agent, "fantasy_team"
             ] = team_name
-            new_standings = self.season_sims(False, postseason, payouts)[1]
+            if bestball:
+                new_standings = self.bestball_sims(payouts)
+            else:
+                new_standings = self.season_sims(False, postseason, payouts)[1]
             added_value = pd.concat([added_value,
                 new_standings.loc[new_standings.team == team_name]],
                 ignore_index=True,
@@ -2278,9 +2353,9 @@ class League:
                 ["winner", "runner_up", "third", "earnings"]
                 + (
                     ["many_mile"]
-                    if self.schedule.team_1.isin(["The Algorithm"]).any()
-                    or self.schedule.team_2.isin(["The Algorithm"]).any()
-                    else []
+                    if (self.schedule.team_1.isin(["The Algorithm"]).any()
+                    or self.schedule.team_2.isin(["The Algorithm"]).any()) \
+                    and not bestball else []
                 )
                 if postseason
                 else []
@@ -2308,6 +2383,7 @@ class League:
         postseason=True,
         verbose=True,
         payouts=[800, 300, 100],
+        bestball=False,
     ):
         """
         Simulates the remainder of the season with the current roster and compares it to 
@@ -2325,7 +2401,10 @@ class League:
             pd.DataFrame: dataframe containing the impact and value of every possible drop analyzed.
         """
         self.refresh_oauth()
-        orig_standings = self.season_sims(False, postseason, payouts)[1]
+        if bestball:
+            orig_standings = self.bestball_sims(payouts)
+        else:
+            orig_standings = self.season_sims(False, postseason, payouts)[1]
         reduced_value = pd.DataFrame(
             columns=[
                 "player_to_drop",
@@ -2343,9 +2422,9 @@ class League:
                 ["winner", "runner_up", "third", "earnings"]
                 + (
                     ["many_mile"]
-                    if self.schedule.team_1.isin(["The Algorithm"]).any()
-                    or self.schedule.team_2.isin(["The Algorithm"]).any()
-                    else []
+                    if (self.schedule.team_1.isin(["The Algorithm"]).any()
+                    or self.schedule.team_2.isin(["The Algorithm"]).any()) \
+                    and not bestball else []
                 )
                 if postseason
                 else []
@@ -2364,7 +2443,10 @@ class League:
             players_to_drop = players_to_drop.loc[~players_to_drop.name.isin(exclude)]
         for my_player in players_to_drop.name:
             self.players.loc[self.players.name == my_player, "fantasy_team"] = None
-            new_standings = self.season_sims(False, postseason, payouts)[1]
+            if bestball:
+                new_standings = self.bestball_sims(payouts)
+            else:
+                new_standings = self.season_sims(False, postseason, payouts)[1]
             reduced_value = pd.concat([reduced_value,
                 new_standings.loc[new_standings.team == team_name]],
                 ignore_index=True,
@@ -2384,9 +2466,9 @@ class League:
                 ["winner", "runner_up", "third", "earnings"]
                 + (
                     ["many_mile"]
-                    if self.schedule.team_1.isin(["The Algorithm"]).any()
-                    or self.schedule.team_2.isin(["The Algorithm"]).any()
-                    else []
+                    if (self.schedule.team_1.isin(["The Algorithm"]).any()
+                    or self.schedule.team_2.isin(["The Algorithm"]).any()) \
+                    and not bestball else []
                 )
                 if postseason
                 else []
@@ -2416,6 +2498,7 @@ class League:
         postseason=True,
         verbose=True,
         payouts=[800, 300, 100],
+        bestball=False,
     ):
         """
         Simulates the remainder of the season with the current roster and compares it to 
@@ -2457,7 +2540,10 @@ class League:
             their_players = their_players.loc[their_players.name.isin(focus_on)]
         if their_players.name.isin(exclude).sum() > 0:
             their_players = their_players.loc[~their_players.name.isin(exclude)]
-        orig_standings = self.season_sims(False, postseason, payouts)[1]
+        if bestball:
+            orig_standings = self.bestball_sims(payouts)
+        else:
+            orig_standings = self.season_sims(False, postseason, payouts)[1]
 
         # Make sure there are two teams and narrow down to that team!!!
         given_check = (
@@ -2516,7 +2602,10 @@ class League:
                 self.players.loc[
                     self.players.name == their_player, "fantasy_team"
                 ] = team_name
-                new_standings = self.season_sims(False, postseason, payouts)[1]
+                if bestball:
+                    new_standings = self.bestball_sims(payouts)
+                else:
+                    new_standings = self.season_sims(False, postseason, payouts)[1]
                 self.players.loc[
                     self.players.name == my_player, "fantasy_team"
                 ] = team_name
