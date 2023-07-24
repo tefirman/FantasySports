@@ -98,11 +98,17 @@ def main():
         dest="sfb",
         help="whether to use SFB scoring/settings throughout the draft",
     )
+    parser.add_option(
+        "--bestball",
+        action="store_true",
+        dest="bestball",
+        help="whether to use SFB scoring/settings throughout the draft",
+    )
     options, args = parser.parse_args()
-    league = fb.League(options.teamname,num_sims=10000,sfb=options.sfb)
+    league = fb.League(options.teamname,num_sims=10000,sfb=options.sfb,bestball=options.bestball)
     num_spots = league.roster_spots['count'].sum()
     num_teams = len(league.teams)
-    if options.sfb and num_teams != 12:
+    if (options.sfb or options.bestball) and num_teams != 12:
         print("SFB13 uses 12 team divisions!!! Pick a different league!!!")
         sys.exit(0)
 
@@ -136,24 +142,41 @@ def main():
             100 * len(league.teams) * 0.1,
         ]
 
-    # SFB13 ADP Source: https://goingfor2.com/the-best-only-scott-fish-bowl-sfb13-sleeper-adp/
-    adp = pd.read_csv("SFB13_ADP.csv")
-    adp['name'] = adp['LAST NAME'] + ' ' + adp['FIRST NAME']
-    missing = ~adp.name.isin(league.players.name.tolist())
+    if options.sfb:
+        # SFB13 ADP Source: https://goingfor2.com/the-best-only-scott-fish-bowl-sfb13-sleeper-adp/
+        adp = pd.read_csv("SFB13_ADP.csv")
+        adp['name'] = adp['LAST NAME'] + ' ' + adp['FIRST NAME']
+        adp = adp.rename(columns={'ADP':'avg_pick','POSITION':'position','TEAM':'Team'})
+    elif options.bestball:
+        # Best Ball ADP Source: https://www.fantasypros.com/nfl/adp/best-ball-overall.php
+        adp = pd.read_csv("FantasyPros_2023_Overall_ADP_Rankings_Bestball.csv")
+        adp = adp.rename(columns={'Player':'name','AVG':'avg_pick','POS':'position'})
+        adp.position = adp.position.str[:2]
+    else:
+        # Redraft ADP Source: https://www.fantasypros.com/nfl/adp/half-point-ppr-overall.php
+        adp = pd.read_csv("FantasyPros_2023_Overall_ADP_Rankings_Redraft.csv")
+        adp = adp.rename(columns={'Player':'name','AVG':'avg_pick','POS':'position'})
+        adp.position = adp.position.str[:2]
+    corrections = pd.read_csv("https://raw.githubusercontent.com/tefirman/FantasySports/main/res/football/name_corrections.csv")
+    adp = pd.merge(left=adp, right=corrections, how="left", on="name")
+    to_fix = ~adp.new_name.isnull()
+    adp.loc[to_fix, "name"] = adp.loc[to_fix, "new_name"]
+    del adp['new_name']
+    missing = ~adp.name.isin(league.players.name.tolist()) & ~adp.position.isin(['DS']) & ~adp.name.isnull()
     if missing.any():
         print("Name mismatches in ADP:")
-        print(adp.loc[missing,['name','POSITION','TEAM']].to_string(index=False))
-    adp = adp.rename(columns={'ADP':'avg_pick','POSITION':'position'})
+        print(adp.loc[missing,['name','position','Team']].to_string(index=False))
     adp['avg_round'] = round(1.0 + adp.avg_pick/num_teams,1)
     adp['avg_pick'] = round(adp.avg_pick,1)
     league.players = pd.merge(left=league.players,right=adp[['name','position','avg_pick','avg_round']],how='left',on=['name','position'])
     display_cols = ['player_to_add','position','current_team','WAR','wins_avg','points_avg','playoffs','winner','earnings','avg_pick','avg_round']
-    # SFB13 ADP Source: https://goingfor2.com/the-best-only-scott-fish-bowl-sfb13-sleeper-adp/
 
     tot_picks = num_teams*num_spots
     exclude = [val.strip() for val in options.exclude.split(',')] if options.exclude else []
-    if options.sfb:
+    if options.sfb or options.bestball:
         exclude += league.players.loc[league.players.position == 'DEF','name'].tolist()
+    if options.bestball:
+        exclude += league.players.loc[league.players.position == 'K','name'].tolist()
     if os.path.exists(str(options.inprogress)):
         progress = pd.read_csv(options.inprogress)
         pick_num = progress.shape[0]
@@ -192,7 +215,8 @@ def main():
             progress.to_csv(options.output,index=False)
             pick_num += 1
         elif pick_name.lower() == "best":
-            best = league.possible_adds([pick_name],exclude,limit_per=5,team_name="My Team",verbose=False,payouts=options.payouts)
+            best = league.possible_adds([pick_name],exclude,limit_per=5,team_name="My Team",\
+            verbose=False,payouts=options.payouts,bestball=options.bestball)
             best = pd.merge(left=best,right=adp[['name','position','avg_pick','avg_round']]\
             .rename(columns={'name':'player_to_add'}),how='left',on=['player_to_add','position'])
             best = pd.merge(left=best,right=league.players[['name','position','WAR']]\
@@ -201,7 +225,8 @@ def main():
             print(best[display_cols].to_string(index=False))
         elif pick_name.lower() == "nearest":
             nearby = league.players.loc[league.players.avg_pick <= pick_num + 2*num_teams,'name'].tolist()
-            nearest = league.possible_adds(nearby,exclude,limit_per=5,team_name="My Team",verbose=False,payouts=options.payouts)
+            nearest = league.possible_adds(nearby,exclude,limit_per=5,team_name="My Team",\
+            verbose=False,payouts=options.payouts,bestball=options.bestball)
             nearest = pd.merge(left=nearest,right=adp[['name','position','avg_pick','avg_round']]\
             .rename(columns={'name':'player_to_add'}),how='left',on=['player_to_add','position'])
             nearest = pd.merge(left=nearest,right=league.players[['name','position','WAR']]\
@@ -213,7 +238,8 @@ def main():
             while focus is None:
                 focus = check_pick_name(league,input("Which player would you like to check? "),["nevermind"])
             if focus != "nevermind":
-                lookup = league.possible_adds([focus],exclude,team_name="My Team",verbose=False,payouts=options.payouts)
+                lookup = league.possible_adds([focus],exclude,team_name="My Team",\
+                verbose=False,payouts=options.payouts,bestball=options.bestball)
                 lookup = pd.merge(left=lookup,right=adp[['name','position','avg_pick','avg_round']]\
                 .rename(columns={'name':'player_to_add'}),how='left',on=['player_to_add','position'])
                 lookup = pd.merge(left=lookup,right=league.players[['name','position','WAR']]\
@@ -232,14 +258,20 @@ def main():
             progress.to_csv(options.output,index=False)
             pick_num -= 1
         elif pick_name.lower() == "sim":
-            standings_sim = league.season_sims(payouts=options.payouts)[1]
+            if options.bestball:
+                standings_sim = league.bestball_sims(payouts=options.payouts)
+            else:
+                standings_sim = league.season_sims(payouts=options.payouts)[1]
             print(standings_sim[['team','points_avg','wins_avg','playoffs','winner','earnings']].to_string(index=False))
         elif pick_name.lower() == "roster":
             print(league.players.loc[league.players.fantasy_team == "My Team",\
             ['name','position','current_team','points_avg','points_stdev','WAR']].to_string(index=False))
 
     # Simulate the entire season and print the final results
-    standings_sim = league.season_sims(payouts=options.payouts)[1]
+    if options.bestball:
+        standings_sim = league.bestball_sims(payouts=options.payouts)
+    else:
+        standings_sim = league.season_sims(payouts=options.payouts)[1]
     print(standings_sim[['team','points_avg','wins_avg','playoffs','winner','earnings']].to_string(index=False))
     standings_sim.to_csv('DraftResults.csv',index=False)
     my_results = standings_sim.loc[standings_sim.team == 'My Team']
