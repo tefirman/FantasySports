@@ -132,7 +132,7 @@ def get_depth_chart(team_abbrev: str):
     wrs = depth.pos == 'WR'
     depth.loc[wrs,'string'] = 1 + (depth.loc[wrs].string.rank(method='first') - 1)/3
     depth = depth.loc[depth.player != '-'].reset_index(drop=True)
-    for status in ['Q','SUSP']: # Need to expand this with possible values as the season goes on...
+    for status in ['P','Q','O','PUP','SUSP','IR']:
         injured = depth.player.str.endswith(' ' + status)
         depth.loc[injured,'player'] = depth.loc[injured,'player'].str.split(' ').str[:-1].apply(' '.join)
     corrections = pd.read_csv("https://raw.githubusercontent.com/tefirman/FantasySports/main/res/football/name_corrections.csv")
