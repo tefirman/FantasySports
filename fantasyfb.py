@@ -63,7 +63,7 @@ class League:
         reference_games=None,
         basaloppstringtime=[],
         sfb=False,
-        bestball=False,
+        bestball="",
     ):
         """
         Initializes a League object using the parameters provided and class functions defined below.
@@ -78,7 +78,7 @@ class League:
             reference_games (int, optional): integer describing the number of games to use as a prior for rates, defaults to None.
             basaloppstringtime (list, optional): list of the four weighting factors when calculating rates, defaults to an empty list.
             sfb (bool, optional): whether to implement SFB13 settings and scoring, defaults to False.
-            bestball (bool, optional): whether to implement best ball settings and scoring, defaults to False.
+            bestball (str, optional): which platform to use when implementing best ball settings/scoring, defaults to a blank string (no bestball).
         """
         self.latest_season = datetime.datetime.now().year - int(
             datetime.datetime.now().month < 6
@@ -97,14 +97,14 @@ class League:
         self.get_fantasy_rosters()
         self.name_corrections()
         self.get_player_ids()
-        self.load_parameters(earliest, reference_games, basaloppstringtime)
-        self.num_sims = num_sims if type(num_sims) == int else 10000
-        self.get_rates()
-        self.war_sim()
         self.add_injuries()
         self.add_bye_weeks()
         self.add_roster_pcts()
         self.add_depth_charts()
+        self.load_parameters(earliest, reference_games, basaloppstringtime)
+        self.num_sims = num_sims if type(num_sims) == int else 10000
+        self.get_rates()
+        self.war_sim()
         self.get_schedule()
         self.starters(self.week)
 
@@ -201,7 +201,7 @@ class League:
         # Creating league object
         self.lg = self.gm.to_league(self.lg_id)
 
-    def load_settings(self, sfb: bool = False, bestball: bool = False):
+    def load_settings(self, sfb: bool = False, bestball: str = ""):
         """
         Pulls league roster/schedule settings and scoring modifiers
         """
@@ -237,7 +237,7 @@ class League:
             'Pts Allow 0':0.0,'Pts Allow 1-6':0.0,'Pts Allow 7-13':0.0,'Pts Allow 14-20':0.0,\
             'Pts Allow 21-27':0.0,'Pts Allow 28-34':0.0,'Pts Allow 35+':0.0,'XPR':0.0}
             self.roster_spots = pd.DataFrame({'position':['QB','RB','WR','TE','W/R/T','W/R/T/Q','K','BN'],'count':[1,2,3,1,2,1,1,11]})
-        elif bestball:
+        elif str(bestball).lower() in ["dk", "draftkings"]:
             self.settings['playoff_start_week'] = 14
             self.settings['num_playoff_teams'] = 2
             self.scoring = {'Pass Yds':0.04,'Pass Comp':0.0,'Pass TD':4.0,'Pass 1D':0.0,'Pass 300+':3.0,\
@@ -249,6 +249,22 @@ class League:
             'Pts Allow 0':0.0,'Pts Allow 1-6':0.0,'Pts Allow 7-13':0.0,'Pts Allow 14-20':0.0,\
             'Pts Allow 21-27':0.0,'Pts Allow 28-34':0.0,'Pts Allow 35+':0.0,'XPR':0.0}
             self.roster_spots = pd.DataFrame({'position':['QB','RB','WR','TE','W/R/T','W/R/T/Q','K','BN'],'count':[1,2,3,1,1,0,0,12]})
+        elif str(bestball).lower() in ["underdog"]:
+            # Slow Puppy
+            self.settings['playoff_start_week'] = 14
+            self.settings['num_playoff_teams'] = 2
+            self.scoring = {'Pass Yds':0.04,'Pass Comp':0.0,'Pass TD':4.0,'Pass 1D':0.0,'Pass 300+':0.0,\
+            'Int Thrown':-1.0,'Rush Yds':0.1,'Rush Att':0.0,'Rush TD':6.0,'Rush 1D':0.0,'Rush 100+':0.0,\
+            'Rec Yds':0.1,'Rec':0.5,'Rec TD':6.0,'Rec 1D':0.0,'Rec 100+':0.0,'Ret Yds':0.0,'Ret TD':0.0,\
+            'TE Rec Bonus':0.0,'TE 1D Bonus':0.0,'2-PT':2.0,'Fum Lost':-2.0,'Fum Ret TD':0.0,\
+            'FG 0-19':0.0,'FG 20-29':0.0,'FG 30-39':0.0,'FG 40-49':0.0,'FG 50+':0.0,'PAT Made':0.0,\
+            'Sack':0.0,'Int':0.0,'Fum Rec':0.0,'TD':0.0,'Safe':0.0,'Blk Kick':0.0,\
+            'Pts Allow 0':0.0,'Pts Allow 1-6':0.0,'Pts Allow 7-13':0.0,'Pts Allow 14-20':0.0,\
+            'Pts Allow 21-27':0.0,'Pts Allow 28-34':0.0,'Pts Allow 35+':0.0,'XPR':0.0}
+            self.roster_spots = pd.DataFrame({'position':['QB','RB','WR','TE','W/R/T','W/R/T/Q','K','BN'],'count':[1,2,3,1,1,0,0,10]})
+            # # Pomeranian Superflex
+            # self.settings['num_playoff_teams'] = 3
+            # self.roster_spots = pd.DataFrame({'position':['QB','RB','WR','TE','W/R/T','W/R/T/Q','K','BN'],'count':[1,2,2,1,1,1,0,12]})
         else:
             if "FG 0-19" not in self.scoring:
                 self.scoring["FG 0-19"] = 3
@@ -1013,7 +1029,8 @@ class League:
             - by_player.loc[inds, "points_rate"] ** 2
         ) ** 0.5
         by_player.player_id_sr = by_player.player_id_sr.fillna("")
-        league_avg = by_player.loc[by_player.player_id_sr.str.startswith("avg_")]
+        league_avg = by_player.loc[by_player.player_id_sr.str.startswith("avg_")].reset_index(drop=True)
+        league_avg['string'] = 2.0
         by_player = pd.merge(
             left=by_player.sort_values(by='num_games',ascending=False)\
             .drop_duplicates(subset=['player_id_sr'],keep='first',ignore_index=True),
@@ -1025,6 +1042,10 @@ class League:
                     "fantasy_team",
                     "current_team",
                     "position",
+                    "string",
+                    "until",
+                    "bye_week",
+                    "pct_rostered",
                     "selected_position",
                 ]
             ].drop_duplicates(),
@@ -1037,9 +1058,14 @@ class League:
                 [
                     "player_id_sr",
                     "player_id",
-                    "position",
+                    "status",
                     "fantasy_team",
                     "current_team",
+                    "position",
+                    "string",
+                    "until",
+                    "bye_week",
+                    "pct_rostered",
                     "selected_position",
                 ],
             ],
@@ -1053,11 +1079,16 @@ class League:
                 [
                     "player_id_sr",
                     "player_id",
+                    "status",
+                    "fantasy_team",
+                    "current_team",
                     "position",
                     "points_rate",
                     "points_stdev",
-                    "fantasy_team",
-                    "current_team",
+                    "string",
+                    "until",
+                    "bye_week",
+                    "pct_rostered",
                     "selected_position",
                 ]
             ],
