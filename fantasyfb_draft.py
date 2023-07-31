@@ -18,9 +18,9 @@ def check_pick_value(league, pick):
     else:
         return int(pick.strip())
 
-def provide_pick_order(league, customize=False, already=[]):
+def provide_pick_order(league, customize=False, already=[], sfb=False, superflex=False):
     if "My Team" in already and len(already) == len(league.teams):
-        my_pick = already.index("My Team")
+        my_pick = already.index("My Team") + 1
     else:
         my_pick = check_pick_value(league,input("Which pick are you? "))
         while my_pick is None:
@@ -28,8 +28,13 @@ def provide_pick_order(league, customize=False, already=[]):
     my_team = [team for team in league.teams if team['name'] == league.name]
     other_teams = [team for team in league.teams if team['name'] != league.name]
     league.teams = other_teams[:my_pick - 1] + my_team + other_teams[my_pick - 1:]
-    avg_team = pd.concat(3*[league.players.loc[league.players.player_id_sr.astype(str).str.startswith('avg_') \
-    & ~league.players.player_id_sr.isin(['avg_QB','avg_TE'])]],ignore_index=True,sort=False)
+    avg_team = pd.concat(3*[league.players.loc[league.players.player_id_sr.astype(str).str.startswith('avg_')]],ignore_index=True,sort=False)
+    if sfb:
+        avg_team = avg_team.loc[~avg_team.player_id_sr.isin(['avg_QB','avg_TE'])].reset_index(drop=True)
+    elif superflex:
+        avg_team = avg_team.loc[~avg_team.player_id_sr.isin(['avg_QB'])].reset_index(drop=True)
+        league.settings['num_playoff_teams'] = 3
+        league.roster_spots = pd.DataFrame({'position':['QB','RB','WR','TE','W/R/T','W/R/T/Q','K','BN'],'count':[1,2,2,1,1,1,0,12]})
     for pick in range(len(league.teams)):
         if pick + 1 == my_pick:
             pick_name = "My Team"
@@ -99,13 +104,21 @@ def main():
         help="whether to use SFB scoring/settings throughout the draft",
     )
     parser.add_option(
-        "--bestball",
+        "--superflex",
         action="store_true",
+        dest="superflex",
+        help="whether to use superflex settings throughout the draft",
+    )
+    parser.add_option(
+        "--bestball",
+        action="store",
         dest="bestball",
-        help="whether to use SFB scoring/settings throughout the draft",
+        default="",
+        help="which platform to use if implementing best ball settings/scoring",
     )
     options, args = parser.parse_args()
     league = fb.League(options.teamname,num_sims=10000,sfb=options.sfb,bestball=options.bestball)
+    options.bestball = str(options.bestball).lower() in ["dk","draftkings","underdog"]
     num_spots = league.roster_spots['count'].sum()
     num_teams = len(league.teams)
     if (options.sfb or options.bestball) and num_teams != 12:
@@ -181,7 +194,7 @@ def main():
         progress = pd.read_csv(options.inprogress)
         pick_num = progress.shape[0]
         given_order = progress.iloc[:progress.fantasy_team.nunique()].fantasy_team.tolist()
-        league = provide_pick_order(league, already=given_order)
+        league = provide_pick_order(league, already=given_order, sfb=options.sfb, superflex=options.superflex)
         league.players = pd.merge(left=league.players,right=progress[['player_id_sr','fantasy_team']],how='left',on='player_id_sr',suffixes=('','_prev'))
         picked = ~league.players.fantasy_team_prev.isnull()
         league.players.loc[picked,'fantasy_team'] = league.players.loc[picked,'fantasy_team_prev']
@@ -191,7 +204,7 @@ def main():
     else:
         options.output = "DraftProgress.csv"
         custom_order = input("Would you like to provide a custom draft order? ")
-        league = provide_pick_order(league,custom_order.lower() in ["yes","y"])
+        league = provide_pick_order(league, custom_order.lower() in ["yes","y"], sfb=options.sfb, superflex=options.superflex)
         pick_num = 0
         progress = pd.DataFrame()
 
@@ -203,13 +216,18 @@ def main():
         elif round_num%2 == 0 and not options.sfb:
             rel_pick = num_teams - rel_pick - 1
         
+        if round_num > 10 and options.bestball:
+            # Initially keeping average replacements for more realistic simulations,
+            # but there's no waiver wire in bestball, eliminating averages half way through
+            league.players = league.players.loc[~league.players.player_id_sr.astype(str).str.startswith('avg_')].reset_index(drop=True)
+
         pick_deets = 'Round #{}, Pick #{}, {}: '.format(round_num,pick_num + 1,league.teams[rel_pick]['name'])
         pick_name = check_pick_name(league,input(pick_deets),["best","nearest","next","lookup","exclude","go back","sim","roster"])
         while pick_name is None:
             pick_name = check_pick_name(league,input(pick_deets),["best","nearest","next","lookup","exclude","go back","sim","roster"])
         
         if pick_name in league.players.name.tolist():
-            # What about players with the same name???
+            # What about players with the same name??? Not worrying about it for now...
             league.players.loc[league.players.name == pick_name,'fantasy_team'] = league.teams[rel_pick]['name']
             progress = pd.concat([progress,league.players.loc[league.players.name == pick_name]],ignore_index=True,sort=False)
             progress.to_csv(options.output,index=False)
