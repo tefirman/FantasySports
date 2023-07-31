@@ -566,16 +566,14 @@ verbose=False, shortslate=False, salary_rate=-0.003125):
         sal_teams = teams.Salary == salary
         if sal_teams.any():
             teams.loc[sal_teams,'Probability'] = np.exp(salary_rate*(50000 - salary))/(q*sal_teams.sum())
-    
     if shortslate:
         teams['captain'] = teams.Name.str.replace('-A-CPT','-ACPT').str.split('-CPT').str[0].str.split(', ').str[-1]
     else:
         teams['captain'] = teams['Name']
-        teams.captain = teams.captain.str[:-2].str.split('-P, ') # Only applies to non-shortstack for now...
+        teams.captain = teams.captain.str[:-2].str.split('-P, ')
         teams = teams.explode('captain',ignore_index=True)
         teams = pd.merge(left=teams,right=salaries[['Name','Salary']].rename(columns={'Name':'captain','Salary':'cpt_salary'}),how='inner',on='captain')
         teams = teams.sort_values(by=['DKFP','cpt_salary'],ascending=False).drop_duplicates(subset=['Name'],keep='first',ignore_index=True)
-
     return teams
 
 
@@ -619,7 +617,8 @@ def simulate_contest(teams, matchups, contest_type, num_sims=1000, major=False, 
         sims = pd.concat([sims,this_entry],ignore_index=True)
     sims['num_sim'] = sims.index%num_sims
     sims['num_entry'] = sims.index//num_sims
-    sims.Name = sims.Name.str[:-2].str.split('-P, ') # Only applies to non-shortstack for now...
+    sims.Name = sims.Name.str.replace('-A-CPT','-P').str.replace('-CPT','-P')
+    sims.Name = sims.Name.str[:-2].str.split('-P, ')
     sims = sims.explode('Name',ignore_index=True)
     sim_matches = simulate_points(matchups, num_sims, major, verbose)
     sims = pd.merge(left=sims,right=sim_matches[['num_sim','Name','DKFP_sim']],how='inner',on=['num_sim','Name'])
@@ -808,7 +807,7 @@ def main():
     print(teams.sort_values(by='earnings',ascending=False).iloc[0].Name)
     print(teams.sort_values(by='earnings',ascending=False).iloc[0])
     print('Quarter Jukebox')
-    combos = best_combos(teams.copy(), matchups, "QuarterJukebox400", limit=10, num_sims=1000, major=options.major, verbose=options.verbose)
+    combos = best_combos(teams.copy(), matchups, "QuarterJukebox400", limit=5, num_sims=1000, major=options.major, verbose=options.verbose)
 
     write_to_spreadsheet(teams.iloc[:20000], combos, options.output)
 
