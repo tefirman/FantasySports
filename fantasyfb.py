@@ -204,6 +204,10 @@ class League:
     def load_settings(self, sfb: bool = False, bestball: str = ""):
         """
         Pulls league roster/schedule settings and scoring modifiers
+
+        Args:
+            sfb (bool, optional): whether to use Scott Fish Bowl 13 settings, defaults to False.
+            bestball (str, optional): which best ball settings to use if desired, defaults to "" (redraft).
         """
         # Pulling league settings
         settings_json = self.lg.yhandler.get_settings_raw(self.lg_id)
@@ -300,9 +304,12 @@ class League:
             + "tefirman/FantasySports/main/res/football/team_abbrevs.csv"
         )
 
-    def load_nfl_schedule(self,path='NFLSchedule.csv'):
+    def load_nfl_schedule(self,path: str = "NFLSchedule.csv"):
         """
         Loads and processes the NFL schedule for use in future simulations
+
+        Args:
+            path (str, optional): location of saved NFL schedule, defaults to "NFLSchedule.csv".
         """
         if os.path.exists(path):
             nfl_schedule = pd.read_csv(path)
@@ -346,7 +353,7 @@ class League:
         nfl_schedule.opp_elo = 1500 / nfl_schedule.opp_elo
         self.nfl_schedule = nfl_schedule.sort_values(by=["season", "week"], ignore_index=True)
 
-    def refresh_oauth(self, threshold=59):
+    def refresh_oauth(self, threshold: int = 59):
         """
         Checks the status of the current authentication token and refreshes it if expired (1hr).
 
@@ -364,7 +371,7 @@ class League:
             self.gm = yfa.Game(self.oauth, "nfl")
             self.lg = self.gm.to_league(self.lg_id)
 
-    def get_yahoo_players(self, injurytries=10):
+    def get_yahoo_players(self, injurytries: int = 10):
         """
         Pulls a dataframe containing details about all NFL players that are eligible 
         to be rostered in the fantasy league in question. Injury statuses will occasionally 
@@ -491,18 +498,19 @@ class League:
             ]
         ]
 
-    def pull_stats(self, start: int, finish: int):
+    def pull_stats(self, start: int, finish: int, path: str = "GameByGameFantasyFootballStats.csv"):
         """
         Pulls a dataframe containing event rates based on per-game statistics during the specified timeframe.
 
         Args:
             start (int): year and number of the first week of interest (YYYYWW, e.g. 202102 = week 2 of 2021).
             finish (int): year and number of the last week of interest (YYYYWW, e.g. 202307 = week 7 of 2023).
+            path (str, optional): location of saved per-game statistics, defaults to "GameByGameFantasyFootballStats.csv".
 
         Returns:
             pd.DataFrame: dataframe containing player rates based on games during the timespan of interest.
         """
-        stats = sr.get_bulk_stats(start//100,start%100,finish//100,finish%100,False,"GameByGameFantasyFootballStats.csv")
+        stats = sr.get_bulk_stats(start//100,start%100,finish//100,finish%100,False,path)
         s = sr.Schedule(stats.season.min(),stats.season.max())
         pts_allowed = pd.concat([s.schedule[['boxscore_abbrev','team1_abbrev','score2']]\
         .rename(columns={'boxscore_abbrev':'game_id','team1_abbrev':'team','score2':'points_allowed'}),\
@@ -548,13 +556,7 @@ class League:
 
     def add_points(self):
         """
-        Loads individual player statistics for each game in the specified timeframe 
-        and calculates fantasy points based on league settings. Initially looks for 
-        pre-pulled statistics saved locally and pulls new stats when necessary.
-
-        Args:
-            start (int): year and number of the first week of interest (YYYYWW, e.g. 202102 = week 2 of 2021).
-            finish (int): year and number of the last week of interest (YYYYWW, e.g. 202307 = week 7 of 2023).
+        Calculates per-game fantasy points based on per-game statistics and provided scoring settings.
         """
         offense = self.stats.loc[self.stats.position != "DEF"].reset_index(drop=True)
         offense["points"] = (
@@ -612,6 +614,15 @@ class League:
         self.stats = pd.concat([offense,defense], ignore_index=True, sort=False)
     
     def load_stats(self, start: int, finish: int):
+        """
+        Loads individual player statistics for each game in the specified timeframe 
+        and calculates fantasy points based on league settings. Initially looks for 
+        pre-pulled statistics saved locally and pulls new stats when necessary.
+
+        Args:
+            start (int): year and number of the first week of interest (YYYYWW, e.g. 202102 = week 2 of 2021).
+            finish (int): year and number of the last week of interest (YYYYWW, e.g. 202307 = week 7 of 2023).
+        """
         self.pull_stats(start, finish)
         self.add_points()
         self.stats = pd.merge(
@@ -637,6 +648,9 @@ class League:
         self.players.loc[to_fix, "name"] = self.players.loc[to_fix, "new_name"]
 
     def get_player_ids(self):
+        """
+        Maps between Yahoo player ID's and SportsRef player ID's based on team rosters and draft results.
+        """
         self.nfl_rosters = sr.get_bulk_rosters(self.season - 1,self.latest_season,"NFLRosters.csv")
         self.nfl_rosters = self.nfl_rosters.rename(columns={'player':'name','player_id':'player_id_sr','team':'current_team'})
         self.players = pd.merge(
@@ -897,6 +911,9 @@ class League:
             )
 
     def add_depth_charts(self):
+        """
+        Pulls current team depth charts from ESPN and merges them into the players dataframe.
+        """
         if self.season == self.latest_season and self.week == self.current_week:
             # Include name corrections here???
             self.players = pd.merge(left=self.players,right=sr.get_all_depth_charts()\
@@ -923,6 +940,9 @@ class League:
         """
         Calculates the average and standard deviation of fantasy points for each player 
         based on the specified prior and normalizing with respect to the provided weighting factors.
+
+        Args:
+            reload (bool, optional): whether to reload the statistics dataframe, defaults to True.
         """
         as_of = self.season * 100 + self.week
         if not hasattr(self,"stats") or reload:
@@ -1280,8 +1300,8 @@ class League:
         )
         self.players["points_avg"] = self.players["points_rate"]*self.players["game_factor"]#.fillna(1.0)
         del self.players["team"], self.players["elo_diff"]
-        """ WAR is linear with points_avg, but slope/intercept depends on position """
-        """ Harder to characterize how WAR varies with points_stdev, ignoring for now... """
+        # WAR is linear with points_avg, but slope/intercept depends on position
+        # Harder to characterize how WAR varies with points_stdev, ignoring for now...
         self.players = self.players.sort_values(by="points_avg", ascending=False)
         # self.players = self.players.sort_values(by='WAR',ascending=False)
         self.players["starter"] = False
@@ -1381,6 +1401,16 @@ class League:
                     ] = True
 
     def bestball_sims(self, payouts=[20,20,20]):
+        """
+        Simulates the remainder of the fantasy season based on current rosters 
+        and best ball settings using Monte Carlo simulations.
+
+        Args:
+            payouts (list, optional): list of prize amounts for first, second, and third, defaults to [800, 300, 100].
+
+        Returns:
+            standings (pd.DataFrame): simulated results for the final season standings and playoff projections.
+        """
         self.refresh_oauth()
         projections = pd.DataFrame(columns=["fantasy_team", "week", "points_avg", "points_stdev"])
         for week in range(self.week,self.settings['playoff_start_week']):
@@ -1432,7 +1462,7 @@ class League:
     ):
         """
         Simulates the remainder of the fantasy season based on current rosters 
-        using Monte Carlo simulations.
+        and redraft settings using Monte Carlo simulations.
 
         Args:
             verbose (bool, optional): whether to print status updates throughout the simulation, defaults to False.
@@ -2136,6 +2166,7 @@ class League:
             postseason (bool, optional): whether to analyze postseason gains or just regular season, defaults to True.
             verbose (bool, optional): whether to print out a status report as the code runs, defaults to True.
             payouts (list, optional): list of payout amounts for top three finishers, defaults to [800, 300, 100].
+            bestball (bool, optional): whether to use best ball settings during simulation, defaults to False.
 
         Returns:
             pd.DataFrame: dataframe containing the impact and value of every add & drop combination analyzed.
@@ -2299,6 +2330,7 @@ class League:
             postseason (bool, optional): whether to analyze postseason gains or just regular season, defaults to True.
             verbose (bool, optional): whether to print out a status report as the code runs, defaults to True.
             payouts (list, optional): list of payout amounts for top three finishers, defaults to [800, 300, 100].
+            bestball (bool, optional): whether to use best ball settings during simulation, defaults to False.
 
         Returns:
             pd.DataFrame: dataframe containing the impact and value of every possible add analyzed.
@@ -2427,6 +2459,7 @@ class League:
             postseason (bool, optional): whether to analyze postseason gains or just regular season, defaults to True.
             verbose (bool, optional): whether to print out a status report as the code runs, defaults to True.
             payouts (list, optional): list of payout amounts for top three finishers, defaults to [800, 300, 100].
+            bestball (bool, optional): whether to use best ball settings during simulation, defaults to False.
 
         Returns:
             pd.DataFrame: dataframe containing the impact and value of every possible drop analyzed.
@@ -2544,6 +2577,7 @@ class League:
             postseason (bool, optional): whether to analyze postseason gains or just regular season, defaults to True.
             verbose (bool, optional): whether to print out a status report as the code runs, defaults to True.
             payouts (list, optional): list of payout amounts for top three finishers, defaults to [800, 300, 100].
+            bestball (bool, optional): whether to use best ball settings during simulation, defaults to False.
 
         Returns:
             pd.DataFrame: dataframe containing the impact and value of every possible trade analyzed.
@@ -2884,10 +2918,18 @@ def sendEmail(subject, body, address, filename=None):
 def main():
     parser = optparse.OptionParser()
     parser.add_option(
-        "--season", action="store", dest="season", help="season of interest"
+        "--season",
+        action="store",
+        type="int",
+        dest="season",
+        help="season of interest"
     )
     parser.add_option(
-        "--week", action="store", dest="week", help="week to project the season from"
+        "--week",
+        action="store",
+        type="int",
+        dest="week",
+        help="week to project the season from"
     )
     parser.add_option(
         "--name",
@@ -2925,7 +2967,9 @@ def main():
     parser.add_option(
         "--injurytries",
         action="store",
+        type="int",
         dest="injurytries",
+        default=10,
         help="number of times to try pulling injury statuses before rolling with it",
     )
     parser.add_option(
@@ -2977,20 +3021,13 @@ def main():
         help="where to send the final projections spreadsheet",
     )
     options, args = parser.parse_args()
-    if str(options.season).isnumeric():
-        options.season = int(options.season)
-    if str(options.week).isnumeric():
-        options.week = int(options.week)
     if options.basaloppstringtime:
-        try:
+        options.basaloppstringtime = options.basaloppstringtime.split(",")
+        if all([val.isnumeric() for val in options.basaloppstringtime]) and len(options.basal_oppstringtime) == 4:
             options.basaloppstringtime = [float(val) for val in options.basaloppstringtime]
-        except:
+        else:
             print("Invalid rate inference parameters, using defaults...")
             options.basaloppstringtime = None
-    if str(options.injurytries).isnumeric():
-        options.injurytries = int(options.injurytries)
-    else:
-        options.injurytries = 10
 
     league = League(
         name=options.name,
@@ -3005,7 +3042,7 @@ def main():
 
     if options.payouts:
         options.payouts = options.payouts.split(",")
-        if all([val.isnumeric() for val in options.payouts]):
+        if all([val.isnumeric() for val in options.payouts]) and len(options.payouts) == 3:
             options.payouts = [float(val) for val in options.payouts]
         else:
             print("Weird values provided for payouts... Assuming standard payouts...")
@@ -3014,9 +3051,6 @@ def main():
                 100 * len(league.teams) * 0.3,
                 100 * len(league.teams) * 0.1,
             ]
-        if len(options.payouts) > 3:
-            print("Too many values provided for payouts... Only using top three...")
-            options.payouts = options.payouts[:3]
     elif league.name == "The Algorithm":
         options.payouts = [720, 360, 120]
     elif league.name == "Toothless Wonders":
