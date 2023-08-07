@@ -116,7 +116,13 @@ def get_intl_games():
 
 
 def get_depth_chart(team_abbrev: str):
-    response = requests.get("https://www.espn.com/nfl/team/depth/_/name/{}".format(team_abbrev)).text
+    os.system("wget https://www.espn.com/nfl/team/depth/_/name/{} -q -O {}.html".format(team_abbrev,team_abbrev))
+    tempData = open(team_abbrev + ".html","r")
+    response = tempData.read()
+    tempData.close()
+    os.remove(team_abbrev + ".html")
+    # Not working for some reason, some sort of CloudFront traffic error
+    # response = requests.get("https://www.espn.com/nfl/team/depth/_/name/{}".format(team_abbrev)).text
     soup = BeautifulSoup(response, "html.parser")
     tables = soup.find_all('table')
     depth = pd.DataFrame()
