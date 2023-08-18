@@ -73,6 +73,25 @@ def pull_elo_rankings() -> pd.DataFrame:
             elo[col] = elo[col].astype(float)
     elo.Updated = pd.to_datetime(elo.Updated, infer_datetime_format=True)
     elo.Player = elo.Player.str.replace('\xa0',' ')
+
+    # Merge in ace and double fault rates???
+    rates = pd.concat([pd.read_csv("https://github.com/JeffSackmann/tennis_atp/raw/master/atp_matches_2023.csv"),\
+    pd.read_csv("https://github.com/JeffSackmann/tennis_wta/raw/master/wta_matches_2023.csv")],ignore_index=True,sort=False)
+    service = pd.concat([rates[['winner_name','w_ace','w_df','w_svpt']]\
+    .rename(columns={'winner_name':'Player','w_ace':'ace','w_df':'df','w_svpt':'svpt'}),\
+    rates[['loser_name','l_ace','l_df','l_svpt']].rename(columns={'loser_name':'Player',\
+    'l_ace':'ace','l_df':'df','l_svpt':'svpt'})],ignore_index=True,sort=False)
+    service['num_matches'] = 1
+    avg_ace = service.ace.sum()/service.svpt.sum()
+    avg_df = service.df.sum()/service.svpt.sum()
+    service = service.groupby('Player').sum().reset_index()
+    service['ace_pct'] = service['ace']/service['svpt']
+    service['df_pct'] = service['df']/service['svpt']
+    service = service.loc[service.num_matches > 10].reset_index(drop=True)
+    elo = pd.merge(left=elo,right=service,how='left',on='Player')
+    elo.ace_pct = elo.ace_pct.fillna(avg_ace)
+    elo.df_pct = elo.df_pct.fillna(avg_df)
+
     return elo
 
 
@@ -294,12 +313,14 @@ def set_probabilities(p, scoring):
     set_probs["DKFP"] = (
         set_probs.games_won * scoring["game_won"]
         + set_probs.games_lost * scoring["game_lost"]
+        + (set_probs.games_lost < 6).astype(float)*set_probs.apply(lambda x: max(x["games_won"] - x["games_lost"],0.0)/2.0,axis=1)*scoring["break_point"]
         + set_probs.sets_won * scoring["set_won"]
         + set_probs.sets_lost * scoring["set_lost"]
     )
     set_probs["DKFP_opp"] = (
         set_probs.games_lost * scoring["game_won"]
         + set_probs.games_won * scoring["game_lost"]
+        + (set_probs.games_lost < 6).astype(float)*set_probs.apply(lambda x: max(x["games_won"] - x["games_lost"],0.0)/2.0,axis=1)*scoring["break_point"]
         + set_probs.sets_lost * scoring["set_won"]
         + set_probs.sets_won * scoring["set_lost"]
     )
@@ -327,8 +348,8 @@ def match_probabilities(p, scoring, major=False):
         how="inner",
         on="dummy",
     )
-    match_combos["DKFP"] = 30 + match_combos["DKFP_1"] + match_combos["DKFP_2"]
-    match_combos["DKFP_opp"] = 30 + match_combos["DKFP_opp_1"] + match_combos["DKFP_opp_2"]
+    match_combos["DKFP"] = scoring["match_played"] + match_combos["DKFP_1"] + match_combos["DKFP_2"]
+    match_combos["DKFP_opp"] = scoring["match_played"] + match_combos["DKFP_opp_1"] + match_combos["DKFP_opp_2"]
     match_combos["prob"] = match_combos["prob_1"] * match_combos["prob_2"]
     if not major:
         match_combos["sets_won"] = match_combos[
@@ -442,7 +463,7 @@ def match_probabilities(p, scoring, major=False):
     return outcomes
 
 
-def project_points(matchups, major=False, verbose=False):
+def project_points(matchups, major=False, underdog=False, verbose=False):
     scoring = (
         pd.read_csv(
             "https://raw.githubusercontent.com/tefirman/FantasySports/main/res/tennis/scoring.csv"
@@ -455,15 +476,18 @@ def project_points(matchups, major=False, verbose=False):
         if verbose:
             print(matchups.loc[ind, "Name"])
         p = matchups.loc[ind, "game_prob"]
-        num_sets = (
+        num_sets = "underdog" if underdog else (
             "three_set"
             if matchups.loc[ind, "Tour"] == "WTA" or not major
             else "five_set"
         )
         outcomes = match_probabilities(p, scoring[num_sets], major)
-        matchups.loc[ind, "DKFP"] = (outcomes.prob * outcomes.DKFP).sum()
+        avg = (outcomes.prob * outcomes.DKFP).sum()
+        sq_avg = (outcomes.prob * (outcomes.DKFP**2.0)).sum()
+        stdev = (sq_avg - avg**2.0)**0.5
+        matchups.loc[ind, "DKFP"] = avg
         if verbose:
-            print((outcomes.prob * outcomes.DKFP).sum())
+            print("{} +/- {}".format(round(avg,2),round(stdev,2)))
     players = matchups[["Name", "Salary", "DKFP", "OppName"]]
     return players
 
@@ -583,6 +607,11 @@ def simulate_contest(teams, matchups, contest_type, num_sims=1000, major=False, 
         max_entries = 7
         entry_fee = 0.25
         payouts = [5,4,3,2,2,1.5,1.5,1.5] + 6*[1.0] + 12*[0.75] + 29*[0.5]
+    elif contest_type == 'QuarterJukebox200':
+        num_entries = 951
+        max_entries = 20
+        entry_fee = 0.25
+        payouts = [20,10,7.5,5,4,3,3,2,2,2,2,2] + 10*[1.5] + 20*[1.0] + 50*[0.75] + 130*[0.5]
     elif contest_type == 'QuarterJukebox400':
         num_entries = 1902
         max_entries = 20
@@ -601,11 +630,12 @@ def simulate_contest(teams, matchups, contest_type, num_sims=1000, major=False, 
     else:
         print("Don't recognize the contest type provided, assuming Quarter Jukebox...")
         num_entries = 1400
+        max_entries = 20
         payouts = [25,10,5,4,3,2,1]
     payouts = payouts + [0]*(num_entries - len(payouts))
     if 'my_entries' not in teams.columns:
         teams['my_entries'] = 0.0
-    sims = teams.sample(n=int((num_entries - teams.my_entries.sum())*num_sims),replace=True,weights="Probability")
+    sims = teams.sample(n=int((num_entries - teams.my_entries.sum())*num_sims),replace=True,weights="Probability",ignore_index=True)
     my_entries = teams.loc[teams.my_entries > 0].reset_index(drop=True)
     if my_entries.my_entries.sum() > max_entries:
         print("Too many entries for this contest!!! Only using the first {}...".format(max_entries))
@@ -624,7 +654,7 @@ def simulate_contest(teams, matchups, contest_type, num_sims=1000, major=False, 
     sims = pd.merge(left=sims,right=sim_matches[['num_sim','Name','DKFP_sim']],how='inner',on=['num_sim','Name'])
     sims = sims.groupby(['num_sim','num_entry']).DKFP_sim.sum().reset_index()
     sims = sims.sort_values(by=['num_sim','DKFP_sim'],ascending=[True,False],ignore_index=True)
-    # sims['ranking'] = sims.groupby(['num_sim']).DKFP_sim.rank()
+    sims['ranking'] = sims.groupby(['num_sim']).DKFP_sim.rank(ascending=False,method='min')
     sims['projected_payout'] = payouts*num_sims
     payouts = sims.groupby(['num_sim','DKFP_sim']).projected_payout.mean()\
     .reset_index().rename(columns={'projected_payout':'actual_payout'})
@@ -637,15 +667,21 @@ def simulate_contest(teams, matchups, contest_type, num_sims=1000, major=False, 
 def best_lineups(teams, matchups, contest_type, limit=5, num_sims=1000, major=False, verbose=False, shortslate=False):
     if 'my_entries' not in teams.columns:
         teams['my_entries'] = 0.0
-    teams['earnings'] = None
-    teams['win_prob'] = None
+    teams[['profit','profit_stdev','profit_fano','gain_prob','push_prob','loss_prob','zero_prob','win_prob']] = None
     cpt_inds = teams.groupby('captain').head(limit).index.tolist()[:50]
     for ind in cpt_inds:
         teams.loc[ind,'my_entries'] += 1.0
         contest_sims = simulate_contest(teams, matchups, contest_type, num_sims=num_sims, major=False)
         payouts = contest_sims.loc[contest_sims.my_entry].groupby('num_sim')[['actual_payout','entry_fee']].sum().reset_index()
-        teams.loc[ind,'earnings'] = payouts.actual_payout.mean()
-        teams.loc[ind,'win_prob'] = payouts.loc[payouts.actual_payout > payouts.entry_fee].shape[0]/num_sims
+        payouts['profit'] = payouts['actual_payout'] - payouts['entry_fee']
+        teams.loc[ind,'profit'] = payouts.profit.mean()
+        teams.loc[ind,'profit_stdev'] = payouts.profit.std()
+        teams.loc[ind,'profit_fano'] = payouts.profit.std()/payouts.profit.mean()
+        teams.loc[ind,'gain_prob'] = payouts.loc[payouts.profit > 0.0].shape[0]/num_sims
+        teams.loc[ind,'push_prob'] = payouts.loc[payouts.profit == 0.0].shape[0]/num_sims
+        teams.loc[ind,'loss_prob'] = payouts.loc[payouts.profit < 0.0].shape[0]/num_sims
+        teams.loc[ind,'zero_prob'] = payouts.loc[payouts.actual_payout == 0].shape[0]/num_sims
+        teams.loc[ind,'win_prob'] = contest_sims.loc[(contest_sims.ranking == 1) & contest_sims.my_entry,'num_sim'].nunique()/num_sims
         teams.loc[ind,'my_entries'] -= 1.0
         if verbose:
             print("{} out of {}, {}".format((~teams.win_prob.isnull()).sum(),len(cpt_inds),datetime.datetime.now()))
@@ -657,7 +693,7 @@ def best_combos(teams, matchups, contest_type, limit=5, num_sims=1000, major=Fal
     for num_entry in range(limit):
         print('Simulating {} entr'.format(num_entry + 1) + ('ies' if num_entry > 0 else 'y'))
         teams = best_lineups(teams, matchups, contest_type, num_sims=num_sims, major=major, verbose=verbose)
-        teams = teams.sort_values(by='earnings',ascending=False).reset_index(drop=True)
+        teams = teams.sort_values(by='profit',ascending=False).reset_index(drop=True)
         if verbose:
             print(teams.iloc[0].Name)
             print(teams.iloc[0])
@@ -777,6 +813,12 @@ def main():
         help="assembles teams based on short-stack rules",
     )
     parser.add_option(
+        "--underdog",
+        action="store_true",
+        dest="underdog",
+        help="whether to use Underdog scoring settings",
+    )
+    parser.add_option(
         "--verbose",
         action="store_true",
         dest="verbose",
@@ -800,16 +842,16 @@ def main():
 
     elo = load_elos(options.elos)
     matchups = add_match_details(elo, options.salaries, options.court[0] if options.court else "")
-    players = project_points(matchups, options.major, options.verbose) # Alters matchups somehow... Object-based coding...
-    teams = compile_teams(matchups, options.salarycap, options.samematch, options.fixed, options.verbose, options.shortstack)
-    teams = best_lineups(teams, matchups, "DoubleUp", limit=5, num_sims=10000, major=options.major, verbose=options.verbose)
-    print('Double Up')
-    print(teams.sort_values(by='earnings',ascending=False).iloc[0].Name)
-    print(teams.sort_values(by='earnings',ascending=False).iloc[0])
-    print('Quarter Jukebox')
-    combos = best_combos(teams.copy(), matchups, "QuarterJukebox400", limit=5, num_sims=1000, major=options.major, verbose=options.verbose)
-
-    write_to_spreadsheet(teams.iloc[:20000], combos, options.output)
+    players = project_points(matchups, options.major, options.underdog, options.verbose) # Alters matchups somehow... Object-based coding...
+    if not options.underdog:
+        teams = compile_teams(matchups, options.salarycap, options.samematch, options.fixed, options.verbose, options.shortstack)
+        teams = best_lineups(teams, matchups, "DoubleUp", limit=5, num_sims=5000, major=options.major, verbose=options.verbose)
+        print('Double Up')
+        print(teams.sort_values(by='profit',ascending=False).iloc[0].Name)
+        print(teams.sort_values(by='profit',ascending=False).iloc[0])
+        print('Quarter Jukebox')
+        combos = best_combos(teams.copy(), matchups, "QuarterJukebox200", limit=20, num_sims=1000, major=options.major, verbose=options.verbose)
+        write_to_spreadsheet(teams.iloc[:20000], combos, options.output)
 
 
 if __name__ == "__main__":
