@@ -545,6 +545,8 @@ class League:
         defenses["player"] = defenses["team"]
         defenses["player_id"] = defenses["player"]
         defenses["pos"] = "DEF"
+        if "string" in defenses.columns:
+            defenses["string"] = 1.0
         defenses = defenses[[col for col in stats.columns if col in defenses.columns]]
         stats = stats.loc[stats.pos.isin(["QB", "RB", "WR", "TE", "K"])]
         self.stats = pd.concat([stats,defenses], ignore_index=True)\
