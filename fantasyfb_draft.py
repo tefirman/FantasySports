@@ -119,7 +119,7 @@ def main():
     options, args = parser.parse_args()
     league = fb.League(options.teamname,num_sims=10000,sfb=options.sfb,bestball=options.bestball)
     options.bestball = str(options.bestball).lower() in ["dk","draftkings","underdog"]
-    num_spots = league.roster_spots['count'].sum()
+    num_spots = league.roster_spots.loc[league.roster_spots.position != 'IR','count'].sum()
     num_teams = len(league.teams)
     if (options.sfb or options.bestball) and num_teams != 12:
         print("SFB13 uses 12 team divisions!!! Pick a different league!!!")
@@ -222,9 +222,9 @@ def main():
             league.players = league.players.loc[~league.players.player_id_sr.astype(str).str.startswith('avg_')].reset_index(drop=True)
 
         pick_deets = 'Round #{}, Pick #{}, {}: '.format(round_num,pick_num + 1,league.teams[rel_pick]['name'])
-        pick_name = check_pick_name(league,input(pick_deets),["best","nearest","next","lookup","exclude","go back","sim","roster"])
+        pick_name = check_pick_name(league,input(pick_deets),["best","nearest","bestball","nearestbestball","next","lookup","exclude","go back","sim","roster"])
         while pick_name is None:
-            pick_name = check_pick_name(league,input(pick_deets),["best","nearest","next","lookup","exclude","go back","sim","roster"])
+            pick_name = check_pick_name(league,input(pick_deets),["best","nearest","bestball","nearestbestball","next","lookup","exclude","go back","sim","roster"])
         
         if pick_name in league.players.name.tolist():
             # What about players with the same name??? Not worrying about it for now...
@@ -251,6 +251,31 @@ def main():
             .rename(columns={'name':'player_to_add'}),how='left',on=['player_to_add','position'])
             print("Best players in terms of ADP:")
             print(nearest[display_cols].to_string(index=False))
+        elif pick_name.lower() == "bestball":
+            league.num_sims = 2000
+            besties = league.players.loc[~league.players.position.isin(['K','DEF']),'name'].tolist()
+            best = league.possible_adds(besties,exclude,limit_per=5,team_name="My Team",\
+            verbose=False,payouts=options.payouts,bestball=True)
+            best = pd.merge(left=best,right=adp[['name','position','avg_pick','avg_round']]\
+            .rename(columns={'name':'player_to_add'}),how='left',on=['player_to_add','position'])
+            best = pd.merge(left=best,right=league.players[['name','position','WAR']]\
+            .rename(columns={'name':'player_to_add'}),how='left',on=['player_to_add','position'])
+            print("Best players according to the Algorithm:")
+            print(best[display_cols].to_string(index=False))
+            league.num_sims = 10000
+        elif pick_name.lower() == "nearestbestball":
+            league.num_sims = 2000
+            nearby = league.players.loc[(league.players.avg_pick <= pick_num + 2*num_teams) \
+            & ~league.players.position.isin(['K','DEF']),'name'].tolist()
+            nearest = league.possible_adds(nearby,exclude,limit_per=5,team_name="My Team",\
+            verbose=False,payouts=options.payouts,bestball=True)
+            nearest = pd.merge(left=nearest,right=adp[['name','position','avg_pick','avg_round']]\
+            .rename(columns={'name':'player_to_add'}),how='left',on=['player_to_add','position'])
+            nearest = pd.merge(left=nearest,right=league.players[['name','position','WAR']]\
+            .rename(columns={'name':'player_to_add'}),how='left',on=['player_to_add','position'])
+            print("Best players in terms of ADP:")
+            print(nearest[display_cols].to_string(index=False))
+            league.num_sims = 10000
         elif pick_name.lower() == "lookup":
             focus = check_pick_name(league,input("Which player would you like to check? "),["nevermind"])
             while focus is None:
