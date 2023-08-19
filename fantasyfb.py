@@ -215,6 +215,7 @@ class League:
         self.settings["playoff_start_week"] = int(self.settings["playoff_start_week"])
         self.settings["num_playoff_teams"] = int(self.settings["num_playoff_teams"])
         self.roster_spots = pd.DataFrame([pos["roster_position"] for pos in self.settings["roster_positions"]])
+        self.roster_spots['count'] = self.roster_spots['count'].astype(int)
         categories = pd.DataFrame(
             [stat["stat"] for stat in self.settings["stat_categories"]["stats"]]
         )
