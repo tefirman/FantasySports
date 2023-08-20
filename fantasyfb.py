@@ -1,10 +1,13 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Sep  7 19:09:47 2019
-
-@author: tefirman
-"""
+#!/usr/bin/env python
+# -*-coding:utf-8 -*-
+'''
+@File    :   fantasyfb.py
+@Time    :   2019/09/07 19:09:47
+@Author  :   Taylor Firman
+@Version :   1.0
+@Contact :   tefirman@gmail.com
+@Desc    :   Firman Fantasy Football Algorithm
+'''
 
 import pandas as pd
 import os
@@ -1602,7 +1605,7 @@ class League:
             "playoffs",
         ] = 0
         standings["playoff_bye"] = 0
-        if self.settings["num_playoff_teams"] == "6":
+        if int(self.settings["num_playoff_teams"]) == 6:
             standings.loc[standings.index % len(self.teams) < 2, "playoff_bye"] = 1
         if postseason:
             algorithm = (
@@ -2436,7 +2439,7 @@ class League:
             if verbose:
                 print(
                     added_value[["player_to_add", "earnings"]]
-                    .sort_values(by="earnings")
+                    .sort_values(by="earnings", ascending=False)
                     .to_string(index=False)
                 )
         return added_value
@@ -2550,7 +2553,7 @@ class League:
             if verbose:
                 print(
                     reduced_value[["player_to_drop", "earnings"]]
-                    .sort_values(by="earnings")
+                    .sort_values(by="earnings", ascending=False)
                     .to_string(index=False)
                 )
         return reduced_value
@@ -3077,21 +3080,21 @@ def main():
         if not os.path.exists(options.output + league.name.replace(" ", "")):
             os.mkdir(options.output + league.name.replace(" ", ""))
         if not os.path.exists(
-            options.output + league.name.replace(" ", "") + "/" + str(options.season)
+            options.output + league.name.replace(" ", "") + "/" + str(league.season)
         ):
             os.mkdir(
                 options.output
                 + league.name.replace(" ", "")
                 + "/"
-                + str(options.season)
+                + str(league.season)
             )
-        options.output += league.name.replace(" ", "") + "/" + str(options.season)
+        options.output += league.name.replace(" ", "") + "/" + str(league.season)
     if options.output[-1] != "/":
         options.output += "/"
     writer = pd.ExcelWriter(
         options.output
         + "FantasyFootballProjections_{}Week{}.xlsx".format(
-            datetime.datetime.now().strftime("%A"), options.week
+            datetime.datetime.now().strftime("%A"), league.week
         ),
         engine="xlsxwriter",
     )
@@ -3368,10 +3371,6 @@ def main():
 
     if options.adds:
         adds = league.possible_adds(
-            focus_on=[val.strip() for val in options.pickups.split(",")]
-            if options.pickups.lower() != "all"
-            else [],
-            exclude=[],
             limit_per=5,
             payouts=options.payouts,
         )
@@ -3430,10 +3429,6 @@ def main():
 
     if options.drops:
         drops = league.possible_drops(
-            focus_on=[val.strip() for val in options.pickups.split(",")]
-            if options.pickups.lower() != "all"
-            else [],
-            exclude=[],
             payouts=options.payouts,
         )
         writer = excelAutofit(
@@ -3493,8 +3488,8 @@ def main():
         if not options.trades:
             options.trades = "all"
         trades = league.possible_trades(
-            focus_on=[val.strip() for val in options.pickups.split(",")]
-            if options.pickups.lower() != "all"
+            focus_on=[val.strip() for val in options.trades.split(",")]
+            if options.trades.lower() != "all"
             else [],
             exclude=[],
             given=[],
@@ -3605,7 +3600,7 @@ def main():
                 options.email,
                 options.output
                 + "FantasyFootballProjections_{}Week{}.xlsx".format(
-                    datetime.datetime.now().strftime("%A"), options.week
+                    datetime.datetime.now().strftime("%A"), league.week
                 ),
             )
         except:
@@ -3613,7 +3608,7 @@ def main():
                 "Couldn't email results, maybe no wifi...\nResults saved to "
                 + options.output
                 + "FantasyFootballProjections_{}Week{}.xlsx".format(
-                    datetime.datetime.now().strftime("%A"), options.week
+                    datetime.datetime.now().strftime("%A"), league.week
                 )
             )
 
