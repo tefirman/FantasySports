@@ -1,3 +1,13 @@
+#!/usr/bin/env python
+# -*-coding:utf-8 -*-
+'''
+@File    :   fantasyfb_draft.py
+@Time    :   2023/08/19 23:09:18
+@Author  :   Taylor Firman
+@Version :   1.0
+@Contact :   tefirman@gmail.com
+@Desc    :   Draft specific application of the Firman Fantasy Football Algorithm.
+'''
 
 import pandas as pd
 import optparse
@@ -317,7 +327,7 @@ def main():
         standings_sim = league.season_sims(payouts=options.payouts)[1]
     print(standings_sim[['team','points_avg','wins_avg','playoffs','winner','earnings']].to_string(index=False))
     standings_sim.to_csv('DraftResults.csv',index=False)
-    my_results = standings_sim.loc[standings_sim.team == 'My Team']
+    my_results = standings_sim.reset_index(drop=True).loc[standings_sim.team == 'My Team']
     if my_results.index[0] < standings_sim.shape[0]/4:
         print("You crushed it!!! Way to go!!!")
     elif my_results.index[0] >= standings_sim.shape[0]/4 \
