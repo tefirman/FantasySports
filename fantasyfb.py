@@ -2946,12 +2946,14 @@ def main():
     parser.add_option(
         "--earliest",
         action="store",
+        type="int",
         dest="earliest",
         help="earliest week of stats being considered, e.g. 201807 corresponds to week 7 of the 2018 season",
     )
     parser.add_option(
         "--games",
         action="store",
+        type="int",
         dest="games",
         help="number of games to build each player's prior off of",
     )
@@ -2962,7 +2964,7 @@ def main():
         help="scaling factors for basal/opponent/depthchart/time factors, comma-separated string of values",
     )
     parser.add_option(
-        "--sims", action="store", dest="sims", help="number of season simulations"
+        "--sims", action="store", type="int", dest="sims", help="number of season simulations"
     )
     parser.add_option(
         "--payouts",
