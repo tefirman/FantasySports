@@ -653,10 +653,14 @@ def possible_drops(rosters,team_name,focus_on=[],exclude=[],pas_per_game=4):
         print(my_player + ', ' + str(datetime.datetime.now()))
         new_rosters = rosters.loc[rosters.full_name != my_player]
         new_standings = season_sim(new_rosters,current)
+        # prev_val = rosters.loc[rosters.full_name == my_player,'until'].values[0]
+        # rosters.loc[rosters.full_name == my_player,'until'] = datetime.datetime.now() + datetime.timedelta(days=2)
+        # new_standings = season_sim(rosters,current)
         new_standings['player_to_drop'] = my_player
         reduced_value = pd.concat([reduced_value,new_standings.loc[new_standings.fantasy_team == team_name]]).reset_index(drop=True)
         print('Earnings Change: $' + str(round(orig_standings.loc[orig_standings.fantasy_team == team_name,'earnings'].values[0],2)) + \
         ' --> $' + str(round(reduced_value.iloc[-1]['earnings'],2)))
+        # rosters.loc[rosters.full_name == my_player,'until'] = prev_val
     for col in ['R','HR','RBI','SB','avg','W','SV','SO','ERA','WHIP']:
         reduced_value['winner_' + col] -= orig_standings.loc[orig_standings.fantasy_team == team_name,'winner_' + col].values[0]
         reduced_value['winner_' + col] = round(reduced_value['winner_' + col],4)
@@ -875,8 +879,9 @@ def main():
     players = add_injuries(players)
     
     # # HOTFIX FOR POTENTIAL MOVE!!!
-    # players.loc[players.full_name.isin(['Jeff McNeil']),'fantasy_team'] = None
-    # players.loc[players.full_name.isin(['Paul DeJong']),'fantasy_team'] = "This Year's The Year"
+    # # players.loc[players.full_name.isin(['Grayson Rodriguez']),'fantasy_team'] = None
+    # players.loc[players.full_name.isin(['Jordan Romano']),'fantasy_team'] = "AbeFroman"
+    # players.loc[players.full_name.isin(['Freddie Freeman','Ty France']),'fantasy_team'] = "This Year's The Year"
     # # HOTFIX FOR POTENTIAL MOVE!!!
 
     """ Running season-long simulation """
