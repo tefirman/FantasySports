@@ -176,16 +176,16 @@ def add_match_details(elo: pd.DataFrame, salary_loc: str = "DKSalaries.csv", cou
     )
     matchups = pd.merge(
         left=matchups,
-        right=elo[["Player", court_type + "Elo", "Tour"]].rename(
-            columns={"Player": "Name", court_type + "Elo": "Elo"}
+        right=elo[["Player", court_type + "Elo", "ace_pct", "df_pct", "Tour"]].rename(
+            columns={"Player": "Name", court_type + "Elo": "Elo", "ace_pct":"AcePct", "df_pct":"DfPct"}
         ),
         how="inner",
         on="Name",
     )
     matchups = pd.merge(
         left=matchups,
-        right=elo[["Player", court_type + "Elo"]].rename(
-            columns={"Player": "OppName", court_type + "Elo": "OppElo"}
+        right=elo[["Player", court_type + "Elo", "ace_pct", "df_pct"]].rename(
+            columns={"Player": "OppName", court_type + "Elo": "OppElo", "ace_pct":"OppAcePct", "df_pct":"OppDfPct"}
         ),
         how="inner",
         on="OppName",
@@ -209,7 +209,7 @@ def add_match_details(elo: pd.DataFrame, salary_loc: str = "DKSalaries.csv", cou
     return matchups
 
 
-def set_probabilities(p, scoring):
+def set_probabilities(matchup, scoring, pts_per_game=6.4):
     set_probs = pd.DataFrame(
         columns=["games_won", "games_lost", "sets_won", "sets_lost", "probability"]
     )
@@ -224,7 +224,7 @@ def set_probabilities(p, scoring):
                         "sets_won": [1],
                         "sets_lost": [0],
                         "prob": [
-                            n_choose_k(6 + lost, lost) * (p**6) * ((1 - p) ** lost)
+                            n_choose_k(6 + lost, lost) * (matchup['game_prob']**6) * ((1 - matchup['game_prob']) ** lost)
                         ],
                     }
                 ),
@@ -240,7 +240,7 @@ def set_probabilities(p, scoring):
                     "games_lost": [5],
                     "sets_won": [1],
                     "sets_lost": [0],
-                    "prob": [n_choose_k(10, 5) * (p**7) * ((1 - p) ** 5)],
+                    "prob": [n_choose_k(10, 5) * (matchup['game_prob']**7) * ((1 - matchup['game_prob']) ** 5)],
                 }
             ),
         ],
@@ -255,7 +255,7 @@ def set_probabilities(p, scoring):
                     "games_lost": [6],
                     "sets_won": [1],
                     "sets_lost": [0],
-                    "prob": [n_choose_k(10, 5) * (p**6) * ((1 - p) ** 6)],
+                    "prob": [n_choose_k(10, 5) * (matchup['game_prob']**6) * ((1 - matchup['game_prob']) ** 6)],
                 }
             ),
         ],
@@ -272,7 +272,7 @@ def set_probabilities(p, scoring):
                         "sets_won": [0],
                         "sets_lost": [1],
                         "prob": [
-                            n_choose_k(6 + won, won) * (p**won) * ((1 - p) ** 6)
+                            n_choose_k(6 + won, won) * (matchup['game_prob']**won) * ((1 - matchup['game_prob']) ** 6)
                         ],
                     }
                 ),
@@ -288,7 +288,7 @@ def set_probabilities(p, scoring):
                     "games_lost": [7],
                     "sets_won": [0],
                     "sets_lost": [1],
-                    "prob": [n_choose_k(10, 5) * (p**5) * ((1 - p) ** 7)],
+                    "prob": [n_choose_k(10, 5) * (matchup['game_prob']**5) * ((1 - matchup['game_prob']) ** 7)],
                 }
             ),
         ],
@@ -303,7 +303,7 @@ def set_probabilities(p, scoring):
                     "games_lost": [6],
                     "sets_won": [0],
                     "sets_lost": [1],
-                    "prob": [n_choose_k(10, 5) * (p**6) * ((1 - p) ** 6)],
+                    "prob": [n_choose_k(10, 5) * (matchup['game_prob']**6) * ((1 - matchup['game_prob']) ** 6)],
                 }
             ),
         ],
@@ -314,13 +314,15 @@ def set_probabilities(p, scoring):
         set_probs.games_won * scoring["game_won"]
         + set_probs.games_lost * scoring["game_lost"]
         + (set_probs.games_lost < 6).astype(float)*set_probs.apply(lambda x: max(x["games_won"] - x["games_lost"],0.0)/2.0,axis=1)*scoring["break_point"]
+        + (set_probs.games_won + set_probs.games_lost)/2.0*pts_per_game*(matchup["AcePct"]*scoring["ace"] + matchup["DfPct"]*scoring["double_fault"])
         + set_probs.sets_won * scoring["set_won"]
         + set_probs.sets_lost * scoring["set_lost"]
     )
     set_probs["DKFP_opp"] = (
         set_probs.games_lost * scoring["game_won"]
         + set_probs.games_won * scoring["game_lost"]
-        + (set_probs.games_lost < 6).astype(float)*set_probs.apply(lambda x: max(x["games_won"] - x["games_lost"],0.0)/2.0,axis=1)*scoring["break_point"]
+        + (set_probs.games_won < 6).astype(float)*set_probs.apply(lambda x: max(x["games_lost"] - x["games_won"],0.0)/2.0,axis=1)*scoring["break_point"]
+        + (set_probs.games_won + set_probs.games_lost)/2.0*pts_per_game*(matchup["OppAcePct"]*scoring["ace"] + matchup["OppDfPct"]*scoring["double_fault"])
         + set_probs.sets_lost * scoring["set_won"]
         + set_probs.sets_won * scoring["set_lost"]
     )
@@ -333,10 +335,10 @@ def set_probabilities(p, scoring):
     return set_probs
 
 
-def match_probabilities(p, scoring, major=False):
+def match_probabilities(matchup, scoring, major=False):
     wins = pd.DataFrame()
     losses = pd.DataFrame()
-    set_probs = set_probabilities(p, scoring)
+    set_probs = set_probabilities(matchup, scoring)
     set_probs["dummy"] = 1
     match_combos = pd.merge(
         left=set_probs.rename(
@@ -475,13 +477,12 @@ def project_points(matchups, major=False, underdog=False, verbose=False):
     for ind in range(matchups.shape[0]):
         if verbose:
             print(matchups.loc[ind, "Name"])
-        p = matchups.loc[ind, "game_prob"]
         num_sets = "underdog" if underdog else (
             "three_set"
             if matchups.loc[ind, "Tour"] == "WTA" or not major
             else "five_set"
         )
-        outcomes = match_probabilities(p, scoring[num_sets], major)
+        outcomes = match_probabilities(matchups.iloc[ind], scoring[num_sets], major)
         avg = (outcomes.prob * outcomes.DKFP).sum()
         sq_avg = (outcomes.prob * (outcomes.DKFP**2.0)).sum()
         stdev = (sq_avg - avg**2.0)**0.5
@@ -507,13 +508,12 @@ def simulate_points(matchups, num_sims=1000, major=False, verbose=False):
             continue
         if verbose:
             print(matchups.iloc[ind]["Name"] + ' vs. ' + matchups.iloc[ind]["OppName"])
-        p = matchups.iloc[ind]["game_prob"]
         num_sets = (
             "three_set"
             if matchups.iloc[ind]["Tour"] == "WTA" or not major
             else "five_set"
         )
-        outcomes = match_probabilities(p, scoring[num_sets], major)
+        outcomes = match_probabilities(matchups.iloc[ind], scoring[num_sets], major)
         outcomes['Name'] = matchups.iloc[ind]['Name']
         outcomes['OppName'] = matchups.iloc[ind]['OppName']
         sim_matches = pd.concat([sim_matches,outcomes.sample(n=num_sims,weights='prob',replace=True)],ignore_index=True,sort=False)
@@ -550,7 +550,7 @@ verbose=False, shortslate=False, salary_rate=-0.003125):
         ]
         teams = teams.loc[
             teams["Salary"] + teams["Salary_" + str(ind + 1)]
-            < salary_cap - (3500 * (spots - ind) if ind < spots - 2 else 0)
+            < salary_cap - salaries.Salary.min() * (spots - ind - 1)
         ]
         teams.Name += "_" + teams["Name_" + str(ind + 1)] + '-' + pos
         teams.DKFP += teams["DKFP_" + str(ind + 1)]*multiplier
