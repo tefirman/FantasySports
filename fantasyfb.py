@@ -295,6 +295,7 @@ class League:
             {
                 "team_key": teams_info[str(ind)]["team"][0][0]["team_key"],
                 "name": teams_info[str(ind)]["team"][0][2]["name"],
+                "manager": teams_info[str(ind)]["team"][0][-1]['managers'][0]['manager']['nickname'],
             }
             for ind in range(teams_info["count"])
         ]
@@ -355,6 +356,7 @@ class League:
         nfl_schedule = pd.concat([home, away], ignore_index=True)
         nfl_schedule.elo_diff = nfl_schedule.elo_diff / 1500
         nfl_schedule.opp_elo = 1500 / nfl_schedule.opp_elo
+        nfl_schedule.date = pd.to_datetime(nfl_schedule.date,infer_datetime_format=True)
         self.nfl_schedule = nfl_schedule.sort_values(by=["season", "week"], ignore_index=True)
 
     def refresh_oauth(self, threshold: int = 59):
@@ -1324,7 +1326,7 @@ class League:
                 (self.nfl_schedule.season == as_of // 100)
                 & (self.nfl_schedule.week == week)
                 & (self.nfl_schedule.date < cutoff),
-                "abbrev",
+                "team",
             ].tolist()
             for team in self.teams:
                 started = self.players.loc[
@@ -1338,11 +1340,11 @@ class League:
                     & self.players.current_team.isin(completed)
                 ]
                 lineup = pd.merge(left=self.roster_spots,right=started.groupby('selected_position').size()\
-                .to_frame('num_started').reset_index().rename(columns={'selected_position':'pos'}),how='left',on='pos')
+                .to_frame('num_started').reset_index().rename(columns={'selected_position':'position'}),how='left',on='position')
                 lineup['count'] -= lineup.num_started.fillna(0.0)
                 num_pos = lineup.loc[~lineup.position.isin(["W/T", "W/R/T", "W/R/T/Q", "BN", "IR"])].set_index('position').to_dict()['count']
                 for pos in num_pos:
-                    for num in range(num_pos[pos]):
+                    for num in range(int(num_pos[pos])):
                         self.players.loc[
                             self.players.loc[
                                 (self.players.fantasy_team == team["name"])
@@ -1359,7 +1361,7 @@ class League:
                         ] = True
                 flex_pos = {"W/T":['WR','TE'],"W/R/T":['WR','RB','TE'],"W/R/T/Q":['WR','RB','TE','QB']}
                 for pos in flex_pos:
-                    num_flex = lineup.loc[lineup.position == pos,'count'].sum()
+                    num_flex = int(lineup.loc[lineup.position == pos,'count'].sum())
                     for flex in range(num_flex):
                         self.players.loc[
                             self.players.loc[
@@ -3494,7 +3496,7 @@ def main():
             if options.trades.lower() != "all"
             else [],
             exclude=[],
-            given=[],
+            given=[val.strip() for val in options.given.split(",")],
             limit_per=10,
             payouts=options.payouts,
         )
