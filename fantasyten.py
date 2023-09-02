@@ -91,7 +91,6 @@ def pull_elo_rankings() -> pd.DataFrame:
     elo = pd.merge(left=elo,right=service,how='left',on='Player')
     elo.ace_pct = elo.ace_pct.fillna(avg_ace)
     elo.df_pct = elo.df_pct.fillna(avg_df)
-
     return elo
 
 
@@ -127,7 +126,7 @@ def load_elos(elo_loc: str = "TennisElo.csv") -> pd.DataFrame:
     return elo
 
 
-def add_match_details(elo: pd.DataFrame, salary_loc: str = "DKSalaries.csv", court_type: str = "h") -> pd.DataFrame:
+def add_match_details(elo: pd.DataFrame, salary_loc: str = "DKSalaries.csv", court_type: str = "h", base_elo: float = 1500) -> pd.DataFrame:
     """
     Merges in opponents and DFS salaries to elo rankings and extrapolates match & game win probabilities.
 
@@ -140,19 +139,27 @@ def add_match_details(elo: pd.DataFrame, salary_loc: str = "DKSalaries.csv", cou
         pd.DataFrame: updated dataframe containing matchup details for each player in the current slate.
     """
     salaries = pd.read_csv(salary_loc)
+    # MAKE IT USE THE MATCHUP NAME RATHER THAN TEAMABBREV!!!
+    team_abbrevs = salaries.groupby("TeamAbbrev").size().to_frame('freq').reset_index()
+    duplicates = team_abbrevs.loc[team_abbrevs.freq > 1,'TeamAbbrev'].tolist()
+    if len(duplicates) > 0:
+        print("Duplicate team abbreviations for some players: " + ", ".join(duplicates))
+    # MAKE IT USE THE MATCHUP NAME RATHER THAN TEAMABBREV!!!
     missing = salaries.loc[~salaries.Name.isin(elo.Player.tolist()), "Name"].tolist()
     if len(missing) > 0:
         print("Missing some players: " + ", ".join(missing))
-        print("Assuming elo rating of 1100...")
+        print("Assuming elo rating of {}...".format(base_elo))
         elo = pd.concat(
             [
                 elo,
                 pd.DataFrame(
                     {
                         "Player": missing,
-                        "gElo": [1100] * len(missing),
-                        "hElo": [1100] * len(missing),
-                        "cElo": [1100] * len(missing),
+                        "gElo": [base_elo] * len(missing),
+                        "hElo": [base_elo] * len(missing),
+                        "cElo": [base_elo] * len(missing),
+                        "ace_pct": [0.0585] * len(missing),
+                        "df_pct": [0.0428] * len(missing),
                     }
                 ),
             ],
@@ -793,6 +800,14 @@ def main():
         help="whether to allow players from the same match in your lineups (not recommended)",
     )
     parser.add_option(
+        "--baseelo",
+        action="store",
+        dest="baseelo",
+        type="int",
+        default=1500,
+        help="default elo ranking if none exists",
+    )
+    parser.add_option(
         "--salarycap",
         action="store",
         dest="salarycap",
@@ -841,8 +856,11 @@ def main():
     options.output += 'DFS/Tennis/'
 
     elo = load_elos(options.elos)
-    matchups = add_match_details(elo, options.salaries, options.court[0] if options.court else "")
+    matchups = add_match_details(elo, options.salaries, options.court[0] if options.court else "", base_elo=options.baseelo)
     players = project_points(matchups, options.major, options.underdog, options.verbose) # Alters matchups somehow... Object-based coding...
+    # print(matchups[['Name','Elo']])
+    # print(matchups.Elo.mean())
+    # print(matchups.Elo.std())
     if not options.underdog:
         teams = compile_teams(matchups, options.salarycap, options.samematch, options.fixed, options.verbose, options.shortstack)
         teams = best_lineups(teams, matchups, "DoubleUp", limit=5, num_sims=5000, major=options.major, verbose=options.verbose)
@@ -850,7 +868,7 @@ def main():
         print(teams.sort_values(by='profit',ascending=False).iloc[0].Name)
         print(teams.sort_values(by='profit',ascending=False).iloc[0])
         print('Quarter Jukebox')
-        combos = best_combos(teams.copy(), matchups, "QuarterJukebox200", limit=20, num_sims=1000, major=options.major, verbose=options.verbose)
+        combos = best_combos(teams.copy(), matchups, "QuarterJukebox200", limit=20, num_sims=500, major=options.major, verbose=options.verbose)
         write_to_spreadsheet(teams.iloc[:20000], combos, options.output)
 
 
