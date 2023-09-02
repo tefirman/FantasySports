@@ -192,6 +192,7 @@ def main():
     adp['avg_round'] = round(1.0 + adp.avg_pick/num_teams,1)
     adp['avg_pick'] = round(adp.avg_pick,1)
     league.players = pd.merge(left=league.players,right=adp[['name','position','avg_pick','avg_round']],how='left',on=['name','position'])
+    league.players['fantasy_team'] = None
     display_cols = ['player_to_add','position','current_team','WAR','wins_avg','points_avg','playoffs','winner','earnings','avg_pick','avg_round']
 
     tot_picks = num_teams*num_spots
@@ -262,7 +263,7 @@ def main():
             print("Best players in terms of ADP:")
             print(nearest[display_cols].to_string(index=False))
         elif pick_name.lower() == "bestball":
-            league.num_sims = 2000
+            league.num_sims = 1000
             besties = league.players.loc[~league.players.position.isin(['K','DEF']),'name'].tolist()
             best = league.possible_adds(besties,exclude,limit_per=5,team_name="My Team",\
             verbose=False,payouts=options.payouts,bestball=True)
@@ -274,7 +275,7 @@ def main():
             print(best[display_cols].to_string(index=False))
             league.num_sims = 10000
         elif pick_name.lower() == "nearestbestball":
-            league.num_sims = 2000
+            league.num_sims = 1000
             nearby = league.players.loc[(league.players.avg_pick <= pick_num + 2*num_teams) \
             & ~league.players.position.isin(['K','DEF']),'name'].tolist()
             nearest = league.possible_adds(nearby,exclude,limit_per=5,team_name="My Team",\
