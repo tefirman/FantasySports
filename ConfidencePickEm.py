@@ -6,37 +6,92 @@ import datetime
 import numpy as np
 import optparse
 
-def load_picks(week: int):
+def load_pick_probs(week: int):
     nfl_teams = pd.read_csv("https://raw.githubusercontent.com/tefirman/FantasySports/main/res/football/team_abbrevs.csv")
     tempData = open("PickEmDistribution_Week1.txt",'r')
     raw_str = tempData.read()
     tempData.close()
     games = raw_str.split("Spread and Confidence\n")[-1].split('\n\n')[0].split('pts\tFavorite\t \n')
-    home = [game.split('\n')[7].split('\t')[0] for game in games]
-    home = [nfl_teams.loc[nfl_teams.yahoo.str.upper().isin([team]),'real_abbrev'].values[0] for team in home]
-    home_pct = [float(game.split('\n')[3].replace('%',''))/100.0 for game in games]
-    away = [game.split('\n')[7].split('\t')[-1] for game in games]
-    away = [nfl_teams.loc[nfl_teams.yahoo.str.upper().isin([team]),'real_abbrev'].values[0] for team in away]
-    away_pct = [float(game.split('\n')[6].replace('%',''))/100.0 for game in games]
-    pick_probs = pd.DataFrame({'team1_abbrev':home,'team2_abbrev':away,'pick_prob1':home_pct,'pick_prob2':away_pct})
-    return pick_probs
+    fave = [game.split('\n')[7].split('\t')[0] for game in games]
+    fave = [nfl_teams.loc[nfl_teams.yahoo.str.upper().isin([team]),'real_abbrev'].values[0] for team in fave]
+    fave_pct = [float(game.split('\n')[3].replace('%',''))/100.0 for game in games]
+    fave_pts = [float(game.split('\n')[8].split('\t')[0]) for game in games]
+    underdog = [game.split('\n')[7].split('\t')[-1] for game in games]
+    underdog = [nfl_teams.loc[nfl_teams.yahoo.str.upper().isin([team]),'real_abbrev'].values[0] for team in underdog]
+    underdog_pct = [float(game.split('\n')[6].replace('%',''))/100.0 for game in games]
+    underdog_pts = [float(game.split('\n')[8].split('\t')[-1]) for game in games]
+    home_fave = ['@' in game.split('\n')[1] for game in games]
+    pick_probs = pd.DataFrame({'fave_abbrev':fave,'underdog_abbrev':underdog,'fave_pick_prob':fave_pct,\
+    'underdog_pick_prob':underdog_pct,'fave_pick_pts':fave_pts,'underdog_pick_pts':underdog_pts,'home_fave':home_fave})
+    pick_probs.loc[pick_probs.home_fave,'team1_abbrev'] = pick_probs.loc[pick_probs.home_fave,'fave_abbrev']
+    pick_probs.loc[pick_probs.home_fave,'pick_prob1'] = pick_probs.loc[pick_probs.home_fave,'fave_pick_prob']
+    pick_probs.loc[pick_probs.home_fave,'pick_pts1'] = pick_probs.loc[pick_probs.home_fave,'fave_pick_pts']
+    pick_probs.loc[pick_probs.home_fave,'team2_abbrev'] = pick_probs.loc[pick_probs.home_fave,'underdog_abbrev']
+    pick_probs.loc[pick_probs.home_fave,'pick_prob2'] = pick_probs.loc[pick_probs.home_fave,'underdog_pick_prob']
+    pick_probs.loc[pick_probs.home_fave,'pick_pts2'] = pick_probs.loc[pick_probs.home_fave,'underdog_pick_pts']
+    pick_probs.loc[~pick_probs.home_fave,'team1_abbrev'] = pick_probs.loc[~pick_probs.home_fave,'underdog_abbrev']
+    pick_probs.loc[~pick_probs.home_fave,'pick_prob1'] = pick_probs.loc[~pick_probs.home_fave,'underdog_pick_prob']
+    pick_probs.loc[~pick_probs.home_fave,'pick_pts1'] = pick_probs.loc[~pick_probs.home_fave,'underdog_pick_pts']
+    pick_probs.loc[~pick_probs.home_fave,'team2_abbrev'] = pick_probs.loc[~pick_probs.home_fave,'fave_abbrev']
+    pick_probs.loc[~pick_probs.home_fave,'pick_prob2'] = pick_probs.loc[~pick_probs.home_fave,'fave_pick_prob']
+    pick_probs.loc[~pick_probs.home_fave,'pick_pts2'] = pick_probs.loc[~pick_probs.home_fave,'fave_pick_pts']
+    return pick_probs[['team1_abbrev','team2_abbrev','pick_prob1','pick_prob2','pick_pts1','pick_pts2']]
 
-def simulate_picks(games: pd.DataFrame, num_sims: int = 1000, num_entries: int = 50, pts_stdev: float = 3.0):
-    sims = pd.concat(num_sims*num_entries*[games],ignore_index=True)
-    sims['entry'] = sims.index%(games.shape[0]*num_entries)//games.shape[0]
-    sims['num_sim'] = sims.index//(games.shape[0]*num_entries)
+def load_picks(week: int):
+    if os.path.exists("ActualConfidencePicks_Week{}.txt".format(week)):
+        tempData = open("ActualConfidencePicks_Week{}.txt".format(week),'r')
+        raw_data = tempData.read().split('Team Name\tPoints\n')[-1]\
+        .split("\nYahoo! Sports - NBC Sports Network.")[0].replace('\n(','\r(').split('\n')
+        tempData.close()
+    else:
+        raw_data = []
+    actual = pd.DataFrame(columns=["player","pick","points_bid"])
+    for vals in raw_data:
+        player = vals.split('\t')[0]
+        picks = vals.split('\t')[1:-1]
+        actual = pd.concat([actual,pd.DataFrame({'player':[player]*len(picks),'pick':picks})],ignore_index=True)
+    actual = actual.loc[~actual.pick.isin(['--',' '])].reset_index(drop=True)
+    actual['points_bid'] = actual.pick.str.split('\r').str[-1].str[1:-1].astype(int)
+    actual['pick'] = actual.pick.str.split('\r').str[0]
+    nfl_teams = pd.read_csv("https://raw.githubusercontent.com/tefirman/FantasySports/main/res/football/team_abbrevs.csv")
+    actual = pd.merge(left=actual,right=nfl_teams[['yahoo','real_abbrev']].rename(columns={"yahoo":"pick"}),how='left',on='pick')
+    actual.loc[~actual.real_abbrev.isnull(),'pick'] = actual.loc[~actual.real_abbrev.isnull(),'real_abbrev']
+    del actual['real_abbrev']
+    my_picks = actual.loc[actual.player == "Firman's Educated Guesses"].reset_index(drop=True)
+    my_picks["entry"] = 0.0
+    actual = actual.loc[actual.player != "Firman's Educated Guesses"].reset_index(drop=True)
+    actual["entry"] = actual.player.rank(method='dense')
+    actual = pd.concat([my_picks,actual])
+    num_picks = actual.groupby('pick').size().to_frame('freq').reset_index()
+    # This isn't quite right, but fine for now...
+    already = num_picks.loc[num_picks.freq > 1,'pick'].unique().tolist()
+    actual = actual.loc[actual.pick.isin(already)].reset_index(drop=True)
+    # This isn't quite right, but fine for now...
+    return actual
+
+def simulate_picks(games: pd.DataFrame, picks: pd.DataFrame, num_sims: int = 1000, num_entries: int = 50, pts_stdev: float = 3.0):
+    # games includes all games from this week, picks only contains games already played...
+    sims = pd.concat(num_sims*num_entries*[games.loc[games.still_to_play]],ignore_index=True)
+    sims['entry'] = sims.index%(games.still_to_play.sum()*num_entries)//games.still_to_play.sum()
+    sims['num_sim'] = sims.index//(games.still_to_play.sum()*num_entries)
     sims['pick_sim'] = np.random.rand(sims.shape[0])
     home_pick = sims.pick_sim < sims.pick_prob1
     sims.loc[home_pick,'pick'] = sims.loc[home_pick,'team1_abbrev']
     sims.loc[~home_pick,'pick'] = sims.loc[~home_pick,'team2_abbrev']
-    sims.loc[home_pick,'points_bid_sim'] = np.random.normal(0,pts_stdev,home_pick.sum()) + sims.loc[home_pick,'elo_prob1']*games.shape[0]
-    sims.loc[~home_pick,'points_bid_sim'] = np.random.normal(0,pts_stdev,(~home_pick).sum()) + sims.loc[~home_pick,'elo_prob2']*games.shape[0]
-    sims['points_bid'] = sims.groupby(['entry','num_sim']).points_bid_sim.rank()
+    all_picks = pd.DataFrame({"entry":[val//games.shape[0] for val in range(games.shape[0]*num_entries)],\
+    "points_bid":[val%games.shape[0] + 1 for val in range(games.shape[0]*num_entries)]})
+    all_picks = pd.merge(left=all_picks,right=picks,how='left',on=['entry','points_bid'])
+    all_picks = all_picks.loc[all_picks.pick.isnull()]
+    sims.loc[home_pick,'points_bid_sim'] = np.random.normal(0,pts_stdev,home_pick.sum()) + sims.loc[home_pick,'pick_pts1']
+    sims.loc[~home_pick,'points_bid_sim'] = np.random.normal(0,pts_stdev,(~home_pick).sum()) + sims.loc[~home_pick,'pick_pts2']
+    sims = sims.sort_values(by=['num_sim','entry','points_bid_sim'],ascending=True)
+    sims['points_bid'] = all_picks.points_bid.tolist()*num_sims
     return sims
 
-def add_chalk_picks(sims: pd.DataFrame, fixed: list = []):
-    num_sims = sims.num_sim.max() + 1
+def add_my_picks(sims: pd.DataFrame, fixed: list = []):
+    num_sims = int(sims.num_sim.max() + 1)
     my_entries = sims.loc[sims.entry == 0].reset_index(drop=True)
+    my_points = sorted(my_entries.points_bid.unique().tolist())[::-1]
     sims = sims.loc[sims.entry != 0].reset_index(drop=True)
     home_fixed = my_entries.team1_abbrev.isin(fixed)
     away_fixed = my_entries.team2_abbrev.isin(fixed)
@@ -50,9 +105,12 @@ def add_chalk_picks(sims: pd.DataFrame, fixed: list = []):
     my_entries.loc[away_fixed,'pick'] = my_entries.loc[away_fixed,'team2_abbrev']
     my_entries.loc[away_fixed,'win_prob'] = my_entries.loc[away_fixed,'elo_prob2']
     my_entries = my_entries.sort_values(by=['num_sim','win_prob'],ascending=False,ignore_index=True)
-    my_entries['points_bid'] = list(range(16,0,-1))*num_sims
+    my_entries['points_bid'] = my_points*num_sims
     sims = pd.concat([sims,my_entries],ignore_index=True)
     sims = sims.sort_values(by=["num_sim","entry"],ascending=True,ignore_index=True)
+    if "points_won" in sims.columns:
+        sims.loc[sims.winner == sims.pick,'points_won'] = sims.loc[sims.winner == sims.pick,'points_bid']
+        sims.loc[sims.winner != sims.pick,'points_won'] = 0.0
     return sims
 
 def simulate_games(sims: pd.DataFrame):
@@ -64,10 +122,13 @@ def simulate_games(sims: pd.DataFrame):
     sims.loc[sims.winner != sims.pick,'points_won'] = 0.0
     return sims
 
-def assess_sims(sims: pd.DataFrame, pot_size: float = 500.0):
+def assess_sims(sims: pd.DataFrame, picks: pd.DataFrame(), pot_size: float = 500.0):
     num_sims = sims.num_sim.max() + 1
     standings = sims.groupby(['entry','num_sim']).points_won.sum().reset_index()\
     .sort_values(by=['num_sim','points_won'],ascending=[True,False])
+    standings = pd.merge(left=standings,right=picks.groupby('entry').points_won.sum().reset_index(),how='left',on=['entry'],suffixes=("","_already"))
+    standings.points_won += standings.points_won_already
+    del standings['points_won_already']
     winners = standings.drop_duplicates(subset=['num_sim'],keep='first')
     results = pd.merge(left=standings.groupby('entry').points_won.mean().reset_index().rename(columns={'points_won':'points_avg'}),\
     right=standings.groupby('entry').points_won.std().reset_index().rename(columns={'points_won':'points_std'}),how='inner',on='entry')
@@ -75,6 +136,39 @@ def assess_sims(sims: pd.DataFrame, pot_size: float = 500.0):
     results.win_pct = results.win_pct.fillna(0.0)/num_sims
     results['earnings'] = results.win_pct*pot_size
     return results
+
+def pick_deltas(games: pd.DataFrame, picks: pd.DataFrame, num_sims: int = 1000, num_entries: int = 50, fixed: list = []):
+    sims = simulate_picks(games, picks, num_sims, num_entries)
+    sims = add_my_picks(sims, fixed)
+    sims = simulate_games(sims)
+    results = assess_sims(sims, picks)
+    baseline = results.loc[results.entry == 0].iloc[0]
+    deltas = pd.DataFrame({'change':[float('inf')]})
+    while (deltas.change > 0).any():
+        my_picks = sims.loc[(sims.entry == 0) & (sims.num_sim == 0),['team1_abbrev','team2_abbrev','pick','win_prob','points_bid']].reset_index(drop=True)
+        deltas = pd.DataFrame()
+        for ind in range(my_picks.shape[0]):
+            pick = my_picks.iloc[ind]['pick']
+            oppo = my_picks.iloc[ind]['team1_abbrev'] if pick == my_picks.iloc[ind]['team2_abbrev'] else my_picks.iloc[ind]['team2_abbrev']
+            if pick in fixed:
+                continue
+            sims = add_my_picks(sims, [team for team in my_picks.pick if team != pick] + [oppo])
+            results = assess_sims(sims, picks)
+            switch = results.loc[results.entry == 0].iloc[0]
+            print('{} --> {}: ${:.2f} --> ${:.2f}'.format(pick,oppo,baseline['earnings'],switch['earnings']))
+            deltas = pd.concat([deltas,pd.DataFrame({'orig_pick':[pick],'orig_earnings':[baseline['earnings']],\
+            'new_pick':[oppo],'new_earnings':[switch['earnings']]})],ignore_index=True)
+        deltas['change'] = deltas.new_earnings - deltas.orig_earnings
+        deltas = deltas.sort_values(by='change',ascending=False,ignore_index=True)
+        print(deltas)
+        if (deltas.change > 0).any():
+            sims = add_my_picks(sims, [team for team in my_picks.pick if team != deltas.iloc[0]['orig_pick']] + [deltas.iloc[0]['new_pick']])
+            results = assess_sims(sims, picks)
+            baseline = results.loc[results.entry == 0].iloc[0]
+    return deltas
+
+# def point_deltas():
+#     # FINISH THIS!!!
 
 def main():
     parser = optparse.OptionParser()
@@ -97,7 +191,7 @@ def main():
         action="store",
         type="int",
         dest="num_entries",
-        default=40,
+        default=58,
         help="number of entries in the pick em league in question",
     )
     parser.add_option(
@@ -108,7 +202,14 @@ def main():
         default=10000,
         help="number of simulations to run when assessing picks",
     )
+    parser.add_option(
+        "--fixed",
+        action="store",
+        dest="fixed",
+        help="comma-separated list of teams to automatically pick regardless of odds",
+    )
     options, args = parser.parse_args()
+    options.fixed = options.fixed.split(',') if options.fixed else []
 
     if os.path.exists(options.schedule):
         schedule = pd.read_csv(options.schedule)
@@ -116,20 +217,36 @@ def main():
         s = sr.Schedule(2015,datetime.datetime.now().year,False,True,False)
         schedule = s.schedule.copy()
         schedule.to_csv(options.schedule,index=False)
-    schedule = schedule.loc[(schedule.season == datetime.datetime.now().year) & (schedule.week == options.week)].reset_index(drop=True)
+    schedule = schedule.loc[schedule.season == datetime.datetime.now().year].reset_index(drop=True)
+    if not options.week:
+        options.week = schedule.loc[schedule.pts_win.isnull(),'week'].min()
+    schedule = schedule.loc[schedule.week == options.week].reset_index(drop=True)
+    schedule['still_to_play'] = pd.to_datetime(schedule.game_date + ', ' + \
+    schedule.gametime,infer_datetime_format=True) > datetime.datetime.now() + datetime.timedelta(hours=2)
+    winners = schedule.loc[~schedule.still_to_play,'winner_abbrev']
 
-    pick_probs = load_picks(options.week)
+    pick_probs = load_pick_probs(options.week)
+    picks = load_picks(options.week)
+    picks.loc[picks.pick.isin(winners),'points_won'] = picks.loc[picks.pick.isin(winners),'points_bid']
+    picks.points_won = picks.points_won.fillna(0.0)
 
-    games = pd.merge(left=schedule[['team1_abbrev','team2_abbrev','elo_prob1','elo_prob2']],\
+    games = pd.merge(left=schedule[['team1_abbrev','team2_abbrev','elo_prob1','elo_prob2','still_to_play']],\
     right=pick_probs,how='inner',on=['team1_abbrev','team2_abbrev'])
 
-    sims = simulate_picks(games, options.num_sims, options.num_entries)
-
-    sims = add_chalk_picks(sims)
+    sims = simulate_picks(games, picks, options.num_sims, options.num_entries)
+    sims = add_my_picks(sims, options.fixed)
     sims = simulate_games(sims)
 
-    results = assess_sims(sims)
-    print(results)
+    results = assess_sims(sims,picks)
+    results = pd.merge(left=results,right=picks[["entry","player"]].drop_duplicates(),how='inner',on=["entry"])
+    baseline = results.loc[results.entry == 0].iloc[0]
+    del results["entry"], baseline["entry"]
+    print(results[["player","points_avg","points_std","win_pct","earnings"]]\
+    .sort_values(by='earnings',ascending=False).to_string(index=False))
+    print(baseline)
+
+    deltas = pick_deltas(games, picks, options.num_sims, options.num_entries, options.fixed)
+    deltas.to_excel("ConfidencePickEm_Week{}.xlsx".format(options.week),index=False)
 
 
 if __name__ == "__main__":
