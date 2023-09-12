@@ -929,7 +929,7 @@ class League:
             how="left",on=["current_team","name",'position'])
             missing = self.players.string.isnull() & ~self.players.position.isin(['DEF']) \
             & ((self.players.pct_rostered > 0.05) | ~self.players.fantasy_team.isnull()) \
-            & ~self.players.status.isin(['NA'])
+            & ~self.players.status.isin(['NA']) & self.players.until.isnull()
             if missing.any():
                 print(
                     "Need to reconcile player names with ESPN... "
