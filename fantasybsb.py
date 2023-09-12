@@ -99,6 +99,7 @@ def establish_oauth(season=None,name=None,new_login=False):
     'brewers','cardinals','cubs','pirates','reds','diamondbacks','dodgers',\
     'giants','padres', 'rockies']:
         mlb_schedule = pd.concat([mlb_schedule,get_starters(team)]).reset_index(drop=True)
+        time.sleep(4)
     mlb_schedule.loc[mlb_schedule.opp_full == 'cleveland','opp_full'] = 'guardians'
     mlb_schedule = pd.merge(left=mlb_schedule,right=mlb_schedule[['opp','opp_full']].drop_duplicates()\
     .rename(columns={'opp':'team','opp_full':'team_full'}),how='left',on='team_full')
