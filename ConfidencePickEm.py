@@ -69,7 +69,7 @@ def load_picks(week: int):
     # This isn't quite right, but fine for now...
     return actual
 
-def simulate_picks(games: pd.DataFrame, picks: pd.DataFrame, num_sims: int = 1000, num_entries: int = 50, pts_stdev: float = 3.0):
+def simulate_picks(games: pd.DataFrame, picks: pd.DataFrame, num_sims: int = 1000, num_entries: int = 50, pts_stdev: float = 4.0):
     # games includes all games from this week, picks only contains games already played...
     sims = pd.concat(num_sims*num_entries*[games.loc[games.still_to_play]],ignore_index=True)
     sims['entry'] = sims.index%(games.still_to_play.sum()*num_entries)//games.still_to_play.sum()
@@ -88,7 +88,7 @@ def simulate_picks(games: pd.DataFrame, picks: pd.DataFrame, num_sims: int = 100
     sims['points_bid'] = all_picks.points_bid.tolist()*num_sims
     return sims
 
-def add_my_picks(sims: pd.DataFrame, fixed: list = []):
+def add_my_picks(sims: pd.DataFrame, fixed: list = [], pick_pref: str = "best", point_pref: str = "best"):
     num_sims = int(sims.num_sim.max() + 1)
     my_entries = sims.loc[sims.entry == 0].reset_index(drop=True)
     my_points = sorted(my_entries.points_bid.unique().tolist())[::-1]
@@ -96,15 +96,42 @@ def add_my_picks(sims: pd.DataFrame, fixed: list = []):
     home_fixed = my_entries.team1_abbrev.isin(fixed)
     away_fixed = my_entries.team2_abbrev.isin(fixed)
     home_fav = my_entries.elo_prob1 >= my_entries.elo_prob2
+    if str(pick_pref).lower() not in ["best","popular","worst","random"]:
+        print('Invalid preference value ("best", "popular", "worst", "random"), using "best" by default...')
+        pick_pref = "best"
+    if pick_pref.lower() == "best":
+        home_fav = my_entries.elo_prob1 >= my_entries.elo_prob2
+    elif pick_pref.lower() == "worst":
+        home_fav = my_entries.elo_prob1 < my_entries.elo_prob2
+    elif pick_pref.lower() == "popular":
+        home_fav = my_entries.pick_prob1 >= my_entries.pick_prob2
+    elif pick_pref.lower() == "random":
+        picks = my_entries.loc[my_entries.num_sim == 0].reset_index(drop=True)
+        picks['random_pick'] = np.random.rand(picks.shape[0])
+        random = picks.loc[picks.random_pick > 0.5,'team1_abbrev'].tolist() + picks.loc[picks.random_pick <= 0.5,'team2_abbrev'].tolist()
+        home_fav = my_entries.team1_abbrev.isin(random)
     my_entries.loc[home_fav & ~home_fixed & ~away_fixed,'pick'] = my_entries.loc[home_fav & ~home_fixed & ~away_fixed,'team1_abbrev']
     my_entries.loc[home_fav & ~home_fixed & ~away_fixed,'win_prob'] = my_entries.loc[home_fav & ~home_fixed & ~away_fixed,'elo_prob1']
+    my_entries.loc[home_fav & ~home_fixed & ~away_fixed,'pick_pts'] = my_entries.loc[home_fav & ~home_fixed & ~away_fixed,'pick_pts1']
     my_entries.loc[~home_fav & ~home_fixed & ~away_fixed,'pick'] = my_entries.loc[~home_fav & ~home_fixed & ~away_fixed,'team2_abbrev']
     my_entries.loc[~home_fav & ~home_fixed & ~away_fixed,'win_prob'] = my_entries.loc[~home_fav & ~home_fixed & ~away_fixed,'elo_prob2']
+    my_entries.loc[~home_fav & ~home_fixed & ~away_fixed,'pick_pts'] = my_entries.loc[~home_fav & ~home_fixed & ~away_fixed,'pick_pts2']
     my_entries.loc[home_fixed,'pick'] = my_entries.loc[home_fixed,'team1_abbrev']
     my_entries.loc[home_fixed,'win_prob'] = my_entries.loc[home_fixed,'elo_prob1']
+    my_entries.loc[home_fixed,'pick_pts'] = my_entries.loc[home_fixed,'pick_pts1']
     my_entries.loc[away_fixed,'pick'] = my_entries.loc[away_fixed,'team2_abbrev']
     my_entries.loc[away_fixed,'win_prob'] = my_entries.loc[away_fixed,'elo_prob2']
+    my_entries.loc[away_fixed,'pick_pts'] = my_entries.loc[away_fixed,'pick_pts2']
     my_entries = my_entries.sort_values(by=['num_sim','win_prob'],ascending=False,ignore_index=True)
+    if str(point_pref).lower() not in ["best","popular","worst","random"]:
+        print('Invalid preference value ("best", "popular", "worst", "random"), using "best" by default...')
+        point_pref = "best"
+    if point_pref.lower() == "worst":
+        my_points = my_points[::-1]
+    elif point_pref.lower() == "popular":
+        my_entries = my_entries.sort_values(by=['num_sim','pick_pts'],ascending=False,ignore_index=True)
+    elif point_pref.lower() == "random":
+        np.random.shuffle(my_points)
     my_entries['points_bid'] = my_points*num_sims
     sims = pd.concat([sims,my_entries],ignore_index=True)
     sims = sims.sort_values(by=["num_sim","entry"],ascending=True,ignore_index=True)
@@ -127,6 +154,7 @@ def assess_sims(sims: pd.DataFrame, picks: pd.DataFrame(), pot_size: float = 500
     standings = sims.groupby(['entry','num_sim']).points_won.sum().reset_index()\
     .sort_values(by=['num_sim','points_won'],ascending=[True,False])
     standings = pd.merge(left=standings,right=picks.groupby('entry').points_won.sum().reset_index(),how='left',on=['entry'],suffixes=("","_already"))
+    standings.points_won_already = standings.points_won_already.fillna(0.0)
     standings.points_won += standings.points_won_already
     del standings['points_won_already']
     winners = standings.drop_duplicates(subset=['num_sim'],keep='first')
@@ -137,14 +165,16 @@ def assess_sims(sims: pd.DataFrame, picks: pd.DataFrame(), pot_size: float = 500
     results['earnings'] = results.win_pct*pot_size
     return results
 
-def pick_deltas(games: pd.DataFrame, picks: pd.DataFrame, num_sims: int = 1000, num_entries: int = 50, fixed: list = []):
+def optimize_picks(games: pd.DataFrame, picks: pd.DataFrame, num_sims: int = 1000, num_entries: int = 50, \
+fixed: list = [], initial_picks: str = "best", initial_pts: str = "best"):
     sims = simulate_picks(games, picks, num_sims, num_entries)
-    sims = add_my_picks(sims, fixed)
+    sims = add_my_picks(sims, fixed, pick_pref=initial_picks)
     sims = simulate_games(sims)
     results = assess_sims(sims, picks)
     baseline = results.loc[results.entry == 0].iloc[0]
-    deltas = pd.DataFrame({'change':[float('inf')]})
-    while (deltas.change > 0).any():
+    # Pick changes
+    update = True
+    while update:
         my_picks = sims.loc[(sims.entry == 0) & (sims.num_sim == 0),['team1_abbrev','team2_abbrev','pick','win_prob','points_bid']].reset_index(drop=True)
         deltas = pd.DataFrame()
         for ind in range(my_picks.shape[0]):
@@ -161,14 +191,58 @@ def pick_deltas(games: pd.DataFrame, picks: pd.DataFrame, num_sims: int = 1000, 
         deltas['change'] = deltas.new_earnings - deltas.orig_earnings
         deltas = deltas.sort_values(by='change',ascending=False,ignore_index=True)
         print(deltas)
-        if (deltas.change > 0).any():
+        update = (deltas.change > 0).any() or ((deltas.change == 0).any() and np.random.rand() > 0.5)
+        if update:
             sims = add_my_picks(sims, [team for team in my_picks.pick if team != deltas.iloc[0]['orig_pick']] + [deltas.iloc[0]['new_pick']])
             results = assess_sims(sims, picks)
             baseline = results.loc[results.entry == 0].iloc[0]
-    return deltas
-
-# def point_deltas():
-#     # FINISH THIS!!!
+    # Point changes
+    final_picks = sims.loc[(sims.entry == 0) & (sims.num_sim == 0),'pick'].tolist()
+    sims = add_my_picks(sims, final_picks, point_pref=initial_pts)
+    results = assess_sims(sims, picks)
+    baseline = results.loc[results.entry == 0].iloc[0]
+    for change in range(4,0,-1):
+        update = True
+        while update:
+            deltas = pd.DataFrame()
+            for switch_from in range(1,games.shape[0] - change + 1):
+                up = (sims.entry == 0) & (sims.points_bid == switch_from)
+                down = (sims.entry == 0) & (sims.points_bid == switch_from + change)
+                if up.sum() == 0 or down.sum() == 0:
+                    continue # One of the point values have already been used...
+                sims.loc[up,'points_bid'] = switch_from + change
+                sims.loc[down,'points_bid'] = switch_from
+                sims.loc[sims.winner == sims.pick,'points_won'] = sims.loc[sims.winner == sims.pick,'points_bid']
+                sims.loc[sims.winner != sims.pick,'points_won'] = 0.0
+                results = assess_sims(sims, picks)
+                switch = results.loc[results.entry == 0].iloc[0]
+                pick = sims.loc[up,'pick'].values[0]
+                oppo = sims.loc[down,'pick'].values[0]
+                deltas = pd.concat([deltas,pd.DataFrame({'from_pick':[pick],'from_pts':[switch_from],\
+                'to_pick':[oppo],'to_pts':[switch_from + change],'orig_earnings':[baseline['earnings']],\
+                'new_earnings':[switch['earnings']]})],ignore_index=True)
+                sims.loc[up,'points_bid'] = switch_from
+                sims.loc[down,'points_bid'] = switch_from + change
+                sims.loc[sims.winner == sims.pick,'points_won'] = sims.loc[sims.winner == sims.pick,'points_bid']
+                sims.loc[sims.winner != sims.pick,'points_won'] = 0.0
+            deltas['change'] = deltas.new_earnings - deltas.orig_earnings
+            deltas = deltas.sort_values(by='change',ascending=False,ignore_index=True)
+            print(deltas)
+            update = (deltas.change > 0).any() or ((deltas.change == 0).any() and np.random.rand() > 0.5)
+            if update:
+                up = (sims.entry == 0) & (sims.points_bid == deltas.iloc[0]['from_pts'])
+                down = (sims.entry == 0) & (sims.points_bid == deltas.iloc[0]['to_pts'])
+                sims.loc[up,'points_bid'] = deltas.iloc[0]['to_pts']
+                sims.loc[down,'points_bid'] = deltas.iloc[0]['from_pts']
+                sims.loc[sims.winner == sims.pick,'points_won'] = sims.loc[sims.winner == sims.pick,'points_bid']
+                sims.loc[sims.winner != sims.pick,'points_won'] = 0.0
+                results = assess_sims(sims, picks)
+                baseline = results.loc[results.entry == 0].iloc[0]
+    my_picks = sims.loc[(sims.entry == 0) & (sims.num_sim == 0),\
+    ['team1_abbrev','team2_abbrev','pick','win_prob','points_bid']]\
+    .sort_values(by='points_bid',ascending=False,ignore_index=True)
+    print(my_picks)
+    return my_picks
 
 def main():
     parser = optparse.OptionParser()
@@ -208,6 +282,12 @@ def main():
         dest="fixed",
         help="comma-separated list of teams to automatically pick regardless of odds",
     )
+    parser.add_option(
+        "--optimize",
+        action="store",
+        dest="optimize",
+        help="which starting point to use during pick optimization (best, worst, popular, random)",
+    )
     options, args = parser.parse_args()
     options.fixed = options.fixed.split(',') if options.fixed else []
 
@@ -229,6 +309,8 @@ def main():
     picks = load_picks(options.week)
     picks.loc[picks.pick.isin(winners),'points_won'] = picks.loc[picks.pick.isin(winners),'points_bid']
     picks.points_won = picks.points_won.fillna(0.0)
+    if picks.shape[0] > 0:
+        options.num_entries = picks.entry.nunique()
 
     games = pd.merge(left=schedule[['team1_abbrev','team2_abbrev','elo_prob1','elo_prob2','still_to_play']],\
     right=pick_probs,how='inner',on=['team1_abbrev','team2_abbrev'])
@@ -238,15 +320,19 @@ def main():
     sims = simulate_games(sims)
 
     results = assess_sims(sims,picks)
-    results = pd.merge(left=results,right=picks[["entry","player"]].drop_duplicates(),how='inner',on=["entry"])
+    if picks.shape[0] > 0:
+        results = pd.merge(left=results,right=picks[["entry","player"]].drop_duplicates(),how='inner',on=["entry"])
+    else:
+        results["player"] = "Player #" + (results["entry"] + 1).astype(str)
     baseline = results.loc[results.entry == 0].iloc[0]
     del results["entry"], baseline["entry"]
     print(results[["player","points_avg","points_std","win_pct","earnings"]]\
     .sort_values(by='earnings',ascending=False).to_string(index=False))
     print(baseline)
 
-    deltas = pick_deltas(games, picks, options.num_sims, options.num_entries, options.fixed)
-    deltas.to_excel("ConfidencePickEm_Week{}.xlsx".format(options.week),index=False)
+    if options.optimize:
+        my_picks = optimize_picks(games, picks, options.num_sims, options.num_entries, options.fixed, options.optimize, options.optimize)
+        my_picks.to_excel("ConfidencePickEm_Week{}.xlsx".format(options.week),index=False)
 
 
 if __name__ == "__main__":
