@@ -328,7 +328,8 @@ class Schedule:
         for season in range(int(start), int(finish) + 1):
             raw_text = get_page("years/{}/games.htm".format(season))
             season_sched = parse_table(raw_text, "games")
-            season_sched = season_sched.loc[~season_sched.week_num.str.startswith('Pre')].reset_index(drop=True)
+            season_sched.week_num = season_sched.week_num.astype(str).str.split('.').str[0]
+            season_sched = season_sched.loc[~season_sched.week_num.astype(str).str.startswith('Pre')].reset_index(drop=True)
             season_sched['season'] = season
             if "game_date" not in season_sched.columns: # Current season
                 season_sched['game_date'] = season_sched.boxscore_word + ', ' + \
