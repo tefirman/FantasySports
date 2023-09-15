@@ -14,6 +14,7 @@ import os
 import shutil
 import numpy as np
 from util import sportsref_nfl as sr
+from util import sleeper_api as sl
 import time
 import datetime
 from pytz import timezone
@@ -443,6 +444,26 @@ class League:
             if not self.players.status.isnull().all():
                 break
 
+    # def get_sleeper_players(self):
+    #     players = sl.get_raw_players()[['full_name','fantasy_positions',\
+    #     'depth_chart_position','position','team','player_id','injury_status',\
+    #     'search_full_name','yahoo_id','depth_chart_order','espn_id']]\
+    #     .rename(columns={"full_name":"name","fantasy_positions":"eligible_positions",\
+    #     "player_id":"sleeper_id","yahoo_id":"player_id","injury_status":"status"})
+    #     players = players.loc[~players.player_id.isnull()].reset_index(drop=True)
+    #     players.loc[players.status.isin(['Questionable']),'status'] = "Q"
+    #     players.loc[players.status.isin(['Doubtful']),'status'] = "D"
+    #     players.loc[players.status.isin(['Out']),'status'] = "O"
+    #     players.loc[players.status.isin(['PUP']),'status'] = "PUP-R"
+    #     players.loc[players.status.isin(['Sus']),'status'] = "SUSP"
+    #     players.player_id = players.player_id.astype(int)
+    #     players.loc[players.team.isin(['LV']),'team'] = "OAK"
+    #     players.loc[players.team.isin(['WAS']),'team'] = "WSH"
+    #     players = pd.merge(left=players,right=self.nfl_teams[["fivethirtyeight","yahoo"]]\
+    #     .rename(columns={"fivethirtyeight":"team","yahoo":"editorial_team_abbr"}),how='left',on="team")
+    #     del players['team']
+    #     self.players = players
+
     def get_fantasy_rosters(self):
         """
         Pulls the current fantasy team of each eligible NFL player 
@@ -503,6 +524,9 @@ class League:
                 "position",
             ]
         ]
+
+    # def get_sleeper_rosters(self):
+    #     print("FINISH THIS!!!")
 
     def pull_stats(self, start: int, finish: int, path: str = "GameByGameFantasyFootballStats.csv"):
         """
@@ -2983,6 +3007,12 @@ def main():
         help="number of times to try pulling injury statuses before rolling with it",
     )
     parser.add_option(
+        "--bestball",
+        action="store_true",
+        dest="bestball",
+        help="whether to assess the league of interest in the context of bestball (simulates bench contributions better)",
+    )
+    parser.add_option(
         "--pickups",
         action="store",
         dest="pickups",
@@ -3097,8 +3127,8 @@ def main():
         options.output += "/"
     writer = pd.ExcelWriter(
         options.output
-        + "FantasyFootballProjections_{}Week{}.xlsx".format(
-            datetime.datetime.now().strftime("%A"), league.week
+        + "FantasyFootballProjections_{}Week{}{}.xlsx".format(
+            datetime.datetime.now().strftime("%A"), league.week, "_BestBall" if options.bestball else ""
         ),
         engine="xlsxwriter",
     )
@@ -3200,63 +3230,66 @@ def main():
         },
     )
 
-    schedule_sim, standings_sim = league.season_sims(True, payouts=options.payouts)
-    print(
-        schedule_sim.loc[
-            schedule_sim.week == league.week,
-            [
-                "week",
-                "team_1",
-                "team_2",
-                "win_1",
-                "win_2",
-                "points_avg_1",
-                "points_avg_2",
+    if options.bestball:
+        standings_sim = league.bestball_sims(payouts=options.payouts)
+    else:
+        schedule_sim, standings_sim = league.season_sims(True, payouts=options.payouts)
+        print(
+            schedule_sim.loc[
+                schedule_sim.week == league.week,
+                [
+                    "week",
+                    "team_1",
+                    "team_2",
+                    "win_1",
+                    "win_2",
+                    "points_avg_1",
+                    "points_avg_2",
+                ],
+            ].to_string(index=False)
+        )
+        print(
+            standings_sim[
+                [
+                    "team",
+                    "wins_avg",
+                    "points_avg",
+                    "playoffs",
+                    "playoff_bye",
+                    "winner",
+                    "earnings",
+                ]
+                + (["many_mile"] if league.name == "The Algorithm" else [])
+            ].to_string(index=False)
+        )
+        writer = excelAutofit(
+            schedule_sim[
+                [
+                    "week",
+                    "team_1",
+                    "team_2",
+                    "win_1",
+                    "win_2",
+                    "points_avg_1",
+                    "points_stdev_1",
+                    "points_avg_2",
+                    "points_stdev_2",
+                    "me",
+                ]
             ],
-        ].to_string(index=False)
-    )
-    print(
-        standings_sim[
-            [
-                "team",
-                "wins_avg",
-                "points_avg",
-                "playoffs",
-                "playoff_bye",
-                "winner",
-                "earnings",
-            ]
-            + (["many_mile"] if league.name == "The Algorithm" else [])
-        ].to_string(index=False)
-    )
-    writer = excelAutofit(
-        schedule_sim[
-            [
-                "week",
-                "team_1",
-                "team_2",
-                "win_1",
-                "win_2",
-                "points_avg_1",
-                "points_stdev_1",
-                "points_avg_2",
-                "points_stdev_2",
-                "me",
-            ]
-        ],
-        "Schedule",
-        writer,
-    )
-    writer.sheets["Schedule"].freeze_panes(1, 3)
-    writer.sheets["Schedule"].conditional_format(
-        "D2:E" + str(schedule_sim.shape[0] + 1),
-        {
-            "type": "3_color_scale",
-            "min_color": "#FF6347",
-            "mid_color": "#FFD700",
-            "max_color": "#3CB371",
-        },
-    )
+            "Schedule",
+            writer,
+        )
+        writer.sheets["Schedule"].freeze_panes(1, 3)
+        writer.sheets["Schedule"].conditional_format(
+            "D2:E" + str(schedule_sim.shape[0] + 1),
+            {
+                "type": "3_color_scale",
+                "min_color": "#FF6347",
+                "mid_color": "#FFD700",
+                "max_color": "#3CB371",
+            },
+        )
     writer = excelAutofit(
         standings_sim[
             [
@@ -3265,9 +3298,13 @@ def main():
                 "wins_stdev",
                 "points_avg",
                 "points_stdev",
+            ]
+            + ([
                 "per_game_avg",
                 "per_game_stdev",
                 "per_game_fano",
+            ] if not options.bestball else []) 
+            + [
                 "playoffs",
                 "playoff_bye",
                 "winner",
@@ -3275,7 +3312,7 @@ def main():
                 "third",
                 "earnings",
             ]
-            + (["many_mile"] if league.name == "The Algorithm" else [])
+            + (["many_mile"] if league.name == "The Algorithm" and not options.bestball else [])
         ],
         "Standings",
         writer,
@@ -3315,9 +3352,10 @@ def main():
             focus_on=[val.strip() for val in options.pickups.split(",")]
             if options.pickups.lower() != "all"
             else [],
-            exclude=[],
+            exclude=["Tom Brady"],
             limit_per=5,
             payouts=options.payouts,
+            bestball=options.bestball,
         )
         writer = excelAutofit(
             pickups[
@@ -3338,7 +3376,7 @@ def main():
                     "third",
                     "earnings",
                 ]
-                + (["many_mile"] if options.name == "The Algorithm" else [])
+                + (["many_mile"] if options.name == "The Algorithm" and not options.bestball else [])
             ],
             "Pickups",
             writer,
@@ -3375,8 +3413,10 @@ def main():
 
     if options.adds:
         adds = league.possible_adds(
+            exclude=["Tom Brady"],
             limit_per=5,
             payouts=options.payouts,
+            bestball=options.bestball,
         )
         writer = excelAutofit(
             adds[
@@ -3396,7 +3436,7 @@ def main():
                     "third",
                     "earnings",
                 ]
-                + (["many_mile"] if options.name == "The Algorithm" else [])
+                + (["many_mile"] if options.name == "The Algorithm" and not options.bestball else [])
             ],
             "Adds",
             writer,
@@ -3434,6 +3474,7 @@ def main():
     if options.drops:
         drops = league.possible_drops(
             payouts=options.payouts,
+            bestball=options.bestball,
         )
         writer = excelAutofit(
             drops[
@@ -3453,7 +3494,7 @@ def main():
                     "third",
                     "earnings",
                 ]
-                + (["many_mile"] if options.name == "The Algorithm" else [])
+                + (["many_mile"] if options.name == "The Algorithm" and not options.bestball else [])
             ],
             "Drops",
             writer,
@@ -3495,10 +3536,11 @@ def main():
             focus_on=[val.strip() for val in options.trades.split(",")]
             if options.trades.lower() != "all"
             else [],
-            exclude=[],
+            exclude=["Tom Brady"],
             given=[val.strip() for val in options.given.split(",")],
             limit_per=10,
             payouts=options.payouts,
+            bestball=options.bestball,
         )
         writer = excelAutofit(
             trades[
