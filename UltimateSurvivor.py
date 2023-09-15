@@ -84,6 +84,20 @@ def main():
         help="location of schedule projections csv based on 538 strategies",
     )
     parser.add_option(
+        "--week",
+        action="store",
+        type="int",
+        dest="week",
+        help="week to start pick combos from",
+    )
+    parser.add_option(
+        "--already",
+        action="store",
+        dest="already",
+        default="",
+        help="comma-separated list of teams you've already picked",
+    )
+    parser.add_option(
         "--limit",
         action="store",
         type="int",
@@ -99,10 +113,12 @@ def main():
         help="where to save the final projections spreadsheet",
     )
     options, args = parser.parse_args()
-    picks = load_picks(options.schedule)
+    options.already = str(options.already).split(',')
+    picks = load_picks(options.schedule, options.week)
+    picks = picks.loc[~picks.team.isin(options.already)].reset_index(drop=True)
     combos = best_combos(picks,options.limit)
 
-    writer = pd.ExcelWriter(options.output + "UltimateSurvivorCombos.xlsx",engine="xlsxwriter")
+    writer = pd.ExcelWriter("{}UltimateSurvivorCombos_Week{}.xlsx".format(options.output,options.week),engine="xlsxwriter")
     writer.book.add_format({"align": "vcenter"})
     writer = excel_autofit(combos[[team for team in combos.columns if team.startswith('team_')] + ["tot_prob"]], "Season", writer)
     current_week = 'team_' + str(picks.week.min())
