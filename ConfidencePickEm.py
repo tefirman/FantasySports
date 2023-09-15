@@ -8,7 +8,7 @@ import optparse
 
 def load_pick_probs(week: int):
     nfl_teams = pd.read_csv("https://raw.githubusercontent.com/tefirman/FantasySports/main/res/football/team_abbrevs.csv")
-    tempData = open("PickEmDistribution_Week1.txt",'r')
+    tempData = open("PickEmDistribution_Week{}.txt".format(week),'r')
     raw_str = tempData.read()
     tempData.close()
     games = raw_str.split("Spread and Confidence\n")[-1].split('\n\n')[0].split('pts\tFavorite\t \n')
@@ -140,23 +140,25 @@ def add_my_picks(sims: pd.DataFrame, fixed: list = [], pick_pref: str = "best", 
         sims.loc[sims.winner != sims.pick,'points_won'] = 0.0
     return sims
 
-def simulate_games(sims: pd.DataFrame):
+def simulate_games(sims: pd.DataFrame, fixed: list = []):
     sims['game_sim'] = np.random.rand(sims.shape[0])
     home_win = sims.game_sim < sims.elo_prob1
     sims.loc[home_win,'winner'] = sims.loc[home_win,'team1_abbrev']
     sims.loc[~home_win,'winner'] = sims.loc[~home_win,'team2_abbrev']
+    sims.loc[sims.team1_abbrev.isin(fixed),"winner"] = sims.loc[sims.team1_abbrev.isin(fixed),"team1_abbrev"]
+    sims.loc[sims.team2_abbrev.isin(fixed),"winner"] = sims.loc[sims.team2_abbrev.isin(fixed),"team2_abbrev"]
     sims.loc[sims.winner == sims.pick,'points_won'] = sims.loc[sims.winner == sims.pick,'points_bid']
     sims.loc[sims.winner != sims.pick,'points_won'] = 0.0
     return sims
 
 def assess_sims(sims: pd.DataFrame, picks: pd.DataFrame(), pot_size: float = 500.0):
     num_sims = sims.num_sim.max() + 1
-    standings = sims.groupby(['entry','num_sim']).points_won.sum().reset_index()\
-    .sort_values(by=['num_sim','points_won'],ascending=[True,False])
+    standings = sims.groupby(['entry','num_sim']).points_won.sum().reset_index()
     standings = pd.merge(left=standings,right=picks.groupby('entry').points_won.sum().reset_index(),how='left',on=['entry'],suffixes=("","_already"))
     standings.points_won_already = standings.points_won_already.fillna(0.0)
     standings.points_won += standings.points_won_already
     del standings['points_won_already']
+    standings = standings.sort_values(by=['num_sim','points_won'],ascending=[True,False])
     winners = standings.drop_duplicates(subset=['num_sim'],keep='first')
     results = pd.merge(left=standings.groupby('entry').points_won.mean().reset_index().rename(columns={'points_won':'points_avg'}),\
     right=standings.groupby('entry').points_won.std().reset_index().rename(columns={'points_won':'points_std'}),how='inner',on='entry')
@@ -241,6 +243,17 @@ fixed: list = [], initial_picks: str = "best", initial_pts: str = "best"):
     my_picks = sims.loc[(sims.entry == 0) & (sims.num_sim == 0),\
     ['team1_abbrev','team2_abbrev','pick','win_prob','points_bid']]\
     .sort_values(by='points_bid',ascending=False,ignore_index=True)
+    for ind in range(my_picks.shape[0]):
+        pick = my_picks.iloc[ind]
+        correct = pick['team1_abbrev'] if pick['team1_abbrev'] == pick['pick'] else pick['team2_abbrev']
+        sims = simulate_games(sims, [correct])
+        results = assess_sims(sims, picks)
+        winner = results.loc[results.entry == 0].iloc[0]
+        incorrect = pick['team2_abbrev'] if pick['team1_abbrev'] == pick['pick'] else pick['team1_abbrev']
+        sims = simulate_games(sims, [incorrect])
+        results = assess_sims(sims, picks)
+        loser = results.loc[results.entry == 0].iloc[0]
+        my_picks.loc[ind,'delta'] = winner["earnings"] - loser["earnings"]
     print(my_picks)
     return my_picks
 
