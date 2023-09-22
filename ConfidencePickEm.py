@@ -11,7 +11,7 @@ def load_pick_probs(week: int):
     tempData = open("PickEmDistribution_Week{}.txt".format(week),'r')
     raw_str = tempData.read()
     tempData.close()
-    games = raw_str.split("Spread and Confidence\n")[-1].split('\n\n')[0].split('pts\tFavorite\t \n')
+    games = raw_str.split("Spread and Confidence\n")[-1].split('\n\n')[0].split('\tFavorite\t \n')
     fave = [game.split('\n')[7].split('\t')[0] for game in games]
     fave = [nfl_teams.loc[nfl_teams.yahoo.str.upper().isin([team]),'real_abbrev'].values[0] for team in fave]
     fave_pct = [float(game.split('\n')[3].replace('%',''))/100.0 for game in games]
@@ -74,6 +74,13 @@ def simulate_picks(games: pd.DataFrame, picks: pd.DataFrame, num_sims: int = 100
     sims = pd.concat(num_sims*num_entries*[games.loc[games.still_to_play]],ignore_index=True)
     sims['entry'] = sims.index%(games.still_to_play.sum()*num_entries)//games.still_to_play.sum()
     sims['num_sim'] = sims.index//(games.still_to_play.sum()*num_entries)
+    sims = pd.merge(left=sims,right=picks,how='left',left_on=["entry","team1_abbrev"],right_on=["entry","pick"])
+    sims = pd.merge(left=sims,right=picks,how='left',left_on=["entry","team2_abbrev"],right_on=["entry","pick"],suffixes=("","_2"))
+    sims.loc[~sims['pick_2'].isnull(),"pick"] = sims.loc[~sims['pick_2'].isnull(),'pick_2']
+    sims.loc[~sims['points_bid_2'].isnull(),"points_bid"] = sims.loc[~sims['points_bid_2'].isnull(),'points_bid_2']
+    del sims['pick_2'], sims['points_bid_2'], sims['player'], sims['player_2'], sims['points_won'], sims['points_won_2']
+    already_picked = sims.loc[~sims.pick.isnull()].reset_index(drop=True)
+    sims = sims.loc[sims.pick.isnull()].reset_index(drop=True)
     sims['pick_sim'] = np.random.rand(sims.shape[0])
     home_pick = sims.pick_sim < sims.pick_prob1
     sims.loc[home_pick,'pick'] = sims.loc[home_pick,'team1_abbrev']
@@ -82,10 +89,12 @@ def simulate_picks(games: pd.DataFrame, picks: pd.DataFrame, num_sims: int = 100
     "points_bid":[val%games.shape[0] + 1 for val in range(games.shape[0]*num_entries)]})
     all_picks = pd.merge(left=all_picks,right=picks,how='left',on=['entry','points_bid'])
     all_picks = all_picks.loc[all_picks.pick.isnull()]
-    sims.loc[home_pick,'points_bid_sim'] = np.random.normal(0,pts_stdev,home_pick.sum()) + sims.loc[home_pick,'pick_pts1']
-    sims.loc[~home_pick,'points_bid_sim'] = np.random.normal(0,pts_stdev,(~home_pick).sum()) + sims.loc[~home_pick,'pick_pts2']
-    sims = sims.sort_values(by=['num_sim','entry','points_bid_sim'],ascending=True)
-    sims['points_bid'] = all_picks.points_bid.tolist()*num_sims
+    if all_picks.entry.nunique() == num_entries:
+        sims.loc[home_pick,'points_bid_sim'] = np.random.normal(0,pts_stdev,home_pick.sum()) + sims.loc[home_pick,'pick_pts1']
+        sims.loc[~home_pick,'points_bid_sim'] = np.random.normal(0,pts_stdev,(~home_pick).sum()) + sims.loc[~home_pick,'pick_pts2']
+        sims = sims.sort_values(by=['num_sim','entry','points_bid_sim'],ascending=True)
+        sims['points_bid'] = all_picks.points_bid.tolist()*num_sims
+    sims = pd.concat([sims,already_picked],ignore_index=True).sort_values(by=['num_sim','entry'],ascending=True)
     return sims
 
 def add_my_picks(sims: pd.DataFrame, fixed: list = [], pick_pref: str = "best", point_pref: str = "best"):
@@ -314,8 +323,18 @@ def main():
     if not options.week:
         options.week = schedule.loc[schedule.pts_win.isnull(),'week'].min()
     schedule = schedule.loc[schedule.week == options.week].reset_index(drop=True)
-    schedule['still_to_play'] = pd.to_datetime(schedule.game_date + ', ' + \
-    schedule.gametime,infer_datetime_format=True) > datetime.datetime.now() + datetime.timedelta(hours=2)
+
+    # # FUNCTIONALITY TEST!!!
+    # schedule.loc[pd.to_datetime(schedule.game_date + ', ' + schedule.gametime,infer_datetime_format=True) > \
+    # pd.to_datetime("September 17th, 2023, 3:00pm",infer_datetime_format=True),['score1','score2','pts_win','pts_lose']] = None
+    # print(schedule[['season','week_num','winner','loser','pts_win','pts_lose','score1','score2']])
+    # # FUNCTIONALITY TEST!!!
+
+    schedule['still_to_play'] = schedule.score1.isnull() & schedule.score2.isnull() & schedule.pts_win.isnull() & schedule.pts_lose.isnull()
+
+    # schedule['still_to_play'] = pd.to_datetime(schedule.game_date + ', ' + \
+    # schedule.gametime,infer_datetime_format=True) + datetime.timedelta(hours=1) > datetime.datetime.now() # -2 for timezone, +3 for the game
+
     winners = schedule.loc[~schedule.still_to_play,'winner_abbrev']
 
     pick_probs = load_pick_probs(options.week)
@@ -329,7 +348,8 @@ def main():
     right=pick_probs,how='inner',on=['team1_abbrev','team2_abbrev'])
 
     sims = simulate_picks(games, picks, options.num_sims, options.num_entries)
-    sims = add_my_picks(sims, options.fixed)
+    if schedule.still_to_play.sum() < 10:
+        sims = add_my_picks(sims, options.fixed)
     sims = simulate_games(sims)
 
     results = assess_sims(sims,picks)
