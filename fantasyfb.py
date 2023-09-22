@@ -14,7 +14,6 @@ import os
 import shutil
 import numpy as np
 from util import sportsref_nfl as sr
-from util import sleeper_api as sl
 import time
 import datetime
 from pytz import timezone
@@ -524,9 +523,6 @@ class League:
                 "position",
             ]
         ]
-
-    # def get_sleeper_rosters(self):
-    #     print("FINISH THIS!!!")
 
     def pull_stats(self, start: int, finish: int, path: str = "GameByGameFantasyFootballStats.csv"):
         """
@@ -3537,7 +3533,7 @@ def main():
             if options.trades.lower() != "all"
             else [],
             exclude=["Tom Brady"],
-            given=[val.strip() for val in options.given.split(",")],
+            given=[val.strip() for val in options.given.split(",")] if options.given else [],
             limit_per=10,
             payouts=options.payouts,
             bestball=options.bestball,
