@@ -2181,6 +2181,7 @@ class League:
         verbose=True,
         payouts=[800, 300, 100],
         bestball=False,
+        min_rostership=0.05,
     ):
         """
         Simulates the remainder of the season with the current roster and compares it to 
@@ -2242,9 +2243,8 @@ class League:
             players_to_drop = players_to_drop.loc[players_to_drop.name.isin(focus_on)]
         if players_to_drop.name.isin(exclude).sum() > 0:
             players_to_drop = players_to_drop.loc[~players_to_drop.name.isin(exclude)]
-        available = self.players.loc[self.players.fantasy_team.isnull()].reset_index(
-            drop=True
-        )
+        available = self.players.loc[self.players.fantasy_team.isnull() \
+        & (self.players.pct_rostered >= min_rostership)].reset_index(drop=True)
         for my_player in players_to_drop.name:
             self.refresh_oauth(55)
             if (
@@ -2345,6 +2345,7 @@ class League:
         verbose=True,
         payouts=[800, 300, 100],
         bestball=False,
+        min_rostership=0.05,
     ):
         """
         Simulates the remainder of the season with the current roster and compares it to 
@@ -2400,9 +2401,8 @@ class League:
                 for team in self.teams
                 if team["team_key"] == self.lg.team_key()
             ][0]
-        available = self.players.loc[self.players.fantasy_team.isnull()].reset_index(
-            drop=True
-        )
+        available = self.players.loc[self.players.fantasy_team.isnull() \
+        & (self.players.pct_rostered >= min_rostership)].reset_index(drop=True)
         possible = available.loc[~available.name.str.contains("Average_")]
         if possible.name.isin(focus_on).sum() > 0:
             possible = possible.loc[possible.name.isin(focus_on)]
