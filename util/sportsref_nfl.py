@@ -116,6 +116,15 @@ def get_intl_games():
 
 
 def get_depth_chart(team_abbrev: str):
+    """
+    Pulls the team depth chart directly from ESPN based on the team abbreviation provided.
+
+    Args:
+        team_abbrev (str): ESPN abbreviation for the team of interest.
+
+    Returns:
+        pd.DataFrame: dataframe containing the depth chart ranking for each player on the team of interest.
+    """
     os.system("wget https://www.espn.com/nfl/team/depth/_/name/{} -q -O {}.html".format(team_abbrev,team_abbrev))
     tempData = open(team_abbrev + ".html","r")
     response = tempData.read()
@@ -150,6 +159,12 @@ def get_depth_chart(team_abbrev: str):
 
 
 def get_all_depth_charts():
+    """
+    Pulls all ESPN depth charts across the NFL.
+
+    Returns:
+        pd.DataFrame: dataframe containing the depth chart ranking for each player in the NFL.
+    """
     teams = pd.read_csv("https://raw.githubusercontent.com/tefirman/FantasySports/main/res/football/team_abbrevs.csv")
     teams['espn'] = teams.fivethirtyeight.str.replace('OAK','LV')
     depths = pd.DataFrame(columns=['team'])
@@ -246,6 +261,16 @@ def get_address(stadium_id: str):
 
 
 def download_zip_codes(url: str = "https://nominatim.org/data/us_postcodes.csv.gz"):
+    """
+    Downloads a csv from Nominatim containing the GPS coordinates of every zip code in the US
+    and returns it in the form of a pandas dataframe (used when accounting for team travel).
+
+    Args:
+        url (str, optional): URL location of the zipcode csv, defaults to "https://nominatim.org/data/us_postcodes.csv.gz".
+
+    Returns:
+        pd.DataFrame: dataframe containing the GPS coordinates of every US zip code.
+    """
     response = requests.get(url,stream=True)
     with open(url.split('/')[-1],'wb') as out_file:
         shutil.copyfileobj(response.raw,out_file)
@@ -324,6 +349,13 @@ class Schedule:
             ].reset_index(drop=True)
 
     def get_schedules(self, start: int, finish: int):
+        """
+        Pulls the full NFL schedules for the seasons provided.
+
+        Args:
+            start (int): first season of interest
+            finish (int): last season of interest
+        """
         self.schedule = pd.DataFrame(columns=["season"])
         for season in range(int(start), int(finish) + 1):
             raw_text = get_page("years/{}/games.htm".format(season))
@@ -340,6 +372,9 @@ class Schedule:
             self.schedule = pd.concat([self.schedule, season_sched], ignore_index=True)
 
     def add_weeks(self):
+        """
+        Infers season week based on game dates for each season.
+        """
         self.schedule.game_date = pd.to_datetime(
             self.schedule.game_date, infer_datetime_format=True
         )
@@ -357,6 +392,9 @@ class Schedule:
         self.schedule["week"] = self.schedule.days_into_season // 7 + 1
 
     def convert_to_home_away(self):
+        """
+        Converts winner/loser syntax of Pro Football Reference schedules into home/away.
+        """
         list1 = ["team1","team1_abbrev","score1","yards1","timeouts1"]
         list2 = ["team2","team2_abbrev","score2","yards2","timeouts2"]
         winner_list = ["winner","winner_abbrev","pts_win","yards_win","to_win"]
@@ -369,6 +407,9 @@ class Schedule:
         self.schedule.loc[away_loser, list2] = self.schedule.loc[away_loser, loser_list].values
 
     def mark_intl_games(self):
+        """
+        Identifies international games in the provided schedule (used when accounting for team travel).
+        """
         intl = get_intl_games()
         intl = intl.loc[
             (intl.game_date.dt.year >= self.schedule.season.min())
@@ -395,6 +436,9 @@ class Schedule:
             print(bad)
 
     def add_team_coords(self):
+        """
+        Adds the home coordinates for each team in each matchup of the schedule.
+        """
         teams = pd.concat(
             [
                 self.schedule[["season", "team1_abbrev"]].rename(
@@ -419,6 +463,10 @@ class Schedule:
             ] = coords
 
     def add_game_coords(self):
+        """
+        Adds game coordinates for each of the matchups in the schedule.
+        If the game is international, the location is pulled directly from Pro Football Reference.
+        """
         neutral = self.schedule.game_location == "N"
         self.schedule.loc[~neutral, "game_coords"] = self.schedule.loc[
             ~neutral, "coords1"
@@ -443,6 +491,9 @@ class Schedule:
         self.schedule.game_coords = self.schedule.game_coords.str.split(",")
 
     def add_travel(self):
+        """
+        Adds the distance traveled for each team in each matchup of the schedule.
+        """
         for team in [1, 2]:
             self.schedule["coords" + str(team)] = self.schedule[
                 "coords" + str(team)
@@ -452,6 +503,9 @@ class Schedule:
             )
 
     def add_rest(self):
+        """
+        Identifies teams that had a bye week before the matchup in question.
+        """
         for week in range(2, self.schedule.week.max() + 1):
             prev = (
                 self.schedule.loc[self.schedule.week == week - 1, ["team1", "team2"]]
@@ -476,6 +530,12 @@ class Schedule:
         self.schedule.rested2 = self.schedule.rested2.fillna(False)
     
     def add_elo_columns(self, qbelo: bool = False):
+        """
+        Adds the necessary columns for elo projections throughout the schedule.
+
+        Args:
+            qbelo (bool, optional): whether to infer QB elo values, defaults to False.
+        """
         self.schedule[['elo1_pre','elo2_pre','elo1_post','elo2_post','elo_diff',\
         'point_spread','elo_prob1','elo_prob2','score_diff','forecast_delta',\
         'mov_multiplier','elo_delta']] = None
@@ -489,9 +549,17 @@ class Schedule:
                 'qb_value_pre':'qb{}_value_pre'.format(team_num),'qb_adj':'qb{}_adj'.format(team_num),\
                 'qb_value_post':'qb{}_value_post'.format(team_num),'VALUE':'VALUE{}'.format(team_num)}),\
                 how='inner',on=['boxscore_abbrev','team{}_abbrev'.format(team_num)])
-            # Need to pull depth charts to extrapolate future values...
+            # Need to pull depth charts to extrapolate future qbelo values... Ignoring this for now...
 
     def next_init_elo(self, init_elo=1300, regress_pct=0.333):
+        """
+        Identifies the next matchup that does not have complete elo projections 
+        and calculates each team's starting elo rating based on 538's model (#RIP).
+
+        Args:
+            init_elo (int, optional): initial elo rating to provide new teams with, defaults to 1300.
+            regress_pct (float, optional): percentage to regress teams back to the mean between each season, defaults to 0.333.
+        """
         ind = self.schedule.loc[self.schedule.elo1_pre.isnull()].index[0]
         for team_num in ['1','2']:
             team = self.schedule.loc[ind,'team{}_abbrev'.format(team_num)]
@@ -521,6 +589,17 @@ class Schedule:
                 self.schedule.loc[ind,'qb{}_adj'.format(team_num)]
     
     def next_elo_prob(self, homefield=48, travel=0.004, rested=25, playoffs=1.2, elo2points=0.04):
+        """
+        Identifies the next matchup that does not have complete elo projections 
+        and calculates each team's win probability based on 538's model (#RIP).
+
+        Args:
+            homefield (int, optional): elo rating boost for home-field advantage, defaults to 48.
+            travel (float, optional): elo rating penalty for travel, defaults to 0.004 per mile traveled.
+            rested (int, optional): elo rating boost for rested teams, defaults to 25.
+            playoffs (float, optional): elo rating expansion in the playoffs, defaults to 1.2.
+            elo2points (float, optional): conversion rate between elo and points, defaults to 0.04.
+        """
         ind = self.schedule.loc[self.schedule.elo_prob1.isnull()].index[0]
         self.schedule.loc[ind,'elo_diff'] = self.schedule.loc[ind,'elo1_pre'] - self.schedule.loc[ind,'elo2_pre']
         self.schedule.loc[ind,'elo_diff'] += homefield # Homefield advantage
@@ -542,6 +621,13 @@ class Schedule:
             self.schedule.loc[ind,'qbelo_prob2'] = 1 - self.schedule.loc[ind,'qbelo_prob1']
 
     def next_elo_delta(self, k_factor=20):
+        """
+        Identifies the next matchup that does not have complete elo projections 
+        and calculates each team's new elo rating based on the results of that game.
+
+        Args:
+            k_factor (int, optional): scaling factor that dictates how much ratings should shift based on recent results, defaults to 20.
+        """
         ind = self.schedule.loc[~self.schedule.elo_prob1.isnull() & self.schedule.elo_delta.isnull()].index[-1]
         if not pd.isnull(self.schedule.loc[ind,'score1']):
             self.schedule.loc[ind,'score_diff'] = self.schedule.loc[ind,'score1'] - self.schedule.loc[ind,'score2']
@@ -556,7 +642,31 @@ class Schedule:
 
 
 class Boxscore:
+    """
+    Boxscore class that gathers all relevant statistics for the game in question
+    and parses them into a pandas dataframe.
+
+    Attributes:
+        game_id: unique SportsRef identifier for the game in question.
+        raw_text: raw html for the Pro Football Reference page of the game in question.
+        season: season of the game in question.
+        week: week of the season for the game in question.
+        team1_abbrev: abbreviation for the home team.
+        team1_score: points scored by the home team.
+        team2_abbrev: abbreviation for the away team.
+        team2_score: points scored by the away team.
+        game_stats: dataframe containing relevant statistics for the game in question.
+        starters: dataframe containing the list of starting players for both teams.
+        snaps: dataframe containing the number of snaps played by every player on both teams.
+    """
+
     def __init__(self, game_id: str):
+        """
+        Initializes a Boxscore object using the parameters provided and class functions defined below.
+
+        Args:
+            game_id (str): unique SportsRef identifier for the game in question.
+        """
         self.game_id = game_id
         self.get_raw_text()
         self.get_details()
@@ -569,9 +679,15 @@ class Boxscore:
         self.normalize_team_names()
 
     def get_raw_text(self):
+        """
+        Pulls down the raw html from Pro Football Reference containing the statistics for the game in question.
+        """
         self.raw_text = get_page("boxscores/{}.htm".format(self.game_id))
 
     def get_details(self):
+        """
+        Extracts the overarching details for the game in question, specifically the season, week, score, and teams involved.
+        """
         season_week = self.raw_text.find(
             "div", attrs={"class": "game_summaries compressed"}
         )
@@ -590,6 +706,10 @@ class Boxscore:
         self.team2_score = int(away_scores[-1].text)
 
     def get_stats(self):
+        """
+        Extracts the basic offensive, defensive, and special teams stats 
+        from the raw html for the game in question.
+        """
         self.game_stats = pd.concat(
             [
                 parse_table(self.raw_text, "player_offense"),
@@ -615,6 +735,10 @@ class Boxscore:
         ] = self.team1_abbrev
 
     def get_advanced_stats(self):
+        """
+        Extracts the advanced offensive, defensive, and special teams stats 
+        from the raw html for the game in question (e.g. first downs).
+        """
         if self.raw_text.find(id="passing_advanced"):
             advanced = pd.concat(
                 [
@@ -632,6 +756,9 @@ class Boxscore:
             self.game_stats[col] = self.game_stats[col].fillna(0.0)
 
     def get_starters(self):
+        """
+        Extracts the intended starters for each team in the game in question.
+        """
         self.starters = pd.concat(
             [
                 parse_table(self.raw_text, "home_starters"),
@@ -640,6 +767,9 @@ class Boxscore:
         )
 
     def get_snap_counts(self):
+        """
+        Extracts the actual snap counts for all players on each team in the game in question.
+        """
         # Games before 2012 don't have snapcounts and therefore no positions for non-starters...
         # Could merge position in via the get_names function...
         if self.raw_text.find(id="home_snap_counts") is not None \
@@ -655,6 +785,10 @@ class Boxscore:
             self.snaps[["off_pct","def_pct","st_pct"]] = 0.0
 
     def add_depth_chart(self):
+        """
+        Infers actual depth chart based on available depth charts/snap counts
+        and merges it into the game_stats dataframe. 
+        """
         nonstarters = self.snaps.loc[
             ~self.snaps.player_id.isin(self.starters.player_id.tolist())
         ].sort_values(by=["off_pct", "def_pct", "st_pct"], ascending=False)
@@ -677,6 +811,19 @@ class Boxscore:
     
     def add_qb_value(self, pass_att=-2.2, pass_cmp=3.7, pass_yds=0.2, pass_td=11.3,\
     pass_int=-14.1, pass_sacked=-8.0, rush_att=-1.1, rush_yds=0.6, rush_td=15.9):
+        """
+        Calculates individual QB elo value based on 538's model (#RIP).
+
+        Args:
+            pass_att (float, optional): weighting factor for pass attempts, defaults to -2.2.
+            pass_cmp (float, optional): weighting factor for pass completions, defaults to 3.7.
+            pass_yds (float, optional): weighting factor for passing yards, defaults to 0.2.
+            pass_td (float, optional): weighting factor for passing touchdowns, defaults to 11.3.
+            pass_sacked (float, optional): weighting factor for sacks, defaults to -8.0.
+            rush_att (float, optional): weighting factor for rush attempts, defaults to -1.1.
+            rush_yds (float, optional): weighting factor for rush yards, defaults to 0.6.
+            rush_td (float, optional): weighting factor for rushing touchdowns, defaults to 15.9.
+        """
         qbs = self.game_stats.pos == 'QB'
         self.game_stats.loc[qbs,'VALUE'] = pass_att*self.game_stats.loc[qbs,'pass_att'] \
         + pass_cmp*self.game_stats.loc[qbs,'pass_cmp'] + pass_yds*self.game_stats.loc[qbs,'pass_yds'] \
@@ -685,6 +832,9 @@ class Boxscore:
         + rush_yds*self.game_stats.loc[qbs,'rush_yds'] + rush_td*self.game_stats.loc[qbs,'rush_td']
 
     def normalize_team_names(self):
+        """
+        Normalizes team names between Pro Football Reference's boxscores and schedules.
+        """
         abbrevs = {'OAK':'RAI','LVR':'RAI','LAC':'SDG','STL':'RAM','LAR':'RAM',\
         'ARI':'CRD','IND':'CLT','BAL':'RAV','HOU':'HTX','TEN':'OTI'}
         for team in abbrevs:
