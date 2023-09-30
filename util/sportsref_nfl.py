@@ -551,13 +551,13 @@ class Schedule:
                 how='inner',on=['boxscore_abbrev','team{}_abbrev'.format(team_num)])
             # Need to pull depth charts to extrapolate future qbelo values... Ignoring this for now...
 
-    def next_init_elo(self, init_elo=1300, regress_pct=0.333):
+    def next_init_elo(self, init_elo: float = 1300.0, regress_pct: float = 0.333):
         """
         Identifies the next matchup that does not have complete elo projections 
         and calculates each team's starting elo rating based on 538's model (#RIP).
 
         Args:
-            init_elo (int, optional): initial elo rating to provide new teams with, defaults to 1300.
+            init_elo (float, optional): initial elo rating to provide new teams with, defaults to 1300.
             regress_pct (float, optional): percentage to regress teams back to the mean between each season, defaults to 0.333.
         """
         ind = self.schedule.loc[self.schedule.elo1_pre.isnull()].index[0]
@@ -588,15 +588,15 @@ class Schedule:
                 self.schedule.loc[ind,'elo{}_pre'.format(team_num)] + \
                 self.schedule.loc[ind,'qb{}_adj'.format(team_num)]
     
-    def next_elo_prob(self, homefield=48, travel=0.004, rested=25, playoffs=1.2, elo2points=0.04):
+    def next_elo_prob(self, homefield: float = 48.0, travel: float = 0.004, rested: float = 25.0, playoffs: float = 1.2, elo2points: float = 0.04):
         """
         Identifies the next matchup that does not have complete elo projections 
         and calculates each team's win probability based on 538's model (#RIP).
 
         Args:
-            homefield (int, optional): elo rating boost for home-field advantage, defaults to 48.
+            homefield (float, optional): elo rating boost for home-field advantage, defaults to 48.
             travel (float, optional): elo rating penalty for travel, defaults to 0.004 per mile traveled.
-            rested (int, optional): elo rating boost for rested teams, defaults to 25.
+            rested (float, optional): elo rating boost for rested teams, defaults to 25.
             playoffs (float, optional): elo rating expansion in the playoffs, defaults to 1.2.
             elo2points (float, optional): conversion rate between elo and points, defaults to 0.04.
         """
@@ -620,13 +620,13 @@ class Schedule:
             self.schedule.loc[ind,'qbelo_prob1'] = 1/(10**(self.schedule.loc[ind,'qbelo_diff']/-400) + 1)
             self.schedule.loc[ind,'qbelo_prob2'] = 1 - self.schedule.loc[ind,'qbelo_prob1']
 
-    def next_elo_delta(self, k_factor=20):
+    def next_elo_delta(self, k_factor: float = 20.0):
         """
         Identifies the next matchup that does not have complete elo projections 
         and calculates each team's new elo rating based on the results of that game.
 
         Args:
-            k_factor (int, optional): scaling factor that dictates how much ratings should shift based on recent results, defaults to 20.
+            k_factor (float, optional): scaling factor that dictates how much ratings should shift based on recent results, defaults to 20.
         """
         ind = self.schedule.loc[~self.schedule.elo_prob1.isnull() & self.schedule.elo_delta.isnull()].index[-1]
         if not pd.isnull(self.schedule.loc[ind,'score1']):
@@ -809,8 +809,9 @@ class Boxscore:
             on=["player", "player_id", "team"],
         )
     
-    def add_qb_value(self, pass_att=-2.2, pass_cmp=3.7, pass_yds=0.2, pass_td=11.3,\
-    pass_int=-14.1, pass_sacked=-8.0, rush_att=-1.1, rush_yds=0.6, rush_td=15.9):
+    def add_qb_value(self, pass_att: float = -2.2, pass_cmp: float = 3.7, pass_yds: float = 0.2, 
+    pass_td: float = 11.3, pass_int: float = -14.1, pass_sacked: float = -8.0, rush_att: float = -1.1,
+    rush_yds: float = 0.6, rush_td: float = 15.9):
         """
         Calculates individual QB elo value based on 538's model (#RIP).
 
@@ -900,6 +901,15 @@ def get_bulk_stats(
 
 
 def get_draft(season: int):
+    """
+    Pulls NFL draft results for the specified season from Pro Football Reference.
+
+    Args:
+        season (int): season of interest.
+
+    Returns:
+        pd.DataFrame: dataframe containing draft results for the season of interest.
+    """
     raw_text = get_page("years/{}/draft.htm".format(season))
     draft_order = parse_table(raw_text, "drafts")
     return draft_order
@@ -907,6 +917,20 @@ def get_draft(season: int):
 
 def get_bulk_draft_pos(start_season: int, finish_season: int, path: str = None, \
 best_qb_val: float = 34.313, qb_val_per_pick: float = -0.137):
+    """
+    Pulls draft results for each season in the specified timeframe from Pro Football Reference
+    and infers initial QB elo values from draft positions.
+
+    Args:
+        start_season (int): first season of interest.
+        finish_season (int): last season of interest.
+        path (str, optional): where to save the draft results in csv form, defaults to None.
+        best_qb_val (float, optional): QB elo value assigned to a first overall pick, defaults to 34.313.
+        qb_val_per_pick (float, optional): elo point decline per pick, defaults to -0.137.
+
+    Returns:
+        pd.DataFrame: dataframe containing all draft results over the timeframe of interest.
+    """
     start_season = int(start_season)
     finish_season = int(finish_season)
     if path and os.path.exists(str(path)):
@@ -927,12 +951,33 @@ best_qb_val: float = 34.313, qb_val_per_pick: float = -0.137):
 
 
 def get_roster(team: str, season: int):
+    """
+    Pulls the full team roster for the team and season of interest from Pro Football Reference.
+
+    Args:
+        team (str): abbreviation for the team of interest.
+        season (int): season of interest.
+
+    Returns:
+        pd.DataFrame: dataframe containing identifying information for each player on the roster of interest.
+    """
     raw_text = get_page("teams/{}/{}_roster.htm".format(team.lower(),season))
     roster = parse_table(raw_text, "roster")
     return roster
 
 
 def get_bulk_rosters(start_season: int, finish_season: int, path: str = None):
+    """
+    Pulls all NFL rosters during the specified timeframe from Pro Football Reference.
+
+    Args:
+        start_season (int): first season of interest.
+        finish_season (int): last season of interest.
+        path (str, optional): where to save the rosters in csv form, defaults to None.
+
+    Returns:
+        pd.DataFrame: dataframe containing all rosters for the specified timeframe.
+    """
     s = Schedule(start_season,finish_season)
     # Need to delete and repull after every new week to account for trades, etc.
     if path and os.path.exists(str(path)):
@@ -953,7 +998,22 @@ def get_bulk_rosters(start_season: int, finish_season: int, path: str = None):
     return teams
 
 
-def get_qb_elos(start, finish, regress_pct=0.25, qb_games=10, team_games=20, elo_adj=3.3):
+def get_qb_elos(start: int, finish: int, regress_pct: float = 0.25, 
+qb_games: int = 10, team_games: int = 20, elo_adj: float = 3.3):
+    """
+    Pulls QB-related statistics and calculates QB elo ratings as they progress over time.
+
+    Args:
+        start (int): first season of interest.
+        finish (int): last season of interest.
+        regress_pct (float, optional): percentage to regress QBs back to the mean between each season, defaults to 0.25.
+        qb_games (int, optional): number of games to use in the rolling average for individual QB elos, defaults to 10.
+        team_games (int, optional): number of games to use in the rolling average for team QB elos, defaults to 20.
+        elo_adj (float, optional): conversion factor between QB rating and team elos, defaults to 3.3.
+
+    Returns:
+        pd.DataFrame: dataframe containing QB statistics and elo ratings throughout the timeframe of interest.
+    """
     stats = get_bulk_stats(start - 3,1,finish,50,True,"GameByGameFantasyFootballStats.csv")
     if finish == datetime.datetime.now().year and datetime.datetime.now().month > 5:
         # Accounting for current season
