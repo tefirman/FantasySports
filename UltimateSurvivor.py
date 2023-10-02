@@ -8,6 +8,17 @@ from pandas.tseries.holiday import USFederalHolidayCalendar
 cal = USFederalHolidayCalendar()
 
 def load_probs(schedule_loc: str = "NFLSchedule.csv", first: int = 1, last: int = 17):
+    """
+    Loads win probabilities for every matchup in the current season.
+
+    Args:
+        schedule_loc (str, optional): location of schedule csv, defaults to "NFLSchedule.csv".
+        first (int, optional): first week of interest, defaults to 1.
+        last (int, optional): last week of interest, defaults to 17.
+
+    Returns:
+        pd.DataFrame: dataframe containing win probabilities for every matchup in the current season.
+    """
     if os.path.exists(schedule_loc):
         schedule = pd.read_csv(schedule_loc)
     else:
@@ -49,7 +60,8 @@ def load_picks(picks_loc: str = str(datetime.datetime.now().year) + " USP Weekly
     'NWE', 'CHI', 'SEA', 'SDG', 'DEN', 'NYG', 'NYJ', 'PHI', 'OTI', 'JAX', \
     'DET', 'HTX', 'CIN', 'TAM', 'BUF', 'CRD', 'RAM', 'DAL', 'CAR', 'SFO', \
     'MIA', 'GNB', 'RAI']
-    translation = {"BAL":"RAV","KC":"KAN","JAC":"JAX","NO":"NOR","SF":"SFO","TB":"TAM","IND":"CLT","LAC":"SDG","GB":"GNB","HOU":"HTX"}
+    translation = {"BAL":"RAV","KC":"KAN","JAC":"JAX","NO":"NOR","SF":"SFO",\
+    "TB":"TAM","IND":"CLT","LAC":"SDG","GB":"GNB","HOU":"HTX","TEN":"OTI"}
     for col in picks.columns:
         if col == "Player":
             continue
@@ -59,7 +71,7 @@ def load_picks(picks_loc: str = str(datetime.datetime.now().year) + " USP Weekly
             print(picks.loc[~picks[col].isin(team_names),col].unique())
     return picks
 
-def best_combos(probs, picks: pd.DataFrame = pd.DataFrame(), limit: int = 1000):
+def best_combos(probs: pd.DataFrame, picks: pd.DataFrame = pd.DataFrame(), limit: int = 1000):
     thanksgiving = cal.holidays(start=str(datetime.datetime.now().year) + '-11-15', end=str(datetime.datetime.now().year) + '-12-01').to_pydatetime()[0]
     probs_tg = probs.loc[probs.game_date == thanksgiving.strftime('%Y-%m-%d')].reset_index(drop=True)
     winners = probs.loc[probs.prob == 1].reset_index(drop=True)
@@ -104,7 +116,20 @@ def best_combos(probs, picks: pd.DataFrame = pd.DataFrame(), limit: int = 1000):
     combos['projected_points'] = combos["tot_prob"] + combos["points_so_far"]
     return combos
 
-def excel_autofit(df, name, writer, hidden=[]):
+def excel_autofit(df: pd.DataFrame, name: str, writer: pd.ExcelWriter, hidden: list = []):
+    """
+    Writes the provided dataframe to a new tab in an excel spreadsheet 
+    with the columns autofitted and autoformatted.
+
+    Args:
+        df (pd.DataFrame): dataframe to print to the excel spreadsheet.
+        name (str): name of the new tab to be added.
+        writer (pd.ExcelWriter): ExcelWriter object representing the excel spreadsheet.
+        hidden (list): list of column names that should be hidden in the excel spreadsheet.
+
+    Returns:
+        pd.ExcelWriter: same excel spreadsheet provided originally with the new tab added.
+    """
     f = writer.book.add_format({"num_format": "0.00"})
     f.set_align("center")
     f.set_align("vcenter")
@@ -196,11 +221,11 @@ def main():
         default="",
         help="where to save the final projections spreadsheet",
     )
-    options, args = parser.parse_args()
+    options = parser.parse_args()[0]
     picks = load_picks(options.picks)
     probs = load_probs(options.schedule)
     combos = best_combos(probs, picks, options.limit)
-    write_to_spreadsheet(combos, options.name, "{}UltimateSurvivorCombos_Week{}.xlsx".format(options.output,picks.columns[-2].split('_')[-1][:-1]))
+    write_to_spreadsheet(combos, options.name, "{}UltimateSurvivorCombos_Week{}.xlsx".format(options.output,int(picks.columns[-2].split('_')[-1][:-1]) + 1))
 
 
 if __name__ == "__main__":
