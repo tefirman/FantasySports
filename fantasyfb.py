@@ -57,16 +57,16 @@ class League:
 
     def __init__(
         self,
-        name=None,
-        season=None,
-        week=None,
-        injurytries=10,
-        num_sims=10000,
-        earliest=None,
-        reference_games=None,
-        basaloppstringtime=[],
-        sfb=False,
-        bestball="",
+        name: str = None,
+        season: int = None,
+        week: int = None,
+        injurytries: int = 10,
+        num_sims: int = 10000,
+        earliest: int = None,
+        reference_games: int = None,
+        basaloppstringtime: list = [],
+        sfb: bool = False,
+        bestball: str = "",
     ):
         """
         Initializes a League object using the parameters provided and class functions defined below.
@@ -153,7 +153,7 @@ class League:
                 f.write(json.dumps(creds))
         self.oauth = OAuth2(None, None, from_file="oauth2.json")
 
-    def load_league(self, name=None):
+    def load_league(self, name: str = None):
         """
         Initializes yahoo_fantasy_api game and league objects used to query Yahoo's API
         for details about the league in question. Also identifies fantasy team name and 
@@ -309,7 +309,7 @@ class League:
             + "tefirman/FantasySports/main/res/football/team_abbrevs.csv"
         )
 
-    def load_nfl_schedule(self,path: str = "NFLSchedule.csv"):
+    def load_nfl_schedule(self, path: str = "NFLSchedule.csv"):
         """
         Loads and processes the NFL schedule for use in future simulations
 
@@ -442,26 +442,6 @@ class League:
             self.players.player_id = self.players.player_id.astype(int)
             if not self.players.status.isnull().all():
                 break
-
-    # def get_sleeper_players(self):
-    #     players = sl.get_raw_players()[['full_name','fantasy_positions',\
-    #     'depth_chart_position','position','team','player_id','injury_status',\
-    #     'search_full_name','yahoo_id','depth_chart_order','espn_id']]\
-    #     .rename(columns={"full_name":"name","fantasy_positions":"eligible_positions",\
-    #     "player_id":"sleeper_id","yahoo_id":"player_id","injury_status":"status"})
-    #     players = players.loc[~players.player_id.isnull()].reset_index(drop=True)
-    #     players.loc[players.status.isin(['Questionable']),'status'] = "Q"
-    #     players.loc[players.status.isin(['Doubtful']),'status'] = "D"
-    #     players.loc[players.status.isin(['Out']),'status'] = "O"
-    #     players.loc[players.status.isin(['PUP']),'status'] = "PUP-R"
-    #     players.loc[players.status.isin(['Sus']),'status'] = "SUSP"
-    #     players.player_id = players.player_id.astype(int)
-    #     players.loc[players.team.isin(['LV']),'team'] = "OAK"
-    #     players.loc[players.team.isin(['WAS']),'team'] = "WSH"
-    #     players = pd.merge(left=players,right=self.nfl_teams[["fivethirtyeight","yahoo"]]\
-    #     .rename(columns={"fivethirtyeight":"team","yahoo":"editorial_team_abbr"}),how='left',on="team")
-    #     del players['team']
-    #     self.players = players
 
     def get_fantasy_rosters(self):
         """
@@ -712,7 +692,7 @@ class League:
         still_missing = self.players.player_id_sr.isnull()
         self.players.loc[still_missing,'player_id_sr'] = self.players.loc[still_missing,'player_id']
 
-    def load_parameters(self, earliest=None, reference_games=None, basaloppstringtime=[]):
+    def load_parameters(self, earliest: int = None, reference_games: int = None, basaloppstringtime: list = []):
         """
         Initializes rate adjustment parameters for future season simulations. 
         If parameters are not manually, optimal values are chosen based on 
@@ -860,7 +840,7 @@ class League:
             left=self.players, right=byes, how="left", on="current_team"
         )
 
-    def add_roster_pcts(self, inc=25):
+    def add_roster_pcts(self, inc: int = 25):
         """
         Pulls the percentage of leagues each player is rostered in and merges it into the players dataframe.
 
@@ -1297,7 +1277,7 @@ class League:
                 schedule.loc[schedule.week == as_of % 100, "score_2"] = 0.0
         self.schedule = schedule
 
-    def starters(self, week):
+    def starters(self, week: int):
         """
         Identifies which players should be started on each fantasy team 
         based on fantasy point projections and available roster spots.
@@ -1428,7 +1408,7 @@ class League:
                         "starter",
                     ] = True
 
-    def bestball_sims(self, payouts=[20,20,20]):
+    def bestball_sims(self, payouts: list = [20,20,20]):
         """
         Simulates the remainder of the fantasy season based on current rosters 
         and best ball settings using Monte Carlo simulations.
@@ -1486,14 +1466,16 @@ class League:
         return standings
 
     def season_sims(
-        self, verbose=False, postseason=True, payouts=[800, 300, 100], fixed_winner=None
+        self, 
+        postseason: bool = True, 
+        payouts: list = [800, 300, 100], 
+        fixed_winner: list = None,
     ):
         """
         Simulates the remainder of the fantasy season based on current rosters 
         and redraft settings using Monte Carlo simulations.
 
         Args:
-            verbose (bool, optional): whether to print status updates throughout the simulation, defaults to False.
             postseason (bool, optional): whether to simulate the postseason in addition to the regular season, defaults to True.
             payouts (list, optional): list of prize amounts for first, second, and third, defaults to [800, 300, 100].
             fixed_winner (list, optional): list containing the week and team name of a fixed winner, defaults to None.
@@ -2173,15 +2155,15 @@ class League:
 
     def possible_pickups(
         self,
-        focus_on=[],
-        exclude=[],
-        limit_per=10,
-        team_name=None,
-        postseason=True,
-        verbose=True,
-        payouts=[800, 300, 100],
-        bestball=False,
-        min_rostership=0.05,
+        focus_on: list = [],
+        exclude: list = [],
+        limit_per: int = 10,
+        team_name: str = None,
+        postseason: bool = True,
+        verbose: bool = True,
+        payouts: list = [800, 300, 100],
+        bestball: bool = False,
+        min_rostership: float = 0.05,
     ):
         """
         Simulates the remainder of the season with the current roster and compares it to 
@@ -2244,6 +2226,7 @@ class League:
         if players_to_drop.name.isin(exclude).sum() > 0:
             players_to_drop = players_to_drop.loc[~players_to_drop.name.isin(exclude)]
         available = self.players.loc[self.players.fantasy_team.isnull() \
+        & (self.players.until.isnull() | (self.players.until < 17)) \
         & (self.players.pct_rostered >= min_rostership)].reset_index(drop=True)
         for my_player in players_to_drop.name:
             self.refresh_oauth(55)
@@ -2337,15 +2320,15 @@ class League:
 
     def possible_adds(
         self,
-        focus_on=[],
-        exclude=[],
-        limit_per=10,
-        team_name=None,
-        postseason=True,
-        verbose=True,
-        payouts=[800, 300, 100],
-        bestball=False,
-        min_rostership=0.05,
+        focus_on: list = [],
+        exclude: list = [],
+        limit_per: int = 10,
+        team_name: str = None,
+        postseason: bool = True,
+        verbose: bool = True,
+        payouts: list = [800, 300, 100],
+        bestball: bool = False,
+        min_rostership: float = 0.05,
     ):
         """
         Simulates the remainder of the season with the current roster and compares it to 
@@ -2402,6 +2385,7 @@ class League:
                 if team["team_key"] == self.lg.team_key()
             ][0]
         available = self.players.loc[self.players.fantasy_team.isnull() \
+        & (self.players.until.isnull() | (self.players.until < 17)) \
         & (self.players.pct_rostered >= min_rostership)].reset_index(drop=True)
         possible = available.loc[~available.name.str.contains("Average_")]
         if possible.name.isin(focus_on).sum() > 0:
@@ -2468,13 +2452,13 @@ class League:
 
     def possible_drops(
         self,
-        focus_on=[],
-        exclude=[],
-        team_name=None,
-        postseason=True,
-        verbose=True,
-        payouts=[800, 300, 100],
-        bestball=False,
+        focus_on: list = [],
+        exclude: list = [],
+        team_name: str = None,
+        postseason: bool = True,
+        verbose: bool = True,
+        payouts: list = [800, 300, 100],
+        bestball: bool = False,
     ):
         """
         Simulates the remainder of the season with the current roster and compares it to 
@@ -2582,15 +2566,15 @@ class League:
 
     def possible_trades(
         self,
-        focus_on=[],
-        exclude=[],
-        given=[],
-        limit_per=10,
-        team_name=None,
-        postseason=True,
-        verbose=True,
-        payouts=[800, 300, 100],
-        bestball=False,
+        focus_on: list = [],
+        exclude: list = [],
+        given: list = [],
+        limit_per: int = 10,
+        team_name: str = None,
+        postseason: bool = True,
+        verbose: bool = True,
+        payouts: list = [800, 300, 100],
+        bestball: bool = False,
     ):
         """
         Simulates the remainder of the season with the current roster and compares it to 
@@ -2820,7 +2804,7 @@ class League:
         )
         return added_value
 
-    def perGameDelta(self, team_name=None, postseason=True, payouts=[800, 300, 100]):
+    def perGameDelta(self, team_name: str = None, postseason: bool = True, payouts: list = [800, 300, 100]):
         """
         Simulates the remainder of the season and compares it to a simulation 
         of the season given one team winning or losing each matchup.
@@ -2856,7 +2840,7 @@ class League:
         )
 
 
-def excelAutofit(df, name, writer):
+def excelAutofit(df: pd.DataFrame, name: str, writer: pd.ExcelWriter):
     """
     Writes the provided dataframe to a new tab in an excel spreadsheet 
     with the columns autofitted and autoformatted.
@@ -2912,7 +2896,7 @@ def excelAutofit(df, name, writer):
     return writer
 
 
-def sendEmail(subject, body, address, filename=None):
+def sendEmail(subject: str, body: str, address: str, filename: str = None):
     """
     Sends an email to the address provided with whichever subject, body, and attachements desired.
 
@@ -2943,7 +2927,7 @@ def sendEmail(subject, body, address, filename=None):
         server.sendmail(os.environ["EMAIL_SENDER"], address, text)
 
 
-def main():
+def initialize_inputs():
     parser = optparse.OptionParser()
     parser.add_option(
         "--season",
@@ -3057,6 +3041,8 @@ def main():
         help="where to send the final projections spreadsheet",
     )
     options, args = parser.parse_args()
+    if not options.season:
+        options.season = datetime.datetime.now().year - int(datetime.datetime.now().month < 6)
     if options.basaloppstringtime:
         options.basaloppstringtime = options.basaloppstringtime.split(",")
         if all([val.isnumeric() for val in options.basaloppstringtime]) and len(options.basal_oppstringtime) == 4:
@@ -3064,7 +3050,48 @@ def main():
         else:
             print("Invalid rate inference parameters, using defaults...")
             options.basaloppstringtime = None
+    if options.payouts:
+        options.payouts = options.payouts.split(",")
+        if all([val.isnumeric() for val in options.payouts]) and len(options.payouts) == 3:
+            options.payouts = [float(val) for val in options.payouts]
+        else:
+            print("Weird values provided for payouts... Assuming standard payouts...")
+            options.payouts = [60.0,30.0,10.0]
+    elif options.name == "The Algorithm":
+        options.payouts = [720, 360, 120]
+    elif options.name == "Toothless Wonders":
+        options.payouts = [350, 100, 50]
+    elif options.name == "The GENIEs":
+        options.payouts = [100, 0, 0]
+    elif options.name == "The Great Gadsby's":
+        options.payouts = [50, 35, 15]
+    else:
+        options.payouts = [60.0,30.0,10.0]
+    if not options.output:
+        options.output = (
+            os.path.expanduser("~/Documents/")
+            if os.path.exists(os.path.expanduser("~/Documents/"))
+            else os.path.expanduser("~/")
+        )
+        if not os.path.exists(options.output + options.name.replace(" ", "")):
+            os.mkdir(options.output + options.name.replace(" ", ""))
+        if not os.path.exists(
+            options.output + options.name.replace(" ", "") + "/" + str(options.season)
+        ):
+            os.mkdir(
+                options.output
+                + options.name.replace(" ", "")
+                + "/"
+                + str(options.season)
+            )
+        options.output += options.name.replace(" ", "") + "/" + str(options.season)
+    if options.output[-1] != "/":
+        options.output += "/"
+    return options
 
+
+def main():
+    options = initialize_inputs()
     league = League(
         name=options.name,
         season=options.season,
@@ -3075,52 +3102,6 @@ def main():
         reference_games=options.games,
         basaloppstringtime=options.basaloppstringtime,
     )
-
-    if options.payouts:
-        options.payouts = options.payouts.split(",")
-        if all([val.isnumeric() for val in options.payouts]) and len(options.payouts) == 3:
-            options.payouts = [float(val) for val in options.payouts]
-        else:
-            print("Weird values provided for payouts... Assuming standard payouts...")
-            options.payouts = [
-                100 * len(league.teams) * 0.6,
-                100 * len(league.teams) * 0.3,
-                100 * len(league.teams) * 0.1,
-            ]
-    elif league.name == "The Algorithm":
-        options.payouts = [720, 360, 120]
-    elif league.name == "Toothless Wonders":
-        options.payouts = [350, 100, 50]
-    elif league.name == "The GENIEs":
-        options.payouts = [100, 0, 0]
-    elif league.name == "The Great Gadsby's":
-        options.payouts = [50, 35, 15]
-    else:
-        options.payouts = [
-            100 * len(league.teams) * 0.6,
-            100 * len(league.teams) * 0.3,
-            100 * len(league.teams) * 0.1,
-        ]
-    if not options.output:
-        options.output = (
-            os.path.expanduser("~/Documents/")
-            if os.path.exists(os.path.expanduser("~/Documents/"))
-            else os.path.expanduser("~/")
-        )
-        if not os.path.exists(options.output + league.name.replace(" ", "")):
-            os.mkdir(options.output + league.name.replace(" ", ""))
-        if not os.path.exists(
-            options.output + league.name.replace(" ", "") + "/" + str(league.season)
-        ):
-            os.mkdir(
-                options.output
-                + league.name.replace(" ", "")
-                + "/"
-                + str(league.season)
-            )
-        options.output += league.name.replace(" ", "") + "/" + str(league.season)
-    if options.output[-1] != "/":
-        options.output += "/"
     writer = pd.ExcelWriter(
         options.output
         + "FantasyFootballProjections_{}Week{}{}.xlsx".format(
