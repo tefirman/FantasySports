@@ -6,7 +6,17 @@ import datetime
 import numpy as np
 import optparse
 
-def load_pick_probs(week: int):
+def load_pick_probs(week: int) -> pd.DataFrame:
+    """
+    Parses pick probabilities from a direct copy of the "Pick Distribution" tab of Yahoo's Pick'em GUI.
+    Literally just Ctrl+A, then copy paste into a plain text file. Sadly, the raw html doesn't contain the required data.
+
+    Args:
+        week (int): week of the NFL season to load pick probabilities for.
+
+    Returns:
+        pd.DataFrame: dataframe containing the percentage of players picking each team in every matchup for that week.
+    """
     nfl_teams = pd.read_csv("https://raw.githubusercontent.com/tefirman/FantasySports/main/res/football/team_abbrevs.csv")
     tempData = open("PickEmDistribution_Week{}.txt".format(week),'r')
     raw_str = tempData.read()
@@ -37,7 +47,17 @@ def load_pick_probs(week: int):
     pick_probs.loc[~pick_probs.home_fave,'pick_pts2'] = pick_probs.loc[~pick_probs.home_fave,'fave_pick_pts']
     return pick_probs[['team1_abbrev','team2_abbrev','pick_prob1','pick_prob2','pick_pts1','pick_pts2']]
 
-def load_picks(week: int):
+def load_picks(week: int) -> pd.DataFrame:
+    """
+    Parses actual picks made by each player from a direct copy of the "Group Picks" tab of Yahoo's Pick'em GUI.
+    Literally just Ctrl+A, then copy paste into a plain text file. Sadly, the raw html doesn't contain the required data.
+
+    Args:
+        week (int): week of the NFL season to load actual picks.
+
+    Returns:
+        pd.DataFrame: dataframe containing the actual picks every player made for that week.
+    """
     if os.path.exists("ActualConfidencePicks_Week{}.txt".format(week)):
         tempData = open("ActualConfidencePicks_Week{}.txt".format(week),'r')
         raw_data = tempData.read().split('Team Name\tPoints\n')[-1]\
@@ -66,11 +86,29 @@ def load_picks(week: int):
     # This isn't quite right, but fine for now...
     already = num_picks.loc[num_picks.freq > 1,'pick'].unique().tolist()
     actual = actual.loc[actual.pick.isin(already)].reset_index(drop=True)
+    # Only able to account for one missed pick per player...
+    num_missing = actual.loc[actual.points_bid == 0].groupby('player').size().to_frame("missed").reset_index()
+    excluded = num_missing.loc[num_missing.missed > 1,'player'].unique()
+    actual = actual.loc[~actual.player.isin(excluded)].reset_index(drop=True)
+    # Only able to account for one missed pick per player...
+    actual.loc[actual.points_bid == 0,'points_bid'] = 1.0
     # This isn't quite right, but fine for now...
     return actual
 
-def simulate_picks(games: pd.DataFrame, picks: pd.DataFrame, num_sims: int = 1000, num_entries: int = 50, pts_stdev: float = 4.0):
-    # games includes all games from this week, picks only contains games already played...
+def simulate_picks(games: pd.DataFrame, picks: pd.DataFrame, num_sims: int = 1000, num_entries: int = 50, pts_stdev: float = 4.0) -> pd.DataFrame:
+    """
+    Simulates contestant picks for an entire Confidence Pick'em contest based on the parameters provided.
+
+    Args:
+        games (pd.DataFrame): dataframe containing details on each NFL matchup during the week of interest.
+        picks (pd.DataFrame): dataframe containing details about picks that have already been made.
+        num_sims (int, optional): number of simulations to perform, defaults to 1000.
+        num_entries (int, optional): number of contestants in the group, defaults to 50.
+        pts_stdev (float, optional): standard deviation for the number of points bid on each matchup, defaults to 4.0.
+
+    Returns:
+        pd.DataFrame: dataframe containing simulated picks for each matchup and each contestant in each simulation.
+    """
     sims = pd.concat(num_sims*num_entries*[games.loc[games.still_to_play]],ignore_index=True)
     sims['entry'] = sims.index%(games.still_to_play.sum()*num_entries)//games.still_to_play.sum()
     sims['num_sim'] = sims.index//(games.still_to_play.sum()*num_entries)
@@ -97,7 +135,19 @@ def simulate_picks(games: pd.DataFrame, picks: pd.DataFrame, num_sims: int = 100
     sims = pd.concat([sims,already_picked],ignore_index=True).sort_values(by=['num_sim','entry'],ascending=True)
     return sims
 
-def add_my_picks(sims: pd.DataFrame, fixed: list = [], pick_pref: str = "best", point_pref: str = "best"):
+def add_my_picks(sims: pd.DataFrame, fixed: list = [], pick_pref: str = "best", point_pref: str = "best") -> pd.DataFrame:
+    """
+    Updates the user's entries in the provided simulations based on the specified strategies.
+
+    Args:
+        sims (pd.DataFrame): dataframe containing simulated picks for each matchup and each contestant in each simulation.
+        fixed (list, optional): list of teams to automatically pick regardless of strategy, defaults to [].
+        pick_pref (str, optional): strategy to use during pick selection. Acceptable values: "best", "worst", "popular", "random"; defaults to "best".
+        point_pref (str, optional): strategy to use during points selection. Acceptable values: "best", "worst", "popular", "random"; defaults to "best".
+
+    Returns:
+        pd.DataFrame: same simulation dataframe, but with the user's picks strategically updated.
+    """
     num_sims = int(sims.num_sim.max() + 1)
     my_entries = sims.loc[sims.entry == 0].reset_index(drop=True)
     my_points = sorted(my_entries.points_bid.unique().tolist())[::-1]
@@ -149,7 +199,17 @@ def add_my_picks(sims: pd.DataFrame, fixed: list = [], pick_pref: str = "best", 
         sims.loc[sims.winner != sims.pick,'points_won'] = 0.0
     return sims
 
-def simulate_games(sims: pd.DataFrame, fixed: list = []):
+def simulate_games(sims: pd.DataFrame, fixed: list = []) -> pd.DataFrame:
+    """
+    Simulates NFL games for the simulated picks provided.
+
+    Args:
+        sims (pd.DataFrame): dataframe containing simulated picks for each matchup and each contestant in each simulation.
+        fixed (list, optional): list of teams to automatically win regardless of simulation, defaults to [].
+
+    Returns:
+        pd.DataFrame: same simulation dataframe, but with game/point outcomes updated.
+    """
     sims['game_sim'] = np.random.rand(sims.shape[0])
     home_win = sims.game_sim < sims.elo_prob1
     sims.loc[home_win,'winner'] = sims.loc[home_win,'team1_abbrev']
@@ -160,7 +220,18 @@ def simulate_games(sims: pd.DataFrame, fixed: list = []):
     sims.loc[sims.winner != sims.pick,'points_won'] = 0.0
     return sims
 
-def assess_sims(sims: pd.DataFrame, picks: pd.DataFrame(), pot_size: float = 500.0):
+def assess_sims(sims: pd.DataFrame, picks: pd.DataFrame(), pot_size: float = 500.0) -> pd.DataFrame:
+    """
+    Assesses the overall results for each contestant in the simulations provided.
+
+    Args:
+        sims (pd.DataFrame): dataframe containing simulated picks and game results.
+        picks (pd.DataFrame): dataframe containing details about picks that have already been made.
+        pot_size (float, optional): amount of money that goes to the winner, defaults to 500.0.
+
+    Returns:
+        pd.DataFrame: dataframe containing results summaries for each contestant.
+    """
     num_sims = sims.num_sim.max() + 1
     standings = sims.groupby(['entry','num_sim']).points_won.sum().reset_index()
     standings = pd.merge(left=standings,right=picks.groupby('entry').points_won.sum().reset_index(),how='left',on=['entry'],suffixes=("","_already"))
@@ -177,7 +248,22 @@ def assess_sims(sims: pd.DataFrame, picks: pd.DataFrame(), pot_size: float = 500
     return results
 
 def optimize_picks(games: pd.DataFrame, picks: pd.DataFrame, num_sims: int = 1000, num_entries: int = 50, \
-fixed: list = [], initial_picks: str = "best", initial_pts: str = "best"):
+fixed: list = [], initial_picks: str = "best", initial_pts: str = "best") -> pd.DataFrame:
+    """
+    Gradually changes each pick one by one and keeps any that improve expected earnings.
+    Once picks have been settled, gradually swaps point values and keeps any that improve expected earnings.
+
+    Args:
+        games (pd.DataFrame): dataframe containing details on each NFL matchup during the week of interest.
+        picks (pd.DataFrame): dataframe containing details about picks that have already been made.
+        num_sims (int, optional): number of simulations to perform, defaults to 1000.
+        num_entries (int, optional): number of contestants in the group, defaults to 50.
+        initial_picks (str, optional): strategy to use during initial pick selection. Acceptable values: "best", "worst", "popular", "random"; defaults to "best".
+        initial_pts (str, optional): strategy to use during initial points selection. Acceptable values: "best", "worst", "popular", "random"; defaults to "best".
+
+    Returns:
+        pd.DataFrame: dataframe containing simulated picks and game results with optimal picks made for the user.
+    """
     sims = simulate_picks(games, picks, num_sims, num_entries)
     sims = add_my_picks(sims, fixed, pick_pref=initial_picks)
     sims = simulate_games(sims)
@@ -249,8 +335,22 @@ fixed: list = [], initial_picks: str = "best", initial_pts: str = "best"):
                 sims.loc[sims.winner != sims.pick,'points_won'] = 0.0
                 results = assess_sims(sims, picks)
                 baseline = results.loc[results.entry == 0].iloc[0]
+    return sims
+
+def pick_deltas(sims: pd.DataFrame, picks: pd.DataFrame) -> pd.DataFrame:
+    """
+    Measures the relative importance of each game by calculating the 
+    change in expected earnings between correct and incorrect picks.
+
+    Args:
+        sims (pd.DataFrame): dataframe containing simulated picks and game results.
+        picks (pd.DataFrame): dataframe containing details about picks that have already been made.
+
+    Returns:
+        pd.DataFrame: dataframe containing the user's picks and their relative earnings impact.
+    """
     my_picks = sims.loc[(sims.entry == 0) & (sims.num_sim == 0),\
-    ['team1_abbrev','team2_abbrev','pick','win_prob','points_bid']]\
+    ['team1_abbrev','team2_abbrev','pick','points_bid']]\
     .sort_values(by='points_bid',ascending=False,ignore_index=True)
     for ind in range(my_picks.shape[0]):
         pick = my_picks.iloc[ind]
@@ -263,10 +363,12 @@ fixed: list = [], initial_picks: str = "best", initial_pts: str = "best"):
         results = assess_sims(sims, picks)
         loser = results.loc[results.entry == 0].iloc[0]
         my_picks.loc[ind,'delta'] = winner["earnings"] - loser["earnings"]
-    print(my_picks)
+    print("\nRemaining Games:")
+    print(my_picks.to_string(index=False))
     return my_picks
 
 def main():
+    # Initializing input arguments
     parser = optparse.OptionParser()
     parser.add_option(
         "--schedule",
@@ -313,6 +415,7 @@ def main():
     options, args = parser.parse_args()
     options.fixed = options.fixed.split(',') if options.fixed else []
 
+    # Loading the current week's schedule
     if os.path.exists(options.schedule):
         schedule = pd.read_csv(options.schedule)
     else:
@@ -323,35 +426,25 @@ def main():
     if not options.week:
         options.week = schedule.loc[schedule.pts_win.isnull(),'week'].min()
     schedule = schedule.loc[schedule.week == options.week].reset_index(drop=True)
-
-    # # FUNCTIONALITY TEST!!!
-    # schedule.loc[pd.to_datetime(schedule.game_date + ', ' + schedule.gametime,infer_datetime_format=True) > \
-    # pd.to_datetime("September 17th, 2023, 3:00pm",infer_datetime_format=True),['score1','score2','pts_win','pts_lose']] = None
-    # print(schedule[['season','week_num','winner','loser','pts_win','pts_lose','score1','score2']])
-    # # FUNCTIONALITY TEST!!!
-
     schedule['still_to_play'] = schedule.score1.isnull() & schedule.score2.isnull() & schedule.pts_win.isnull() & schedule.pts_lose.isnull()
-
-    # schedule['still_to_play'] = pd.to_datetime(schedule.game_date + ', ' + \
-    # schedule.gametime,infer_datetime_format=True) + datetime.timedelta(hours=1) > datetime.datetime.now() # -2 for timezone, +3 for the game
-
     winners = schedule.loc[~schedule.still_to_play,'winner_abbrev']
 
+    # Loading pick probabilities for the current week
     pick_probs = load_pick_probs(options.week)
     picks = load_picks(options.week)
     picks.loc[picks.pick.isin(winners),'points_won'] = picks.loc[picks.pick.isin(winners),'points_bid']
+    picks.points_bid = picks.points_bid.fillna(1.0)
     picks.points_won = picks.points_won.fillna(0.0)
     if picks.shape[0] > 0:
         options.num_entries = picks.entry.nunique()
-
     games = pd.merge(left=schedule[['team1_abbrev','team2_abbrev','elo_prob1','elo_prob2','still_to_play']],\
     right=pick_probs,how='inner',on=['team1_abbrev','team2_abbrev'])
 
+    # Simulating a full Confidence Pick'em contest
     sims = simulate_picks(games, picks, options.num_sims, options.num_entries)
     if schedule.still_to_play.sum() < 10:
         sims = add_my_picks(sims, options.fixed)
     sims = simulate_games(sims)
-
     results = assess_sims(sims,picks)
     if picks.shape[0] > 0:
         results = pd.merge(left=results,right=picks[["entry","player"]].drop_duplicates(),how='inner',on=["entry"])
@@ -359,13 +452,21 @@ def main():
         results["player"] = "Player #" + (results["entry"] + 1).astype(str)
     baseline = results.loc[results.entry == 0].iloc[0]
     del results["entry"], baseline["entry"]
+
+    # Printing simulation results
+    print("\nFull Standings:")
     print(results[["player","points_avg","points_std","win_pct","earnings"]]\
-    .sort_values(by='earnings',ascending=False).to_string(index=False))
-    print(baseline)
+    .sort_values(by=['earnings','points_avg'],ascending=False).to_string(index=False))
+    print("\nYour Projections:")
+    print(baseline.to_string())
 
     if options.optimize:
-        my_picks = optimize_picks(games, picks, options.num_sims, options.num_entries, options.fixed, options.optimize, options.optimize)
-        my_picks.to_excel("ConfidencePickEm_Week{}.xlsx".format(options.week),index=False)
+        # Identifying optimal picks for the current week
+        sims = optimize_picks(games, picks, options.num_sims, options.num_entries, options.fixed, options.optimize, options.optimize)
+    
+    # Identifying the relative impact of each pick
+    my_picks = pick_deltas(sims, picks)
+    my_picks.to_excel("ConfidencePickEm_Week{}.xlsx".format(options.week),index=False)
 
 
 if __name__ == "__main__":
