@@ -244,7 +244,7 @@ class League:
             'Sack':0.0,'Int':0.0,'Fum Rec':0.0,'TD':0.0,'Safe':0.0,'Blk Kick':0.0,\
             'Pts Allow 0':0.0,'Pts Allow 1-6':0.0,'Pts Allow 7-13':0.0,'Pts Allow 14-20':0.0,\
             'Pts Allow 21-27':0.0,'Pts Allow 28-34':0.0,'Pts Allow 35+':0.0,'XPR':0.0}
-            self.roster_spots = pd.DataFrame({'position':['QB','RB','WR','TE','W/R/T','W/R/T/Q','K','BN'],'count':[1,2,3,1,2,1,1,11]})
+            self.roster_spots = pd.DataFrame({'position':['QB','RB','WR','TE','W/R/T','Q/W/R/T','K','BN'],'count':[1,2,3,1,2,1,1,11]})
         elif str(bestball).lower() in ["dk", "draftkings"]:
             self.settings['playoff_start_week'] = 14
             self.settings['num_playoff_teams'] = 2
@@ -256,7 +256,7 @@ class League:
             'Sack':0.0,'Int':0.0,'Fum Rec':0.0,'TD':0.0,'Safe':0.0,'Blk Kick':0.0,\
             'Pts Allow 0':0.0,'Pts Allow 1-6':0.0,'Pts Allow 7-13':0.0,'Pts Allow 14-20':0.0,\
             'Pts Allow 21-27':0.0,'Pts Allow 28-34':0.0,'Pts Allow 35+':0.0,'XPR':0.0}
-            self.roster_spots = pd.DataFrame({'position':['QB','RB','WR','TE','W/R/T','W/R/T/Q','K','BN'],'count':[1,2,3,1,1,0,0,12]})
+            self.roster_spots = pd.DataFrame({'position':['QB','RB','WR','TE','W/R/T','Q/W/R/T','K','BN'],'count':[1,2,3,1,1,0,0,12]})
         elif str(bestball).lower() in ["underdog"]:
             # Slow Puppy
             self.settings['playoff_start_week'] = 14
@@ -269,10 +269,10 @@ class League:
             'Sack':0.0,'Int':0.0,'Fum Rec':0.0,'TD':0.0,'Safe':0.0,'Blk Kick':0.0,\
             'Pts Allow 0':0.0,'Pts Allow 1-6':0.0,'Pts Allow 7-13':0.0,'Pts Allow 14-20':0.0,\
             'Pts Allow 21-27':0.0,'Pts Allow 28-34':0.0,'Pts Allow 35+':0.0,'XPR':0.0}
-            self.roster_spots = pd.DataFrame({'position':['QB','RB','WR','TE','W/R/T','W/R/T/Q','K','BN'],'count':[1,2,3,1,1,0,0,10]})
+            self.roster_spots = pd.DataFrame({'position':['QB','RB','WR','TE','W/R/T','Q/W/R/T','K','BN'],'count':[1,2,3,1,1,0,0,10]})
             # # Pomeranian Superflex
             # self.settings['num_playoff_teams'] = 3
-            # self.roster_spots = pd.DataFrame({'position':['QB','RB','WR','TE','W/R/T','W/R/T/Q','K','BN'],'count':[1,2,2,1,1,1,0,12]})
+            # self.roster_spots = pd.DataFrame({'position':['QB','RB','WR','TE','W/R/T','Q/W/R/T','K','BN'],'count':[1,2,2,1,1,1,0,12]})
         else:
             if "FG 0-19" not in self.scoring:
                 self.scoring["FG 0-19"] = 3
@@ -1342,7 +1342,7 @@ class League:
                 lineup = pd.merge(left=self.roster_spots,right=started.groupby('selected_position').size()\
                 .to_frame('num_started').reset_index().rename(columns={'selected_position':'position'}),how='left',on='position')
                 lineup['count'] -= lineup.num_started.fillna(0.0)
-                num_pos = lineup.loc[~lineup.position.isin(["W/T", "W/R/T", "W/R/T/Q", "BN", "IR"])].set_index('position').to_dict()['count']
+                num_pos = lineup.loc[~lineup.position.isin(["W/T", "W/R/T", "Q/W/R/T", "BN", "IR"])].set_index('position').to_dict()['count']
                 for pos in num_pos:
                     for num in range(int(num_pos[pos])):
                         self.players.loc[
@@ -1359,7 +1359,7 @@ class League:
                             .index,
                             "starter",
                         ] = True
-                flex_pos = {"W/T":['WR','TE'],"W/R/T":['WR','RB','TE'],"W/R/T/Q":['WR','RB','TE','QB']}
+                flex_pos = {"W/T":['WR','TE'],"W/R/T":['WR','RB','TE'],"Q/W/R/T":['WR','RB','TE','QB']}
                 for pos in flex_pos:
                     num_flex = int(lineup.loc[lineup.position == pos,'count'].sum())
                     for flex in range(num_flex):
@@ -1378,7 +1378,7 @@ class League:
                             "starter",
                         ] = True
         elif week >= as_of % 100:
-            num_pos = self.roster_spots.loc[~self.roster_spots.position.isin(["W/T", "W/R/T", "W/R/T/Q", "BN", "IR"])].set_index('position').to_dict()['count']
+            num_pos = self.roster_spots.loc[~self.roster_spots.position.isin(["W/T", "W/R/T", "Q/W/R/T", "BN", "IR"])].set_index('position').to_dict()['count']
             for pos in num_pos:
                 for num in range(num_pos[pos]):
                     self.players.loc[
@@ -1392,7 +1392,7 @@ class League:
                         .index,
                         "starter",
                     ] = True
-            flex_pos = {"W/T":['WR','TE'],"W/R/T":['WR','RB','TE'],"W/R/T/Q":['WR','RB','TE','QB']}
+            flex_pos = {"W/T":['WR','TE'],"W/R/T":['WR','RB','TE'],"Q/W/R/T":['WR','RB','TE','QB']}
             for pos in flex_pos:
                 num_flex = self.roster_spots.loc[self.roster_spots.position == pos,'count'].sum()
                 for flex in range(num_flex):
@@ -1436,12 +1436,12 @@ class League:
         season_sims = season_sims.sort_values(by='points_sim',ascending=False,ignore_index=True)
         season_sims['injured'] = np.random.rand(season_sims.shape[0]) < 0.1
         season_sims['starter'] = False
-        num_pos = self.roster_spots.loc[~self.roster_spots.position.isin(["W/T", "W/R/T", "W/R/T/Q", "BN", "IR"])].set_index('position').to_dict()['count']
+        num_pos = self.roster_spots.loc[~self.roster_spots.position.isin(["W/T", "W/R/T", "Q/W/R/T", "BN", "IR"])].set_index('position').to_dict()['count']
         for pos in num_pos:
             inds = season_sims.loc[(season_sims.position == pos) & ~season_sims.injured]\
             .groupby(['num_sim','week','fantasy_team']).head(num_pos[pos]).index
             season_sims.loc[inds,'starter'] = True
-        flex_pos = {"W/T":['WR','TE'],"W/R/T":['WR','RB','TE'],"W/R/T/Q":['WR','RB','TE','QB']}
+        flex_pos = {"W/T":['WR','TE'],"W/R/T":['WR','RB','TE'],"Q/W/R/T":['WR','RB','TE','QB']}
         for pos in flex_pos:
             num_flex = self.roster_spots.loc[self.roster_spots.position == pos,'count'].sum()
             inds = season_sims.loc[season_sims.position.isin(flex_pos[pos]) & ~season_sims.injured & ~season_sims.starter]\
@@ -1611,11 +1611,11 @@ class League:
         standings["playoff_bye"] = 0
         if int(self.settings["num_playoff_teams"]) == 6:
             standings.loc[standings.index % len(self.teams) < 2, "playoff_bye"] = 1
+        algorithm = (
+            schedule.team_1.isin(["The Algorithm"]).any()
+            or schedule.team_2.isin(["The Algorithm"]).any()
+        )
         if postseason:
-            algorithm = (
-                schedule.team_1.isin(["The Algorithm"]).any()
-                or schedule.team_2.isin(["The Algorithm"]).any()
-            )
             standings["seed"] = standings.index % len(self.teams)
             scores = pd.concat([schedule.loc[
                     schedule.week >= self.settings["playoff_start_week"],
@@ -2187,7 +2187,7 @@ class League:
         if bestball:
             orig_standings = self.bestball_sims(payouts)
         else:
-            orig_standings = self.season_sims(False, postseason, payouts)[1]
+            orig_standings = self.season_sims(postseason, payouts)[1]
         added_value = pd.DataFrame(
             columns=[
                 "player_to_drop",
@@ -2264,7 +2264,7 @@ class League:
                 if bestball:
                     new_standings = self.bestball_sims(payouts)
                 else:
-                    new_standings = self.season_sims(False, postseason, payouts)[1]
+                    new_standings = self.season_sims(postseason, payouts)[1]
                 added_value = pd.concat([added_value,
                     new_standings.loc[new_standings.team == team_name]],
                     ignore_index=True,
@@ -2352,7 +2352,7 @@ class League:
         if bestball:
             orig_standings = self.bestball_sims(payouts)
         else:
-            orig_standings = self.season_sims(False, postseason, payouts)[1]
+            orig_standings = self.season_sims(postseason, payouts)[1]
         added_value = pd.DataFrame(
             columns=[
                 "player_to_add",
@@ -2402,7 +2402,7 @@ class League:
             if bestball:
                 new_standings = self.bestball_sims(payouts)
             else:
-                new_standings = self.season_sims(False, postseason, payouts)[1]
+                new_standings = self.season_sims(postseason, payouts)[1]
             added_value = pd.concat([added_value,
                 new_standings.loc[new_standings.team == team_name]],
                 ignore_index=True,
@@ -2480,7 +2480,7 @@ class League:
         if bestball:
             orig_standings = self.bestball_sims(payouts)
         else:
-            orig_standings = self.season_sims(False, postseason, payouts)[1]
+            orig_standings = self.season_sims(postseason, payouts)[1]
         reduced_value = pd.DataFrame(
             columns=[
                 "player_to_drop",
@@ -2522,7 +2522,7 @@ class League:
             if bestball:
                 new_standings = self.bestball_sims(payouts)
             else:
-                new_standings = self.season_sims(False, postseason, payouts)[1]
+                new_standings = self.season_sims(postseason, payouts)[1]
             reduced_value = pd.concat([reduced_value,
                 new_standings.loc[new_standings.team == team_name]],
                 ignore_index=True,
@@ -2620,7 +2620,7 @@ class League:
         if bestball:
             orig_standings = self.bestball_sims(payouts)
         else:
-            orig_standings = self.season_sims(False, postseason, payouts)[1]
+            orig_standings = self.season_sims(postseason, payouts)[1]
 
         # Make sure there are two teams and narrow down to that team!!!
         given_check = (
@@ -2682,7 +2682,7 @@ class League:
                 if bestball:
                     new_standings = self.bestball_sims(payouts)
                 else:
-                    new_standings = self.season_sims(False, postseason, payouts)[1]
+                    new_standings = self.season_sims(postseason, payouts)[1]
                 self.players.loc[
                     self.players.name == my_player, "fantasy_team"
                 ] = team_name
@@ -2825,10 +2825,10 @@ class League:
                 for team in self.teams
                 if team["team_key"] == self.lg.team_key()
             ][0]
-        deltas = self.season_sims(False, postseason, payouts)[1][["team", "earnings"]]
+        deltas = self.season_sims(postseason, payouts)[1][["team", "earnings"]]
         for team in self.players.fantasy_team.unique():
             new_standings = self.season_sims(
-                False, postseason, payouts, fixed_winner=[as_of % 100, team]
+                postseason, payouts, fixed_winner=[as_of % 100, team]
             )[1][["team", "earnings"]].rename(columns={"earnings": "earnings_new"})
             deltas = pd.merge(left=deltas, right=new_standings, how="inner", on="team")
             deltas[team] = deltas["earnings_new"] - deltas["earnings"]
@@ -2840,7 +2840,7 @@ class League:
         )
 
 
-def excelAutofit(df: pd.DataFrame, name: str, writer: pd.ExcelWriter):
+def excelAutofit(df: pd.DataFrame, name: str, writer: pd.ExcelWriter, freeze_cols: int = 1):
     """
     Writes the provided dataframe to a new tab in an excel spreadsheet 
     with the columns autofitted and autoformatted.
@@ -2893,6 +2893,7 @@ def excelAutofit(df: pd.DataFrame, name: str, writer: pd.ExcelWriter):
         ).replace("@", "")
         + str(df.shape[0] + 1)
     )
+    writer.sheets[name].freeze_panes(1, freeze_cols)
     return writer
 
 
@@ -3150,7 +3151,6 @@ def main():
         "Rosters",
         writer,
     )
-    writer.sheets["Rosters"].freeze_panes(1, 1)
     writer.sheets["Rosters"].conditional_format(
         "F2:F" + str(rosters.shape[0] + 1),
         {
@@ -3196,7 +3196,6 @@ def main():
         "Available",
         writer,
     )
-    writer.sheets["Available"].freeze_panes(1, 1)
     writer.sheets["Available"].conditional_format(
         "F2:F" + str(available.shape[0] + 1),
         {
@@ -3256,8 +3255,8 @@ def main():
             ],
             "Schedule",
             writer,
+            3,
         )
-        writer.sheets["Schedule"].freeze_panes(1, 3)
         writer.sheets["Schedule"].conditional_format(
             "D2:E" + str(schedule_sim.shape[0] + 1),
             {
@@ -3294,7 +3293,6 @@ def main():
         "Standings",
         writer,
     )
-    writer.sheets["Standings"].freeze_panes(1, 1)
     writer.sheets["Standings"].conditional_format(
         "I2:M" + str(standings_sim.shape[0] + 1),
         {
@@ -3357,8 +3355,8 @@ def main():
             ],
             "Pickups",
             writer,
+            2,
         )
-        writer.sheets["Pickups"].freeze_panes(1, 2)
         writer.sheets["Pickups"].conditional_format(
             "J2:N" + str(pickups.shape[0] + 1),
             {
@@ -3418,7 +3416,6 @@ def main():
             "Adds",
             writer,
         )
-        writer.sheets["Adds"].freeze_panes(1, 1)
         writer.sheets["Adds"].conditional_format(
             "J2:N" + str(adds.shape[0] + 1),
             {
@@ -3476,7 +3473,6 @@ def main():
             "Drops",
             writer,
         )
-        writer.sheets["Drops"].freeze_panes(1, 1)
         writer.sheets["Drops"].conditional_format(
             "J2:N" + str(drops.shape[0] + 1),
             {
@@ -3555,8 +3551,8 @@ def main():
             ],
             "Trades",
             writer,
+            3,
         )
-        writer.sheets["Trades"].freeze_panes(1, 3)
         writer.sheets["Trades"].conditional_format(
             "K2:O" + str(trades.shape[0] + 1),
             {
@@ -3597,7 +3593,6 @@ def main():
     if options.deltas:
         deltas = league.perGameDelta(payouts=options.payouts)
         writer = excelAutofit(deltas, "Deltas", writer)
-        writer.sheets["Deltas"].freeze_panes(0, 1)
         writer.sheets["Deltas"].conditional_format(
             "B2:" + chr(ord("A") + deltas.shape[1]) + str(deltas.shape[0] + 1),
             {
