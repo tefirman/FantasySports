@@ -7,7 +7,7 @@ import optparse
 from pandas.tseries.holiday import USFederalHolidayCalendar
 cal = USFederalHolidayCalendar()
 
-def load_probs(schedule_loc: str = "NFLSchedule.csv", first: int = 1, last: int = 17):
+def load_probs(schedule_loc: str = "NFLSchedule.csv", first: int = 1, last: int = 17) -> pd.DataFrame:
     """
     Loads win probabilities for every matchup in the current season.
 
@@ -37,9 +37,19 @@ def load_probs(schedule_loc: str = "NFLSchedule.csv", first: int = 1, last: int 
     schedule[['week_num','game_date','team2_abbrev','elo_prob2']]\
     .rename(columns={'week_num':'week','team2_abbrev':'team','elo_prob2':'prob'})],ignore_index=True)
     probs = probs.loc[(probs.week >= first) & (probs.week <= last)].reset_index(drop=True)
+    probs.game_date = pd.to_datetime(probs.game_date,infer_datetime_format=True)
     return probs
 
-def load_picks(picks_loc: str = str(datetime.datetime.now().year) + " USP Weekly Picks.xlsx"):
+def load_picks(picks_loc: str = str(datetime.datetime.now().year) + " USP Weekly Picks.xlsx") -> pd.DataFrame:
+    """
+    Parses actual picks made by each player from the weekly results spreadsheet.
+
+    Args:
+        picks_loc (str, optional): location of the weekly results spreadsheet, defaults to "{YEAR} USP Weekly Picks.xlsx".
+
+    Returns:
+        pd.DataFrame: dataframe containing the actual picks every player made for the season thus far.
+    """
     if not os.path.exists(picks_loc):
         return pd.DataFrame() # Not sure what will happen here to be honest...
     picks = pd.read_excel(picks_loc, sheet_name="Season", skiprows=2)
@@ -61,7 +71,7 @@ def load_picks(picks_loc: str = str(datetime.datetime.now().year) + " USP Weekly
     'DET', 'HTX', 'CIN', 'TAM', 'BUF', 'CRD', 'RAM', 'DAL', 'CAR', 'SFO', \
     'MIA', 'GNB', 'RAI']
     translation = {"BAL":"RAV","KC":"KAN","JAC":"JAX","NO":"NOR","SF":"SFO",\
-    "TB":"TAM","IND":"CLT","LAC":"SDG","GB":"GNB","HOU":"HTX","TEN":"OTI"}
+    "TB":"TAM","IND":"CLT","LAC":"SDG","GB":"GNB","HOU":"HTX","TEN":"OTI","ARI":"CRD"}
     for col in picks.columns:
         if col == "Player":
             continue
@@ -71,9 +81,20 @@ def load_picks(picks_loc: str = str(datetime.datetime.now().year) + " USP Weekly
             print(picks.loc[~picks[col].isin(team_names),col].unique())
     return picks
 
-def best_combos(probs: pd.DataFrame, picks: pd.DataFrame = pd.DataFrame(), limit: int = 1000):
+def best_combos(probs: pd.DataFrame, picks: pd.DataFrame = pd.DataFrame(), limit: int = 1000) -> pd.DataFrame:
+    """
+    Identifies the best combinations of picks for the rest of the season based on 538 win probabilities.
+
+    Args:
+        probs (pd.DataFrame): win probabilities for every matchup remaining in the season.
+        picks (pd.DataFrame, optional): dataframe containing details about picks that have already been made, defaults to pd.DataFrame().
+        limit (int, optional): maximum number of pick combinations to retain between each iteration, defaults to 1000.
+
+    Returns:
+        pd.DataFrame: dataframe containing the best pick combinations for the rest of season.
+    """
     thanksgiving = cal.holidays(start=str(datetime.datetime.now().year) + '-11-15', end=str(datetime.datetime.now().year) + '-12-01').to_pydatetime()[0]
-    probs_tg = probs.loc[probs.game_date == thanksgiving.strftime('%Y-%m-%d')].reset_index(drop=True)
+    probs_tg = probs.loc[probs.game_date == thanksgiving].reset_index(drop=True)
     winners = probs.loc[probs.prob == 1].reset_index(drop=True)
     picks["points_so_far"] = 0.0
     for week in winners.week.unique():
@@ -116,7 +137,7 @@ def best_combos(probs: pd.DataFrame, picks: pd.DataFrame = pd.DataFrame(), limit
     combos['projected_points'] = combos["tot_prob"] + combos["points_so_far"]
     return combos
 
-def excel_autofit(df: pd.DataFrame, name: str, writer: pd.ExcelWriter, hidden: list = []):
+def excel_autofit(df: pd.DataFrame, name: str, writer: pd.ExcelWriter, hidden: list = []) -> pd.ExcelWriter:
     """
     Writes the provided dataframe to a new tab in an excel spreadsheet 
     with the columns autofitted and autoformatted.
@@ -156,6 +177,17 @@ def excel_autofit(df: pd.DataFrame, name: str, writer: pd.ExcelWriter, hidden: l
     return writer
 
 def write_to_spreadsheet(combos: pd.DataFrame, name: str, filename: str = "UltimateSurvivorCombos.xlsx"):
+    """
+    Writes final results to an excel spreadsheet in three tabs:
+        - Standings: optimal pick combinations for each contestant ranked by projected points.
+        - This Week: user's optimal picks for the current week.
+        - Next 3 Weeks: user's optimal picks for the next three weeks.
+
+    Args:
+        combos (pd.DataFrame): optimal pick combinations for each contestant ranked by projected points.
+        name (str): name of the contestant of interest.
+        filename (str, optional): where to save the results spreadsheet, defaults to "UltimateSurvivorCombos.xlsx".
+    """
     writer = pd.ExcelWriter(filename,engine="xlsxwriter")
     writer.book.add_format({"align": "vcenter"})
     future_cols = [col.replace("prob_","team_") for col in combos.columns if col.startswith("prob_")]
@@ -184,6 +216,7 @@ def write_to_spreadsheet(combos: pd.DataFrame, name: str, filename: str = "Ultim
     writer.close()
 
 def main():
+    # Initializing input arguments
     parser = optparse.OptionParser()
     parser.add_option(
         "--schedule",
@@ -222,9 +255,13 @@ def main():
         help="where to save the final projections spreadsheet",
     )
     options = parser.parse_args()[0]
+
+    # Simulating Ultimate Survivor Pool contest
     picks = load_picks(options.picks)
     probs = load_probs(options.schedule)
     combos = best_combos(probs, picks, options.limit)
+
+    # Writing results to spreadsheet
     write_to_spreadsheet(combos, options.name, "{}UltimateSurvivorCombos_Week{}.xlsx".format(options.output,int(picks.columns[-2].split('_')[-1][:-1]) + 1))
 
 
