@@ -1,3 +1,19 @@
+#!/usr/bin/env python
+# -*-coding:utf-8 -*-
+'''
+@File    :   UltimateSurvivor.py
+@Time    :   2023/10/11 15:14:43
+@Author  :   Taylor Firman
+@Version :   1.0
+@Contact :   tefirman@gmail.com
+@Desc    :   Simulation tools for an "Ultimate Survivor Pool" where every week,
+each player picks a team to win and cannot pick them again for the rest of the season. 
+However, unlike other survivor/elimination-style football pools, you aren't eliminated 
+if you don't pick a winner, you just don't get a win for that week. The player with 
+the most wins at the end of the season wins the pool. To increase the number of picks 
+and therefore increase complexity, odd weeks get one pick, even weeks get two picks, 
+and Thanksgiving day gets an extra pick.
+'''
 
 import pandas as pd
 import os
@@ -66,12 +82,13 @@ def load_picks(picks_loc: str = str(datetime.datetime.now().year) + " USP Weekly
             picks = picks.rename(columns={col:"team_" + col[:-2] + "b"})
         elif col == "Giving":
             picks = picks.rename(columns={col:"team_" + str(col) + "c"})
-    team_names = ['KAN', 'CLT', 'RAV', 'MIN', 'WAS', 'NOR', 'CLE', 'PIT', 'ATL', \
-    'NWE', 'CHI', 'SEA', 'SDG', 'DEN', 'NYG', 'NYJ', 'PHI', 'OTI', 'JAX', \
-    'DET', 'HTX', 'CIN', 'TAM', 'BUF', 'CRD', 'RAM', 'DAL', 'CAR', 'SFO', \
-    'MIA', 'GNB', 'RAI']
+    team_names = ['KAN', 'CLT', 'RAV', 'MIN', 'WAS', 'NOR', 'CLE', 'PIT', \
+    'ATL', 'NWE', 'CHI', 'SEA', 'SDG', 'DEN', 'NYG', 'NYJ', 'PHI', 'OTI', \
+    'JAX', 'DET', 'HTX', 'CIN', 'TAM', 'BUF', 'CRD', 'RAM', 'DAL', 'CAR', \
+    'SFO', 'MIA', 'GNB', 'RAI']
     translation = {"BAL":"RAV","KC":"KAN","JAC":"JAX","NO":"NOR","SF":"SFO",\
-    "TB":"TAM","IND":"CLT","LAC":"SDG","GB":"GNB","HOU":"HTX","TEN":"OTI","ARI":"CRD"}
+    "TB":"TAM","IND":"CLT","LAC":"SDG","GB":"GNB","HOU":"HTX","TEN":"OTI",\
+    "ARI":"CRD","LAR":"RAM","LV":"RAI"}
     for col in picks.columns:
         if col == "Player":
             continue
