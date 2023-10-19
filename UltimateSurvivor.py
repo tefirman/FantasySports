@@ -17,142 +17,180 @@ and Thanksgiving day gets an extra pick.
 
 import pandas as pd
 import os
+import sys
 import datetime
 from util import sportsref_nfl as sr
 import optparse
 from pandas.tseries.holiday import USFederalHolidayCalendar
 cal = USFederalHolidayCalendar()
 
-def load_probs(schedule_loc: str = "NFLSchedule.csv", first: int = 1, last: int = 17) -> pd.DataFrame:
-    """
-    Loads win probabilities for every matchup in the current season.
+class USP:
+    def __init__(self, season: int = datetime.datetime.now().year, schedule_loc: str = None, picks_loc: str = None, limit: int = 1000):
+        self.season = season
+        self.load_probs(schedule_loc)
+        self.load_picks(picks_loc)
+        self.week = int(self.picks.columns[-2].split('_')[-1][:-1]) + 1
+        self.best_combos(limit)
 
-    Args:
-        schedule_loc (str, optional): location of schedule csv, defaults to "NFLSchedule.csv".
-        first (int, optional): first week of interest, defaults to 1.
-        last (int, optional): last week of interest, defaults to 17.
+    def load_probs(self, schedule_loc: str = None, first: int = 1, last: int = 17) -> pd.DataFrame:
+        """
+        Loads win probabilities for every matchup in the current season.
 
-    Returns:
-        pd.DataFrame: dataframe containing win probabilities for every matchup in the current season.
-    """
-    if os.path.exists(schedule_loc):
-        schedule = pd.read_csv(schedule_loc)
-    else:
-        s = sr.Schedule(2015,datetime.datetime.now().year,False,True,False)
-        schedule = s.schedule.copy()
-        schedule.to_csv(schedule_loc,index=False)
-    schedule = schedule.loc[schedule.season == datetime.datetime.now().year].reset_index(drop=True)
-    schedule.loc[schedule.score1 > schedule.score2,'elo_prob1'] = 1.0
-    schedule.loc[schedule.score1 > schedule.score2,'elo_prob2'] = 0.0
-    schedule.loc[schedule.score1 < schedule.score2,'elo_prob1'] = 0.0
-    schedule.loc[schedule.score1 < schedule.score2,'elo_prob2'] = 1.0
-    schedule.loc[schedule.score1 == schedule.score2,'elo_prob1'] = 0.0
-    schedule.loc[schedule.score1 == schedule.score2,'elo_prob2'] = 0.0
-    probs = pd.concat([schedule[['week_num','game_date','team1_abbrev','elo_prob1']]\
-    .rename(columns={'week_num':'week','team1_abbrev':'team','elo_prob1':'prob'}),\
-    schedule[['week_num','game_date','team2_abbrev','elo_prob2']]\
-    .rename(columns={'week_num':'week','team2_abbrev':'team','elo_prob2':'prob'})],ignore_index=True)
-    probs = probs.loc[(probs.week >= first) & (probs.week <= last)].reset_index(drop=True)
-    probs.game_date = pd.to_datetime(probs.game_date,infer_datetime_format=True)
-    return probs
+        Args:
+            schedule_loc (str, optional): location of schedule csv, defaults to "NFLSchedule.csv".
+            first (int, optional): first week of interest, defaults to 1.
+            last (int, optional): last week of interest, defaults to 17.
+        """
+        if schedule_loc is None:
+            schedule_loc = "NFLSchedule.csv"
+        if os.path.exists(schedule_loc):
+            self.schedule = pd.read_csv(schedule_loc)
+        else:
+            self.schedule = pd.DataFrame(columns=["season"])
+        if self.season not in self.schedule.season.unique():
+            # Needs to update with new results...
+            s = sr.Schedule(self.season - 8,self.season,False,True,False)
+            self.schedule = s.schedule.copy()
+            self.schedule.to_csv(schedule_loc,index=False)
+        self.schedule = self.schedule.loc[self.schedule.season == datetime.datetime.now().year].reset_index(drop=True)
+        self.schedule.loc[self.schedule.score1 > self.schedule.score2,'elo_prob1'] = 1.0
+        self.schedule.loc[self.schedule.score1 > self.schedule.score2,'elo_prob2'] = 0.0
+        self.schedule.loc[self.schedule.score1 < self.schedule.score2,'elo_prob1'] = 0.0
+        self.schedule.loc[self.schedule.score1 < self.schedule.score2,'elo_prob2'] = 1.0
+        self.schedule.loc[self.schedule.score1 == self.schedule.score2,'elo_prob1'] = 0.0
+        self.schedule.loc[self.schedule.score1 == self.schedule.score2,'elo_prob2'] = 0.0
+        self.probs = pd.concat([self.schedule[['week_num','game_date','team1_abbrev','elo_prob1']]\
+        .rename(columns={'week_num':'week','team1_abbrev':'team','elo_prob1':'prob'}),\
+        self.schedule[['week_num','game_date','team2_abbrev','elo_prob2']]\
+        .rename(columns={'week_num':'week','team2_abbrev':'team','elo_prob2':'prob'})],ignore_index=True)
+        self.probs = self.probs.loc[(self.probs.week >= first) & (self.probs.week <= last)].reset_index(drop=True)
+        self.probs.game_date = pd.to_datetime(self.probs.game_date,infer_datetime_format=True)
 
-def load_picks(picks_loc: str = str(datetime.datetime.now().year) + " USP Weekly Picks.xlsx") -> pd.DataFrame:
-    """
-    Parses actual picks made by each player from the weekly results spreadsheet.
+    def load_picks(self, picks_loc: str = None) -> pd.DataFrame:
+        """
+        Parses actual picks made by each player from the weekly results spreadsheet.
 
-    Args:
-        picks_loc (str, optional): location of the weekly results spreadsheet, defaults to "{YEAR} USP Weekly Picks.xlsx".
+        Args:
+            picks_loc (str, optional): location of the weekly results spreadsheet, defaults to "{YEAR} USP Weekly Picks.xlsx".
+        """
+        if picks_loc is None:
+            picks_loc = "{} USP Weekly Picks.xlsx".format(self.season)
+        if not os.path.exists(picks_loc):
+            print("Can't find Ultimate Surivor picks at specified location... Try again...")
+            sys.exit(0)
+        self.picks = pd.read_excel(picks_loc, sheet_name="Season", skiprows=2)
+        num_entries = self.picks.loc[self.picks.Player == "Total Picks"].index[0] - 1
+        self.picks = self.picks.iloc[:num_entries].reset_index(drop=True)
+        ind = 0
+        while not self.picks[self.picks.columns[ind]].isnull().all():
+            ind += 1
+        self.picks = self.picks[self.picks.columns[:ind]]
+        for col in self.picks.columns:
+            if type(col) == int:
+                self.picks = self.picks.rename(columns={col:"team_" + str(col) + "a"})
+            elif str(col).endswith(".1"):
+                self.picks = self.picks.rename(columns={col:"team_" + col[:-2] + "b"})
+            elif col == "Giving":
+                self.picks = self.picks.rename(columns={col:"team_" + str(col) + "c"})
+        team_names = self.schedule.team1_abbrev.unique().tolist()
+        translation = {"BAL":"RAV","KC":"KAN","JAC":"JAX","NO":"NOR","SF":"SFO",\
+        "TB":"TAM","IND":"CLT","LAC":"SDG","GB":"GNB","HOU":"HTX","TEN":"OTI",\
+        "ARI":"CRD","LAR":"RAM","LV":"RAI"}
+        for col in self.picks.columns:
+            if col == "Player":
+                continue
+            for team_name in translation:
+                self.picks[col] = self.picks[col].str.replace(team_name,translation[team_name])
+            if (~self.picks[col].isin(team_names)).any():
+                print(self.picks.loc[~self.picks[col].isin(team_names),col].unique())
 
-    Returns:
-        pd.DataFrame: dataframe containing the actual picks every player made for the season thus far.
-    """
-    if not os.path.exists(picks_loc):
-        return pd.DataFrame() # Not sure what will happen here to be honest...
-    picks = pd.read_excel(picks_loc, sheet_name="Season", skiprows=2)
-    num_entries = picks.loc[picks.Player == "Total Picks"].index[0] - 1
-    picks = picks.iloc[:num_entries].reset_index(drop=True)
-    ind = 0
-    while not picks[picks.columns[ind]].isnull().all():
-        ind += 1
-    picks = picks[picks.columns[:ind]]
-    for col in picks.columns:
-        if type(col) == int:
-            picks = picks.rename(columns={col:"team_" + str(col) + "a"})
-        elif str(col).endswith(".1"):
-            picks = picks.rename(columns={col:"team_" + col[:-2] + "b"})
-        elif col == "Giving":
-            picks = picks.rename(columns={col:"team_" + str(col) + "c"})
-    team_names = ['KAN', 'CLT', 'RAV', 'MIN', 'WAS', 'NOR', 'CLE', 'PIT', \
-    'ATL', 'NWE', 'CHI', 'SEA', 'SDG', 'DEN', 'NYG', 'NYJ', 'PHI', 'OTI', \
-    'JAX', 'DET', 'HTX', 'CIN', 'TAM', 'BUF', 'CRD', 'RAM', 'DAL', 'CAR', \
-    'SFO', 'MIA', 'GNB', 'RAI']
-    translation = {"BAL":"RAV","KC":"KAN","JAC":"JAX","NO":"NOR","SF":"SFO",\
-    "TB":"TAM","IND":"CLT","LAC":"SDG","GB":"GNB","HOU":"HTX","TEN":"OTI",\
-    "ARI":"CRD","LAR":"RAM","LV":"RAI"}
-    for col in picks.columns:
-        if col == "Player":
-            continue
-        for team_name in translation:
-            picks[col] = picks[col].str.replace(team_name,translation[team_name])
-        if (~picks[col].isin(team_names)).any():
-            print(picks.loc[~picks[col].isin(team_names),col].unique())
-    return picks
+    def best_combos(self, limit: int = 1000) -> pd.DataFrame:
+        """
+        Identifies the best combinations of picks for the rest of the season based on 538 win probabilities.
 
-def best_combos(probs: pd.DataFrame, picks: pd.DataFrame = pd.DataFrame(), limit: int = 1000) -> pd.DataFrame:
-    """
-    Identifies the best combinations of picks for the rest of the season based on 538 win probabilities.
+        Args:
+            limit (int, optional): maximum number of pick combinations to retain between each iteration, defaults to 1000.
+        """
+        thanksgiving = cal.holidays(start=str(datetime.datetime.now().year) + '-11-15', end=str(datetime.datetime.now().year) + '-12-01').to_pydatetime()[0]
+        probs_tg = self.probs.loc[self.probs.game_date == thanksgiving].reset_index(drop=True)
+        winners = self.probs.loc[self.probs.prob == 1].reset_index(drop=True)
+        self.picks["points_so_far"] = 0.0
+        for week in winners.week.unique():
+            self.picks.loc[self.picks["team_{}a".format(week)].isin(winners.loc[winners.week == week,'team'].tolist()),'points_so_far'] += 1.0
+            if week%2 == 0:
+                self.picks.loc[self.picks["team_{}b".format(week)].isin(winners.loc[winners.week == week,'team'].tolist()),'points_so_far'] += 1.0
+            if week == probs_tg.week.unique()[0]:
+                self.picks.loc[self.picks["team_{}c".format(week)].isin(winners.loc[winners.week == week,'team'].tolist()),'points_so_far'] += 1.0
+        self.probs = self.probs.loc[(self.probs.prob > 0) & (self.probs.prob < 1)].reset_index(drop=True)
+        self.probs['dummy'] = 1
+        if self.picks.shape[0] == 0:
+            self.combos = pd.DataFrame({"dummy":[1],"Player":["Best"]})
+        else:
+            self.combos = self.picks.copy()
+            self.combos['dummy'] = 1
+        for week in range(self.probs.week.min(),self.probs.week.max() + 1):
+            print("Week {}, {}".format(week,datetime.datetime.now()))
+            self.combos = pd.merge(left=self.combos,right=self.probs.loc[(self.probs.week == week) & (self.probs.prob >= 0.5),['dummy','team','prob']]\
+            .rename(columns={'team':f'team_{week}a','prob':f'prob_{week}a'}),how='inner',on='dummy')
+            if week%2 == 0:
+                self.combos = pd.merge(left=self.combos,right=self.probs.loc[(self.probs.week == week) & (self.probs.prob >= 0.5),['dummy','team','prob']]\
+                .rename(columns={'team':f'team_{week}b','prob':f'prob_{week}b'}),how='inner',on='dummy')
+                self.combos = self.combos.loc[self.combos[f'team_{week}a'] < self.combos[f'team_{week}b']].reset_index(drop=True)
+            team_cols = [team for team in self.combos.columns if team.startswith('team_')]
+            self.combos = self.combos.loc[self.combos[team_cols].nunique(axis=1) >= len(team_cols) - int(week >= 12)].reset_index(drop=True)
+            self.combos['tot_prob'] = self.combos[[team for team in self.combos.columns if team.startswith('prob_')]].sum(axis=1)
+            self.combos = self.combos.sort_values(by='tot_prob',ascending=False,ignore_index=True).groupby('Player').head(limit).reset_index(drop=True)
+            if week == probs_tg.week.unique()[0]: # Thanksgiving
+                self.combos = pd.merge(left=self.combos,right=self.probs.loc[(self.probs.week == week) & (self.probs.prob >= 0.5),['dummy','team','prob']]\
+                .rename(columns={'team':f'team_{week}c','prob':f'prob_{week}c'}),how='inner',on='dummy')
+                self.combos = self.combos.loc[self.combos[f'team_{week}b'] < self.combos[f'team_{week}c']].reset_index(drop=True)
+                self.combos = self.combos.loc[self.combos[f'team_{week}a'].isin(probs_tg.team.tolist()) \
+                | self.combos[f'team_{week}b'].isin(probs_tg.team.tolist()) \
+                | self.combos[f'team_{week}c'].isin(probs_tg.team.tolist())].reset_index(drop=True)
+                team_cols = [team for team in self.combos.columns if team.startswith('team_')]
+                self.combos = self.combos.loc[self.combos[team_cols].nunique(axis=1) >= len(team_cols) - int(week >= 12)].reset_index(drop=True)
+                self.combos['tot_prob'] = self.combos[[team for team in self.combos.columns if team.startswith('prob_')]].sum(axis=1)
+                self.combos = self.combos.sort_values(by='tot_prob',ascending=False,ignore_index=True).groupby('Player').head(limit).reset_index(drop=True)
+        del self.probs['dummy'], self.combos['dummy']
+        self.combos['projected_points'] = self.combos["tot_prob"] + self.combos["points_so_far"]
 
-    Args:
-        probs (pd.DataFrame): win probabilities for every matchup remaining in the season.
-        picks (pd.DataFrame, optional): dataframe containing details about picks that have already been made, defaults to pd.DataFrame().
-        limit (int, optional): maximum number of pick combinations to retain between each iteration, defaults to 1000.
+    def write_to_spreadsheet(self, name: str, filename: str = "UltimateSurvivorCombos.xlsx"):
+        """
+        Writes final results to an excel spreadsheet in three tabs:
+            - Standings: optimal pick combinations for each contestant ranked by projected points.
+            - This Week: user's optimal picks for the current week.
+            - Next 3 Weeks: user's optimal picks for the next three weeks.
 
-    Returns:
-        pd.DataFrame: dataframe containing the best pick combinations for the rest of season.
-    """
-    thanksgiving = cal.holidays(start=str(datetime.datetime.now().year) + '-11-15', end=str(datetime.datetime.now().year) + '-12-01').to_pydatetime()[0]
-    probs_tg = probs.loc[probs.game_date == thanksgiving].reset_index(drop=True)
-    winners = probs.loc[probs.prob == 1].reset_index(drop=True)
-    picks["points_so_far"] = 0.0
-    for week in winners.week.unique():
-        picks.loc[picks["team_{}a".format(week)].isin(winners.loc[winners.week == week,'team'].tolist()),'points_so_far'] += 1.0
-        if week%2 == 0:
-            picks.loc[picks["team_{}b".format(week)].isin(winners.loc[winners.week == week,'team'].tolist()),'points_so_far'] += 1.0
-        if week == probs_tg.week.unique()[0]:
-            picks.loc[picks["team_{}c".format(week)].isin(winners.loc[winners.week == week,'team'].tolist()),'points_so_far'] += 1.0
-    probs = probs.loc[(probs.prob > 0) & (probs.prob < 1)].reset_index(drop=True)
-    probs['dummy'] = 1
-    if picks.shape[0] == 0:
-        combos = pd.DataFrame({"dummy":[1],"Player":["Best"]})
-    else:
-        combos = picks.copy()
-        combos['dummy'] = 1
-    for week in range(probs.week.min(),probs.week.max() + 1):
-        print("Week {}, {}".format(week,datetime.datetime.now()))
-        combos = pd.merge(left=combos,right=probs.loc[(probs.week == week) & (probs.prob >= 0.5),['dummy','team','prob']]\
-        .rename(columns={'team':f'team_{week}a','prob':f'prob_{week}a'}),how='inner',on='dummy')
-        if week%2 == 0:
-            combos = pd.merge(left=combos,right=probs.loc[(probs.week == week) & (probs.prob >= 0.5),['dummy','team','prob']]\
-            .rename(columns={'team':f'team_{week}b','prob':f'prob_{week}b'}),how='inner',on='dummy')
-            combos = combos.loc[combos[f'team_{week}a'] < combos[f'team_{week}b']].reset_index(drop=True)
-        team_cols = [team for team in combos.columns if team.startswith('team_')]
-        combos = combos.loc[combos[team_cols].nunique(axis=1) >= len(team_cols) - int(week >= 12)].reset_index(drop=True)
-        combos['tot_prob'] = combos[[team for team in combos.columns if team.startswith('prob_')]].sum(axis=1)
-        combos = combos.sort_values(by='tot_prob',ascending=False,ignore_index=True).groupby('Player').head(limit).reset_index(drop=True)
-        if week == probs_tg.week.unique()[0]: # Thanksgiving
-            combos = pd.merge(left=combos,right=probs.loc[(probs.week == week) & (probs.prob >= 0.5),['dummy','team','prob']]\
-            .rename(columns={'team':f'team_{week}c','prob':f'prob_{week}c'}),how='inner',on='dummy')
-            combos = combos.loc[combos[f'team_{week}b'] < combos[f'team_{week}c']].reset_index(drop=True)
-            combos = combos.loc[combos[f'team_{week}a'].isin(probs_tg.team.tolist()) \
-            | combos[f'team_{week}b'].isin(probs_tg.team.tolist()) \
-            | combos[f'team_{week}c'].isin(probs_tg.team.tolist())].reset_index(drop=True)
-            team_cols = [team for team in combos.columns if team.startswith('team_')]
-            combos = combos.loc[combos[team_cols].nunique(axis=1) >= len(team_cols) - int(week >= 12)].reset_index(drop=True)
-            combos['tot_prob'] = combos[[team for team in combos.columns if team.startswith('prob_')]].sum(axis=1)
-            combos = combos.sort_values(by='tot_prob',ascending=False,ignore_index=True).groupby('Player').head(limit).reset_index(drop=True)
-    del probs['dummy'], combos['dummy']
-    combos['projected_points'] = combos["tot_prob"] + combos["points_so_far"]
-    return combos
+        Args:
+            name (str): name of the contestant of interest.
+            filename (str, optional): where to save the results spreadsheet, defaults to "UltimateSurvivorCombos.xlsx".
+        """
+        writer = pd.ExcelWriter(filename,engine="xlsxwriter")
+        writer.book.add_format({"align": "vcenter"})
+        future_cols = [col.replace("prob_","team_") for col in self.combos.columns if col.startswith("prob_")]
+        hidden_cols = [col for col in self.combos.columns if col.startswith("team_") and col not in future_cols]
+        writer = excel_autofit(self.combos[["Player"] + [team for team in self.combos.columns if team.startswith('team_')] + \
+        ["points_so_far","projected_points"]].sort_values(by="projected_points",ascending=False)\
+        .drop_duplicates(subset=['Player'],keep='first'), "Standings", writer, hidden_cols)
+        writer.sheets["Standings"].freeze_panes(1, 1)
+        current_week = future_cols[0][:-1]
+        my_picks = self.combos.loc[self.combos.Player.isin([name])].reset_index(drop=True)
+        teams = [team for team in my_picks.columns if team in [current_week + 'a',current_week + 'b',current_week + 'c']]
+        this_week_pts = my_picks.groupby(teams).projected_points.mean().reset_index()
+        this_week_freq = my_picks.groupby(teams).size().to_frame('freq').reset_index()
+        this_week_freq.freq /= my_picks.shape[0]
+        this_week = pd.merge(left=this_week_pts,right=this_week_freq,how='inner',on=teams).sort_values(by='freq',ascending=False)
+        writer = excel_autofit(this_week, "This Week", writer)
+        start_week = int(current_week.split('_')[-1])
+        for week in range(min(start_week + 1,18),min(start_week + 3,18)):
+            current_week = 'team_' + str(week)
+            teams += [team for team in my_picks.columns if team in [current_week + 'a',current_week + 'b',current_week + 'c']]
+        three_week_pts = my_picks.groupby(teams).projected_points.mean().reset_index()
+        three_week_freq = my_picks.groupby(teams).size().to_frame('freq').reset_index()
+        three_week_freq.freq /= my_picks.shape[0]
+        three_week = pd.merge(left=three_week_pts,right=three_week_freq,how='inner',on=teams).sort_values(by='freq',ascending=False)
+        writer = excel_autofit(three_week, "Next 3 Weeks", writer)
+        writer.close()
 
 def excel_autofit(df: pd.DataFrame, name: str, writer: pd.ExcelWriter, hidden: list = []) -> pd.ExcelWriter:
     """
@@ -193,48 +231,16 @@ def excel_autofit(df: pd.DataFrame, name: str, writer: pd.ExcelWriter, hidden: l
     )
     return writer
 
-def write_to_spreadsheet(combos: pd.DataFrame, name: str, filename: str = "UltimateSurvivorCombos.xlsx"):
-    """
-    Writes final results to an excel spreadsheet in three tabs:
-        - Standings: optimal pick combinations for each contestant ranked by projected points.
-        - This Week: user's optimal picks for the current week.
-        - Next 3 Weeks: user's optimal picks for the next three weeks.
-
-    Args:
-        combos (pd.DataFrame): optimal pick combinations for each contestant ranked by projected points.
-        name (str): name of the contestant of interest.
-        filename (str, optional): where to save the results spreadsheet, defaults to "UltimateSurvivorCombos.xlsx".
-    """
-    writer = pd.ExcelWriter(filename,engine="xlsxwriter")
-    writer.book.add_format({"align": "vcenter"})
-    future_cols = [col.replace("prob_","team_") for col in combos.columns if col.startswith("prob_")]
-    hidden_cols = [col for col in combos.columns if col.startswith("team_") and col not in future_cols]
-    writer = excel_autofit(combos[["Player"] + [team for team in combos.columns if team.startswith('team_')] + \
-    ["points_so_far","projected_points"]].sort_values(by="projected_points",ascending=False)\
-    .drop_duplicates(subset=['Player'],keep='first'), "Standings", writer, hidden_cols)
-    writer.sheets["Standings"].freeze_panes(1, 1)
-    current_week = future_cols[0][:-1]
-    my_picks = combos.loc[combos.Player.isin([name])].reset_index(drop=True)
-    teams = [team for team in my_picks.columns if team in [current_week + 'a',current_week + 'b',current_week + 'c']]
-    this_week_pts = my_picks.groupby(teams).projected_points.mean().reset_index()
-    this_week_freq = my_picks.groupby(teams).size().to_frame('freq').reset_index()
-    this_week_freq.freq /= my_picks.shape[0]
-    this_week = pd.merge(left=this_week_pts,right=this_week_freq,how='inner',on=teams).sort_values(by='freq',ascending=False)
-    writer = excel_autofit(this_week, "This Week", writer)
-    start_week = int(current_week.split('_')[-1])
-    for week in range(min(start_week + 1,18),min(start_week + 3,18)):
-        current_week = 'team_' + str(week)
-        teams += [team for team in my_picks.columns if team in [current_week + 'a',current_week + 'b',current_week + 'c']]
-    three_week_pts = my_picks.groupby(teams).projected_points.mean().reset_index()
-    three_week_freq = my_picks.groupby(teams).size().to_frame('freq').reset_index()
-    three_week_freq.freq /= my_picks.shape[0]
-    three_week = pd.merge(left=three_week_pts,right=three_week_freq,how='inner',on=teams).sort_values(by='freq',ascending=False)
-    writer = excel_autofit(three_week, "Next 3 Weeks", writer)
-    writer.close()
-
 def main():
     # Initializing input arguments
     parser = optparse.OptionParser()
+    parser.add_option(
+        "--season",
+        action="store",
+        dest="season",
+        default=datetime.datetime.now().year,
+        help="season of interest for the Ultimate Surivor Pool",
+    )
     parser.add_option(
         "--schedule",
         action="store",
@@ -274,12 +280,10 @@ def main():
     options = parser.parse_args()[0]
 
     # Simulating Ultimate Survivor Pool contest
-    picks = load_picks(options.picks)
-    probs = load_probs(options.schedule)
-    combos = best_combos(probs, picks, options.limit)
+    usp = USP(options.season, options.schedule, options.picks, options.limit)
 
     # Writing results to spreadsheet
-    write_to_spreadsheet(combos, options.name, "{}UltimateSurvivorCombos_Week{}.xlsx".format(options.output,int(picks.columns[-2].split('_')[-1][:-1]) + 1))
+    usp.write_to_spreadsheet(options.name, "{}UltimateSurvivorCombos_Week{}.xlsx".format(options.output,usp.week))
 
 
 if __name__ == "__main__":
