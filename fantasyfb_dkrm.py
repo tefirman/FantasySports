@@ -4,6 +4,8 @@ import datetime
 import fantasyfb as fb
 import matplotlib.pyplot as plt
 import numpy as np
+import os
+import sys
 
 class Collection:
     def __init__(self):
@@ -14,24 +16,16 @@ class Collection:
         self.add_proj_pts()
         self.add_proj_price()
 
-    def load_raw_data(self):
-        tempData = open("DKRM_{}.txt".format(datetime.datetime.now().strftime('%m%d%y')),"r")
-        raw_vals = tempData.read().split("""NAME
-BUY NOW
-FPPG
-OPP
-OPRK
-LAST
-FLOOR
-FPPG/$
-OWNED
-TOTAL
-""")[-1].split("""
-DraftKings Inc.
-Boston, MA
-COMPANY
-About DraftKings""")[0].replace("\nQ\n","\n").replace("\nIR\n","\n")\
-        .replace("\nOUT\n","\n").replace("\nD\n","\n").replace("WR\n-\n","WR\n0.0\n\n").split("\n")
+    def load_raw_data(self, players_loc=None):
+        if players_loc is None:
+            players_loc = "DKRM_{}.txt".format(datetime.datetime.now().strftime('%m%d%y'))
+        if not os.path.exists(players_loc):
+            print("Can't find RM player data at specified location... Try again...")
+            sys.exit(0)
+        tempData = open(players_loc,"r")
+        raw_vals = tempData.read().split("""\nTOTAL\n""")[-1].split("""\nDraftKings Inc.\n""")[0]\
+        .replace("\nQ\n","\n").replace("\nIR\n","\n").replace("\nOUT\n","\n")\
+        .replace("\nD\n","\n").replace("WR\n-\n","WR\n0.0\n\n").split("\n")
         tempData.close()
         names = raw_vals[::14]
         team_pos = raw_vals[2::14]
@@ -60,8 +54,13 @@ About DraftKings""")[0].replace("\nQ\n","\n").replace("\nIR\n","\n")\
         del self.players['team_pos']
         self.players = self.players.loc[self.players.pos.isin(['QB','RB','WR','TE','K'])].reset_index(drop=True)
     
-    def load_cards(self):
-        self.cards = pd.read_csv("{}_tefirman_mycards.csv".format(datetime.datetime.now().strftime('%Y-%m-%d')))
+    def load_cards(self, cards_loc=None):
+        if cards_loc is None:
+            cards_loc = "{}_tefirman_mycards.csv".format(datetime.datetime.now().strftime('%Y-%m-%d'))
+        if not os.path.exists(cards_loc):
+            print("Can't find card data at specified location... Try again...")
+            sys.exit(0)
+        self.cards = pd.read_csv(cards_loc)
         self.cards = self.cards.loc[self.cards.Series == datetime.datetime.now().year].reset_index(drop=True)
         self.cards['name'] = self.cards['FirstName'].str[0] + '. ' + self.cards['LastName']
         self.cards['listable'] = ~self.cards.Set.isin(['Starter'])
@@ -175,14 +174,14 @@ def main():
     dkrm_tf.print_values()
     stacks = {"WR":{"J. Herbert":["J. Palmer"],"B. Purdy":["D. Samuel"],"T. Lawrence":["C. Ridley","C. Kirk"],\
                     "R. Tannehill":["T. Burks","N. Westbrook-Ikhine"],"K. Pickett":["A. Robinson II"],\
-                    "M. Jones":["J. Smith-Schuster"],"T. Tagovailoa":["C. Wilson Jr."]},\
+                    "M. Jones":["J. Smith-Schuster"],"T. Tagovailoa":["J. Waddle"]},\
             "RB":{"K. Pickett":["N. Harris"]},\
             "TE":{"J. Herbert":["G. Everett"],"B. Purdy":["G. Kittle"],\
                     "R. Tannehill":["C. Okonkwo"],"T. Tagovailoa":["D. Smythe"]}}
     limit = 1000
-    dkrm_tf.players['taken'] = dkrm_tf.players.name.isin(["S. Clifford","D. Mills","S. Barkley","G. Davis","G. Gano","D. Knox",\
-    "J. Herbert","J. Palmer","G. Everett","B. Cooks","R. Tannehill","J. Hill", "N. Westbrook-Ikhine","C. Okonkwo",\
-    "T. Tagovailoa","T. Allgeier","T. Hockenson"]) # TNF Entry, Exclusions
+    dkrm_tf.players['taken'] = dkrm_tf.players.name.isin(["S. Clifford","D. Mills",\
+    "B. Purdy","D. Samuel","G. Kittle","T. Hockenson","T. Lawrence","C. Ridley",\
+    "C. Kirk","J. Williams","T. Tagovailoa","J. Waddle","D. Goedert","C. Wilson Jr."]) # Showdown Entries, Exclusions
     best = pd.DataFrame()
     for lineup in range(3):
         lineups = dkrm_tf.best_lineups(stacks, limit)
