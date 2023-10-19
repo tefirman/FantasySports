@@ -1,3 +1,17 @@
+#!/usr/bin/env python
+# -*-coding:utf-8 -*-
+'''
+@File    :   ConfidencePickEm.py
+@Time    :   2023/10/11 13:19:41
+@Author  :   Taylor Firman
+@Version :   1.0
+@Contact :   tefirman@gmail.com
+@Desc    :   Simulation tools for a Confidence Pick'em league where every player picks
+a winner for each game of the week and assigns a point value based on how confident 
+they are in that winner (between 1 and the number of games). For each correct pick, 
+the player receives the amount of points assigned to that game and the player with 
+the most points that week wins.
+'''
 
 from util import sportsref_nfl as sr
 import pandas as pd
