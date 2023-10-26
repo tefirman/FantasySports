@@ -19,18 +19,20 @@ import pandas as pd
 import os
 import sys
 import datetime
+import numpy as np
 from util import sportsref_nfl as sr
 import optparse
 from pandas.tseries.holiday import USFederalHolidayCalendar
 cal = USFederalHolidayCalendar()
 
 class USP:
-    def __init__(self, season: int = datetime.datetime.now().year, schedule_loc: str = None, picks_loc: str = None, limit: int = 1000):
+    def __init__(self, season: int = datetime.datetime.now().year, schedule_loc: str = None, picks_loc: str = None, limit: int = 1000, num_sims: int = 1000):
         self.season = season
         self.load_probs(schedule_loc)
         self.load_picks(picks_loc)
-        self.week = int(self.picks.columns[-2].split('_')[-1][:-1]) + 1
+        self.week = int(self.picks.columns[-1].split('_')[-1][:-1]) + 1
         self.best_combos(limit)
+        self.season_sims(num_sims)
 
     def load_probs(self, schedule_loc: str = None, first: int = 1, last: int = 17) -> pd.DataFrame:
         """
@@ -153,6 +155,34 @@ class USP:
                 self.combos = self.combos.sort_values(by='tot_prob',ascending=False,ignore_index=True).groupby('Player').head(limit).reset_index(drop=True)
         del self.probs['dummy'], self.combos['dummy']
         self.combos['projected_points'] = self.combos["tot_prob"] + self.combos["points_so_far"]
+        self.combos = self.combos.sort_values(by="projected_points",ascending=False,ignore_index=True)
+        self.best_combos = self.combos.drop_duplicates(subset=['Player'],keep='first')
+
+    def season_sims(self, num_sims: int = 1000):
+        best_picks = pd.DataFrame(columns=["week","Player","pick"])
+        for col in self.best_combos.columns:
+            if col.startswith('team_'):
+                best_picks = pd.concat([best_picks,self.best_combos[['Player',col]].rename(columns={col:'pick'})],ignore_index=True)
+                best_picks.week = best_picks.week.fillna(int(col.split('_')[-1][:-1]))
+        sched_sims = pd.concat(num_sims*[self.schedule[['week','team1_abbrev','elo_prob1','team2_abbrev','elo_prob2']]],ignore_index=True)
+        sched_sims['num_sim'] = sched_sims.index//self.schedule.shape[0]
+        sched_sims['sim'] = np.random.rand(sched_sims.shape[0])
+        home_winner = sched_sims.sim <= sched_sims.elo_prob1
+        sched_sims.loc[home_winner,'pick'] = sched_sims.loc[home_winner,'team1_abbrev']
+        sched_sims.loc[~home_winner,'pick'] = sched_sims.loc[~home_winner,'team2_abbrev']
+        pick_sims = pd.merge(left=best_picks,right=sched_sims[['num_sim','week','pick']],how='inner',on=['week','pick'])
+        standings = pick_sims.groupby(['num_sim','Player']).size().to_frame('points').reset_index()
+        standings['tiebreaker'] = np.random.rand(standings.shape[0])
+        standings = standings.sort_values(by=['num_sim','points','tiebreaker'],ascending=[True,False,False],ignore_index=True)
+        standings['place'] = standings.index%self.best_combos.shape[0] + 1
+        standings['playoffs'] = (standings.place <= 8).astype(float)
+        standings['winner'] = (standings.place == 1).astype(float)
+        standings['runner_up'] = (standings.place == 2).astype(float)
+        standings['third'] = (standings.place == 3).astype(float)
+        standings['earnings'] = 100.0*standings.winner + 75.0*standings.runner_up + 50.0*standings.third + (715.0/8.0)*standings.playoffs
+        standings = standings.groupby('Player').mean().reset_index()
+        self.best_combos = pd.merge(left=self.best_combos,right=standings[['Player','winner','runner_up','third','playoffs','earnings']],how='inner',on='Player')
+        self.best_combos = self.best_combos.sort_values(by='earnings',ascending=False,ignore_index=True)
 
     def write_to_spreadsheet(self, name: str, filename: str = "UltimateSurvivorCombos.xlsx"):
         """
@@ -169,9 +199,8 @@ class USP:
         writer.book.add_format({"align": "vcenter"})
         future_cols = [col.replace("prob_","team_") for col in self.combos.columns if col.startswith("prob_")]
         hidden_cols = [col for col in self.combos.columns if col.startswith("team_") and col not in future_cols]
-        writer = excel_autofit(self.combos[["Player"] + [team for team in self.combos.columns if team.startswith('team_')] + \
-        ["points_so_far","projected_points"]].sort_values(by="projected_points",ascending=False)\
-        .drop_duplicates(subset=['Player'],keep='first'), "Standings", writer, hidden_cols)
+        writer = excel_autofit(self.best_combos[["Player"] + [team for team in self.best_combos.columns if team.startswith('team_')] + \
+        ["points_so_far","projected_points",'winner','runner_up','third','playoffs','earnings']], "Standings", writer, hidden_cols)
         writer.sheets["Standings"].freeze_panes(1, 1)
         current_week = future_cols[0][:-1]
         my_picks = self.combos.loc[self.combos.Player.isin([name])].reset_index(drop=True)
@@ -271,6 +300,14 @@ def main():
         help="number of top lineups to keep during each merge for memory purposes",
     )
     parser.add_option(
+        "--num_sims",
+        action="store",
+        type="int",
+        dest="num_sims",
+        default=1000,
+        help="number of simulations to run when assessing picks",
+    )
+    parser.add_option(
         "--output",
         action="store",
         dest="output",
@@ -280,7 +317,7 @@ def main():
     options = parser.parse_args()[0]
 
     # Simulating Ultimate Survivor Pool contest
-    usp = USP(options.season, options.schedule, options.picks, options.limit)
+    usp = USP(options.season, options.schedule, options.picks, options.limit, options.num_sims)
 
     # Writing results to spreadsheet
     usp.write_to_spreadsheet(options.name, "{}UltimateSurvivorCombos_Week{}.xlsx".format(options.output,usp.week))
