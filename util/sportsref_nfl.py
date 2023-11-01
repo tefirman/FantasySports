@@ -301,6 +301,8 @@ def get_coordinates(address: str, zips: pd.DataFrame):
         coords = "51.5072,-0.1276"
     elif stad_zip == "Bavaria":
         coords = "48.2188,11.6248"
+    elif stad_zip == "Hesse":
+        coords = "50.0686,8.6455"
     else:
         print("Can't find zip code provided: " + str(stad_zip))
         print("Using centerpoint of US...")
@@ -480,7 +482,7 @@ class Schedule:
                 elif stad_name == "Tottenham Hotspur Stadium":
                     stadium_id = "LON02"
                 elif stad_name == "Deutsche Bank Park":
-                    stadium_id = "MUN01" # Not quite right, but close enough for now...
+                    stadium_id = "FRA00"
             address = get_address(stadium_id)
             coords = get_coordinates(address, zips)
             self.schedule.loc[
