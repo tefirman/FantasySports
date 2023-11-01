@@ -97,14 +97,14 @@ class USP:
         team_names = self.schedule.team1_abbrev.unique().tolist()
         translation = {"BAL":"RAV","KC":"KAN","JAC":"JAX","NO":"NOR","SF":"SFO",\
         "TB":"TAM","IND":"CLT","LAC":"SDG","GB":"GNB","HOU":"HTX","TEN":"OTI",\
-        "ARI":"CRD","LAR":"RAM","LV":"RAI"}
+        "ARI":"CRD","LAR":"RAM","LV":"RAI","NE":"NWE"}
         for col in self.picks.columns:
             if col == "Player":
                 continue
             for team_name in translation:
                 self.picks[col] = self.picks[col].str.replace(team_name,translation[team_name])
-            if (~self.picks[col].isin(team_names)).any():
-                print(self.picks.loc[~self.picks[col].isin(team_names),col].unique())
+            if (~self.picks[col].isin(team_names) & ~self.picks[col].isnull()).any():
+                print(self.picks.loc[~self.picks[col].isin(team_names) & ~self.picks[col].isnull(),col].unique())
 
     def best_combos(self, limit: int = 1000) -> pd.DataFrame:
         """
