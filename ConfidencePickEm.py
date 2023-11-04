@@ -59,6 +59,8 @@ def load_pick_probs(week: int) -> pd.DataFrame:
     pick_probs.loc[~pick_probs.home_fave,'team2_abbrev'] = pick_probs.loc[~pick_probs.home_fave,'fave_abbrev']
     pick_probs.loc[~pick_probs.home_fave,'pick_prob2'] = pick_probs.loc[~pick_probs.home_fave,'fave_pick_prob']
     pick_probs.loc[~pick_probs.home_fave,'pick_pts2'] = pick_probs.loc[~pick_probs.home_fave,'fave_pick_pts']
+    pick_probs.pick_pts1 = pick_probs.pick_pts1*1.131 - 0.259
+    pick_probs.pick_pts2 = pick_probs.pick_pts2*1.131 - 0.259
     return pick_probs[['team1_abbrev','team2_abbrev','pick_prob1','pick_prob2','pick_pts1','pick_pts2']]
 
 def load_picks(week: int) -> pd.DataFrame:
@@ -109,7 +111,7 @@ def load_picks(week: int) -> pd.DataFrame:
     # This isn't quite right, but fine for now...
     return actual
 
-def simulate_picks(games: pd.DataFrame, picks: pd.DataFrame, num_sims: int = 1000, num_entries: int = 50, pts_stdev: float = 4.0) -> pd.DataFrame:
+def simulate_picks(games: pd.DataFrame, picks: pd.DataFrame, num_sims: int = 1000, num_entries: int = 50) -> pd.DataFrame:
     """
     Simulates contestant picks for an entire Confidence Pick'em contest based on the parameters provided.
 
@@ -137,15 +139,25 @@ def simulate_picks(games: pd.DataFrame, picks: pd.DataFrame, num_sims: int = 100
     home_pick = sims.pick_sim < sims.pick_prob1
     sims.loc[home_pick,'pick'] = sims.loc[home_pick,'team1_abbrev']
     sims.loc[~home_pick,'pick'] = sims.loc[~home_pick,'team2_abbrev']
+    sims.loc[home_pick,'pts_avg'] = 1.131*sims.loc[home_pick,'pick_pts1'] - 0.259
+    sims.loc[~home_pick,'pts_avg'] = 1.131*sims.loc[~home_pick,'pick_pts2'] - 0.259
+    sims['rel_pts'] = sims['pts_avg']/games.shape[0]
+    sims['pts_stdev_true'] = (-0.441*sims['rel_pts']**2.0 + 0.446*sims['rel_pts'] + 0.097)*games.shape[0]
+    sims['pts_stdev'] = sims['pts_stdev_true']*0.82
     all_picks = pd.DataFrame({"entry":[val//games.shape[0] for val in range(games.shape[0]*num_entries)],\
     "points_bid":[val%games.shape[0] + 1 for val in range(games.shape[0]*num_entries)]})
     all_picks = pd.merge(left=all_picks,right=picks,how='left',on=['entry','points_bid'])
     all_picks = all_picks.loc[all_picks.pick.isnull()]
     if all_picks.entry.nunique() == num_entries:
-        sims.loc[home_pick,'points_bid_sim'] = np.random.normal(0,pts_stdev,home_pick.sum()) + sims.loc[home_pick,'pick_pts1']
-        sims.loc[~home_pick,'points_bid_sim'] = np.random.normal(0,pts_stdev,(~home_pick).sum()) + sims.loc[~home_pick,'pick_pts2']
+        sims['points_bid_sim'] = sims.apply(lambda x: np.random.normal(x['pts_avg'],x['pts_stdev']),axis=1)
         sims = sims.sort_values(by=['num_sim','entry','points_bid_sim'],ascending=True)
         sims['points_bid'] = all_picks.points_bid.tolist()*num_sims
+    # comparison = pd.merge(left=sims.groupby('pick').points_bid.mean().reset_index().rename(columns={"points_bid":"actual_avg"}),\
+    # right=sims.groupby('pick').points_bid.std().reset_index().rename(columns={"points_bid":"actual_stdev"}),how='inner',on='pick')
+    # comparison = pd.merge(left=comparison,right=sims.groupby('pick')[['pts_avg','pts_stdev','pts_stdev_true']].mean().reset_index(),how='inner',on='pick')
+    # print(comparison)
+    # print(comparison.corr())
+    # print("St. Dev. Mean Squared Error: " + str(sum((comparison.actual_stdev - comparison.pts_stdev_true)**2.0)))
     sims = pd.concat([sims,already_picked],ignore_index=True).sort_values(by=['num_sim','entry'],ascending=True)
     return sims
 
