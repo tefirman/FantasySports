@@ -2,7 +2,7 @@ player_id_sr,name,position,until
 KamaAl00,Alvin Kamara,RB,3
 PatrTi00,Tim Patrick,WR,17
 HineNy00,Nyheim Hines,RB,17
-MurrKy00,Kyler Murray,QB,4
+MurrKy00,Kyler Murray,QB,9
 GageRu00,Russell Gage,WR,17
 FourLe00,Leonard Fournette,RB,17
 WillJa11,Jameson Williams,WR,4
@@ -49,7 +49,7 @@ JoneDa05,Daniel Jones,QB,7
 JohnRo07,Roschon Johnson,RB,7
 RiveRo01,Ronnie Rivers,RB,10
 DellNa00,Tank Dell,WR,7
-FielJu00,Justin Fields,QB,8
+FielJu00,Justin Fields,QB,9
 WillKy02,Kyren Williams,RB,11
 HarrDa06,Damien Harris,RB,8
 SamuDe00,Deebo Samuel,WR,9
@@ -57,3 +57,8 @@ MaheBr01,Brett Maher,K,17
 FordJe00,Jerome Ford,RB,8
 ErtzZa00,Zach Ertz,TE,11
 CousKi00,Kirk Cousins,QB,17
+PalmJo00,Josh Palmer,WR,9
+WallDa01,Darren Waller,TE,12
+PierDa01,Dameon Pierce,RB,9
+DemeEm00,Emari Demercado,RB,9
+LondDr00,Drake London,WR,9
