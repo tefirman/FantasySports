@@ -6,12 +6,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import sys
+import optparse
 
 class Collection:
-    def __init__(self):
+    def __init__(self, rarity: str = None):
         self.load_raw_data()
         self.clean_data()
-        self.load_cards()
+        self.load_cards(rarity=rarity)
         self.load_ff_league()
         self.add_proj_pts()
         self.add_proj_price()
@@ -25,7 +26,8 @@ class Collection:
         tempData = open(players_loc,"r")
         raw_vals = tempData.read().split("""\nTOTAL\n""")[-1].split("""\nDraftKings Inc.\n""")[0]\
         .replace("\nQ\n","\n").replace("\nIR\n","\n").replace("\nOUT\n","\n")\
-        .replace("\nD\n","\n").replace("WR\n-\n","WR\n0.0\n\n").split("\n")
+        .replace("\nD\n","\n").replace("WR\n-\n","WR\n\n0.0\n").replace("RB\n-\n","RB\n\n0.0\n")\
+        .replace("K\n-\n","K\n\n0.0\n").replace("TE\n-\n","TE\n\n0.0\n").replace("QB\n-\n","QB\n\n0.0\n").split("\n")
         tempData.close()
         names = raw_vals[::14]
         team_pos = raw_vals[2::14]
@@ -52,9 +54,8 @@ class Collection:
             self.players.loc[self.players.team_pos.str.startswith(team),'pos'] = \
             self.players.loc[self.players.team_pos.str.startswith(team),'team_pos'].str.replace(team,"")
         del self.players['team_pos']
-        self.players = self.players.loc[self.players.pos.isin(['QB','RB','WR','TE','K'])].reset_index(drop=True)
     
-    def load_cards(self, cards_loc=None):
+    def load_cards(self, cards_loc=None, rarity="Core"):
         if cards_loc is None:
             cards_loc = "{}_tefirman_mycards.csv".format(datetime.datetime.now().strftime('%Y-%m-%d'))
         if not os.path.exists(cards_loc):
@@ -65,23 +66,33 @@ class Collection:
         self.cards['name'] = self.cards['FirstName'].str[0] + '. ' + self.cards['LastName']
         self.cards['listable'] = ~self.cards.Set.isin(['Starter'])
         self.cards['my_card'] = True
+        if str(rarity).title() in ["Core","Rare","Elite","Legendary","Reignmaker"]:
+            self.cards = self.cards.loc[self.cards.Rarity == rarity.title()].reset_index(drop=True)
         self.players = pd.merge(left=self.players,right=self.cards[['name','Position','my_card','listable','Set']]\
         .rename(columns={'Position':'pos'}),how='left',on=['name','pos'])
         self.players.listable = self.players.listable.fillna(False)
         self.players.my_card = self.players.my_card.fillna(False)
-    
+
     def load_ff_league(self):
         self.league = fb.League("The GENIEs")
         self.league.players['name'] = self.league.players['name'].str.split(' ').str[0].str[:1] + \
         '. ' + self.league.players['name'].str.split(' ').str[-1]
         self.league.players.loc[self.league.players['name'].isin(['A. Robinson']),'name'] += ' II'
         self.league.players.loc[self.league.players.player_id_sr.isin(['WilsCe01']),'name'] = 'C. Wilson Jr.'
+        self.league.players.loc[self.league.players.position == 'DEF','name'] = \
+        self.league.players.loc[self.league.players.position == 'DEF','current_team']
         self.league.nfl_teams.yahoo = self.league.nfl_teams.yahoo.str.upper()
     
     def add_proj_pts(self):
         self.players = pd.merge(left=self.players,right=self.league.nfl_teams[["yahoo","real_abbrev"]]\
         .rename(columns={"yahoo":"team","real_abbrev":"current_team"}),how='inner',on=["team"])
         del self.players["team"]
+        defense = ~self.players.pos.isin(['QB','RB','WR','TE','K'])
+        self.players.loc[defense,'pos'] = 'DEF'
+        self.players.loc[defense,'name'] = self.players.loc[defense,'current_team'] # current_team isn't there...
+        self.players = pd.concat([self.players.loc[~self.players.pos.isin(['DEF'])],\
+        self.players.loc[self.players.pos.isin(['DEF'])].sort_values(by='my_card',ascending=False)\
+        .drop_duplicates(subset=['name'])],ignore_index=True)
         self.players = pd.merge(left=self.players,right=self.league.players[["name","current_team",\
         "WAR","points_avg","pct_rostered","string","until"]],how='inner',on=["name","current_team"])
         # Excluding J. Williams from DEN for now, but need to fix this...
@@ -124,7 +135,7 @@ class Collection:
             self.players["taken"] = False
         
         # INCORPORATE DIFFERENT CONTEST TYPES!!!
-        positions = {"QB":1,"WR":2,"RB":2,"TE":1,"K":1}
+        positions = {"QB":1,"WR":2,"RB":2,"TE":1,"K":1,'DEF':1}
         # INCORPORATE DIFFERENT CONTEST TYPES!!!
 
         lineups = pd.DataFrame({'dummy':[1]})
@@ -139,18 +150,18 @@ class Collection:
                 lineups['name'] = lineups[name_cols].apply(sorted,axis=1).apply(", ".join)
                 lineups = lineups.drop_duplicates(subset=["name"],ignore_index=True)
                 lineups = lineups.loc[lineups[name_cols].nunique(axis=1) == len(name_cols)].reset_index(drop=True)
-
                 # ACCOUNT FOR STACKS A BIT MORE GENERICALLY!!!
                 # ACCOUNT FOR STACKS A BIT MORE GENERICALLY!!!
                 # ACCOUNT FOR STACKS A BIT MORE GENERICALLY!!!
-
-                if pos in stacks:
-                    for qb in stacks[pos]:
-                        for stack in stacks[pos][qb]:
-                            lineups = lineups.loc[~lineups['name'].str.contains(qb) | lineups['name'].str.contains(stack)]
-                            lineups = lineups.loc[lineups['name'].str.contains(qb) | ~lineups['name'].str.contains(stack)]
-                lineups = lineups.sort_values(by='points_avg',ascending=False,ignore_index=True)
-                lineups = lineups.groupby('name_QB1').head(limit).reset_index(drop=True) # Switch this to CPT for showdowns...
+            if pos in stacks:
+                for qb in stacks[pos]:
+                    if not lineups['name'].str.contains(qb).any():
+                        continue
+                    for stack in stacks[pos][qb]:
+                        lineups = lineups.loc[~lineups['name'].str.contains(qb) | lineups['name'].str.contains(stack)]
+                        lineups = lineups.loc[lineups['name'].str.contains(qb) | ~lineups['name'].str.contains(stack)]
+            lineups = lineups.sort_values(by='points_avg',ascending=False,ignore_index=True)
+            lineups = lineups.groupby('name_QB1').head(limit).reset_index(drop=True) # Switch this to CPT for showdowns...
         lineups = pd.merge(left=lineups,right=self.players.loc[~self.players.pos.isin(['QB']) \
         & self.players.my_card & ~self.players.taken & uninjured,['name','points_avg','dummy']]\
         .rename(columns={'name':'name_FLEX','points_avg':'points_avg_FLEX'}),how='inner',on='dummy')
@@ -161,6 +172,8 @@ class Collection:
         lineups = lineups.loc[lineups[name_cols].nunique(axis=1) == len(name_cols)].reset_index(drop=True)
         for pos in stacks:
             for qb in stacks[pos]:
+                if not lineups['name'].str.contains(qb).any():
+                    continue
                 for stack in stacks[pos][qb]:
                     lineups = lineups.loc[~lineups['name'].str.contains(qb) | lineups['name'].str.contains(stack)]
                     lineups = lineups.loc[lineups['name'].str.contains(qb) | ~lineups['name'].str.contains(stack)]
@@ -170,21 +183,50 @@ class Collection:
         return lineups
 
 def main():
-    dkrm_tf = Collection()
+    # Initializing input arguments
+    parser = optparse.OptionParser()
+    parser.add_option(
+        "--rarity",
+        action="store",
+        dest="rarity",
+        default="Core",
+        help="rarity tier of interest, i.e. Core, Rare, Elite, Legendary, Reignmaker",
+    )
+    parser.add_option(
+        "--limit",
+        action="store",
+        type="int",
+        dest="limit",
+        default=1000,
+        help="number of top lineups to keep during each merge for memory purposes",
+    )
+    options = parser.parse_args()[0]
+
+    dkrm_tf = Collection(options.rarity)
     dkrm_tf.print_values()
-    stacks = {"WR":{"J. Herbert":["J. Palmer"],"B. Purdy":["D. Samuel"],"T. Lawrence":["C. Ridley","C. Kirk"],\
-                    "R. Tannehill":["T. Burks","N. Westbrook-Ikhine"],"K. Pickett":["A. Robinson II"],\
-                    "M. Jones":["J. Smith-Schuster"],"T. Tagovailoa":["J. Waddle"]},\
-            "RB":{"K. Pickett":["N. Harris"]},\
-            "TE":{"J. Herbert":["G. Everett"],"B. Purdy":["G. Kittle"],\
-                    "R. Tannehill":["C. Okonkwo"],"T. Tagovailoa":["D. Smythe"]}}
-    limit = 1000
-    dkrm_tf.players['taken'] = dkrm_tf.players.name.isin(["S. Clifford","D. Mills",\
-    "B. Purdy","D. Samuel","G. Kittle","T. Hockenson","T. Lawrence","C. Ridley",\
-    "C. Kirk","J. Williams","T. Tagovailoa","J. Waddle","D. Goedert","C. Wilson Jr."]) # Showdown Entries, Exclusions
+    # stacks = {}
+    stacks = {"WR":{"K. Pickett":["D. Johnson"],\
+                    "J. Herbert":["J. Guyton"],\
+                    "B. Purdy":["D. Samuel"],\
+                    "T. Lawrence":["C. Ridley","C. Kirk"]},\
+              "TE":{"J. Herbert":["G. Everett"],\
+                    "B. Purdy":["G. Kittle"]}}
+
+    # dkrm_tf.players.loc[dkrm_tf.players.name.isin(['N. Harris']),'points_avg'] = 15.6
+    # dkrm_tf.players.loc[dkrm_tf.players.name.isin(['K. Pickett']),'points_avg'] = 10.3
+    # dkrm_tf.players.loc[dkrm_tf.players.name.isin(['D. Johnson']),'points_avg'] = 22.0
+
+    dkrm_tf.players['taken'] = dkrm_tf.players.name.isin(["M. Jones","R. Tannehill"]) # Showdown Entries, Exclusions
+    # taken_inds = dkrm_tf.players.loc[dkrm_tf.players.name.isin(["A. Gibson",\
+    # "D. Parker","J. Smith-Schuster"])].drop_duplicates(subset=["name"],keep="first").index
+    # dkrm_tf.players.loc[taken_inds,'taken'] = True # When I'm only using one of two cards for a particular player
+
     best = pd.DataFrame()
-    for lineup in range(3):
-        lineups = dkrm_tf.best_lineups(stacks, limit)
+    while True:
+        try:
+            lineups = dkrm_tf.best_lineups(stacks, options.limit)
+        except:
+            break
         best = pd.concat([best,lineups.iloc[:1][['name','points_avg']]],ignore_index=True)
         taken_inds = dkrm_tf.players.loc[dkrm_tf.players.name.isin(lineups.iloc[0]['name'].split(', ')) & ~dkrm_tf.players.taken].drop_duplicates(subset=["name"],keep="first").index
         dkrm_tf.players.loc[taken_inds,'taken'] = True
