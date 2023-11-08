@@ -106,9 +106,14 @@ def load_picks(week: int) -> pd.DataFrame:
     num_missing = actual.loc[actual.points_bid == 0].groupby('player').size().to_frame("missed").reset_index()
     excluded = num_missing.loc[num_missing.missed > 1,'player'].unique()
     actual = actual.loc[~actual.player.isin(excluded)].reset_index(drop=True)
-    # Only able to account for one missed pick per player...
+    # Only able to account for one missed pick per player... THIS DOESN'T WORK!!! THIS DOESN'T WORK!!!
     actual.loc[actual.points_bid == 0,'points_bid'] = 1.0
     # This isn't quite right, but fine for now...
+
+    # # HOTFIX FOR WEEK 9!!!
+    # actual = pd.concat([actual,pd.DataFrame({"player":['JK','Chicago Bears'],"pick":['MIA','OTI'],"points_bid":[1,1],'entry':[25.0,16.0]})])
+    # # HOTFIX FOR WEEK 9!!!
+
     return actual
 
 def simulate_picks(games: pd.DataFrame, picks: pd.DataFrame, num_sims: int = 1000, num_entries: int = 50) -> pd.DataFrame:
@@ -148,6 +153,8 @@ def simulate_picks(games: pd.DataFrame, picks: pd.DataFrame, num_sims: int = 100
     "points_bid":[val%games.shape[0] + 1 for val in range(games.shape[0]*num_entries)]})
     all_picks = pd.merge(left=all_picks,right=picks,how='left',on=['entry','points_bid'])
     all_picks = all_picks.loc[all_picks.pick.isnull()]
+    # print(all_picks.groupby('entry').size().sort_values())
+    # print(picks.loc[picks.entry.isin([16,29,25])])
     if all_picks.entry.nunique() == num_entries:
         sims['points_bid_sim'] = sims.apply(lambda x: np.random.normal(x['pts_avg'],x['pts_stdev']),axis=1)
         sims = sims.sort_values(by=['num_sim','entry','points_bid_sim'],ascending=True)
@@ -388,6 +395,8 @@ def pick_deltas(sims: pd.DataFrame, picks: pd.DataFrame) -> pd.DataFrame:
         sims = simulate_games(sims, [incorrect])
         results = assess_sims(sims, picks)
         loser = results.loc[results.entry == 0].iloc[0]
+        my_picks.loc[ind,'win'] = winner["earnings"]
+        my_picks.loc[ind,'loss'] = loser["earnings"]
         my_picks.loc[ind,'delta'] = winner["earnings"] - loser["earnings"]
     print("\nRemaining Games:")
     print(my_picks.to_string(index=False))
