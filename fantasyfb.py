@@ -356,7 +356,7 @@ class League:
         nfl_schedule = pd.concat([home, away], ignore_index=True)
         nfl_schedule.elo_diff = nfl_schedule.elo_diff / 1500
         nfl_schedule.opp_elo = 1500 / nfl_schedule.opp_elo
-        nfl_schedule.date = pd.to_datetime(nfl_schedule.date,infer_datetime_format=True)
+        nfl_schedule.date = pd.to_datetime(nfl_schedule.date)
         self.nfl_schedule = nfl_schedule.sort_values(by=["season", "week"], ignore_index=True)
 
     def refresh_oauth(self, threshold: int = 59):
@@ -557,10 +557,7 @@ class League:
         stats = stats.loc[stats.pos.isin(["QB", "RB", "WR", "TE", "K"])]
         self.stats = pd.concat([stats,defenses], ignore_index=True)\
         .rename(columns={'pos':'position','player':'name','player_id':'player_id_sr'})
-        self.stats["weeks_ago"] = (
-            datetime.datetime.now()
-            - pd.to_datetime(self.stats.game_id.str[:8], infer_datetime_format=True)
-        ).dt.days / 7.0
+        self.stats["weeks_ago"] = (datetime.datetime.now() - pd.to_datetime(self.stats.game_id.str[:8])).dt.days / 7.0
 
     def add_points(self):
         """
@@ -3063,7 +3060,7 @@ def initialize_inputs():
     elif options.name == "Toothless Wonders":
         options.payouts = [350, 100, 50]
     elif options.name == "The GENIEs":
-        options.payouts = [100, 0, 0]
+        options.payouts = [120, 0, 0]
     elif options.name == "The Great Gadsby's":
         options.payouts = [50, 35, 15]
     else:
@@ -3205,6 +3202,26 @@ def main():
             "max_color": "#3CB371",
         },
     )
+
+    # # ASSESS WAR VALUES FOR EACH TEAM'S STARTERS!!!
+    # war_inds = rosters.starter & ~rosters.position.isin(["DEF","K"])
+    # war_vals = pd.merge(left=rosters.loc[war_inds].groupby(["fantasy_team","position"]).WAR.mean().unstack().reset_index(),\
+    # right=rosters.loc[war_inds].groupby("fantasy_team").WAR.mean().reset_index().rename(columns={"WAR":"Overall"}),how='inner',on='fantasy_team')
+    # print(war_vals[["fantasy_team","QB","WR","RB"]].set_index('fantasy_team').T.corr())
+    # for col in war_vals.columns:
+    #     if col != "fantasy_team":
+    #         war_vals[col] = round(war_vals[col],3)
+    # writer = excelAutofit(war_vals,"Team WAR",writer)
+    # writer.sheets["Team WAR"].conditional_format(
+    #     "B2:F" + str(rosters.shape[0] + 1),
+    #     {
+    #         "type": "3_color_scale",
+    #         "min_color": "#FF6347",
+    #         "mid_color": "#FFD700",
+    #         "max_color": "#3CB371",
+    #     },
+    # )
+    # # ASSESS WAR VALUES FOR EACH TEAM'S STARTERS!!!
 
     if options.bestball:
         standings_sim = league.bestball_sims(payouts=options.payouts)
