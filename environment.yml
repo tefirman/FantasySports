@@ -17,3 +17,4 @@ dependencies:
     - black
     - lxml
     - scipy
+    - pdoc
