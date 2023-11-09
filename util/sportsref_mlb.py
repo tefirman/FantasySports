@@ -150,10 +150,7 @@ def get_boxscore(game_id: str):
         return pd.DataFrame(), pd.DataFrame()
     away = description.split(" vs ")[0]
     home = description.split(" vs ")[-1].split(" Box Score: ")[0]
-    date = pd.to_datetime(
-        description.split(" Box Score: ")[-1].split(" | ")[0],
-        infer_datetime_format=True,
-    )
+    date = pd.to_datetime(description.split(" Box Score: ")[-1].split(" | ")[0])
     batting = pd.concat(
         [
             parse_table(raw_text, away.replace(" ", "").replace(".", "") + "batting"),
@@ -219,8 +216,8 @@ def get_games(start: str, finish: str):
         pd.DataFrame: dataframe containing player batting statistics for games during the timespan of interest.
         pd.DataFrame: dataframe containing player pitching statistics for games during the timespan of interest.
     """
-    start = pd.to_datetime(start, infer_datetime_format=True)
-    finish = pd.to_datetime(finish, infer_datetime_format=True)
+    start = pd.to_datetime(start)
+    finish = pd.to_datetime(finish)
     batting_stats = pd.DataFrame()
     pitching_stats = pd.DataFrame()
     for season in range(start.year, finish.year + 1):
