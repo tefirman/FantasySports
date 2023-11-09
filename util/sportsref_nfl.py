@@ -103,14 +103,12 @@ def get_intl_games():
     soup = BeautifulSoup(response, "html.parser")
     tables = soup.find_all("table", attrs={"class": "wikitable sortable"})[1:-1]
     intl_games = pd.concat(pd.read_html(str(tables)), ignore_index=True)
-    intl_games = intl_games.loc[~intl_games.Date.isnull()].reset_index(drop=True)
+    intl_games = intl_games.loc[~intl_games.Date.isnull() & ~intl_games.Date.isin(["TBD"])].reset_index(drop=True)
     intl_games.Year = intl_games.Year.astype(str).str.split(" ").str[0].astype(int)
     intl_games["team1"] = intl_games["Designated home team"].str.split("\[").str[0]
     intl_games["team2"] = intl_games["Designated visitor"].str.split("\[").str[0]
     intl_games.Stadium = intl_games.Stadium.str.split('\[').str[0]
-    intl_games["game_date"] = pd.to_datetime(
-        intl_games.Date + ", " + intl_games.Year.astype(str), infer_datetime_format=True
-    )
+    intl_games["game_date"] = pd.to_datetime(intl_games.Date + ", " + intl_games.Year.astype(str))
     return intl_games[["game_date", "team1", "team2", "Stadium"]]
 
 
@@ -376,9 +374,7 @@ class Schedule:
         """
         Infers season week based on game dates for each season.
         """
-        self.schedule.game_date = pd.to_datetime(
-            self.schedule.game_date, infer_datetime_format=True
-        )
+        self.schedule.game_date = pd.to_datetime(self.schedule.game_date)
         min_date = self.schedule.groupby("season").game_date.min().reset_index()
         self.schedule = pd.merge(
             left=self.schedule,
