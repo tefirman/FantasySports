@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # -*-coding:utf-8 -*-
 '''
-@File    :   fantasyfb.py
-@Time    :   2019/09/07 19:09:47
-@Author  :   Taylor Firman
-@Version :   1.0
-@Contact :   tefirman@gmail.com
+@File    :   fantasyfb.py  
+@Time    :   2019/09/07 19:09:47  
+@Author  :   Taylor Firman  
+@Version :   1.0  
+@Contact :   tefirman@gmail.com  
 @Desc    :   Firman Fantasy Football Algorithm
 '''
 
@@ -35,23 +35,23 @@ class League:
     League class that gathers all relevant settings and statistics
     to simulate and assess the fantasy league in question.
 
-    Attributes:
-        season: integer specifying the season of interest.
-        week: integer specifiying the week of interest.
-        oauth: yahoo_oauth object contain user credentials and auth tokens
-        lg: yahoo_fantasy_api league object used to connect to Yahoo's API
-        gm: yahoo_fantasy_api game object used to connect to Yahoo's API
-        name: string specifying the name of the fantasy to be analyzed
-        settings: dictionary containing the scheduling and roster settings for the league in question
-        scoring: dictionary containing the scoring categories and values for the league in question
-        teams: list of dictionaries containing identifiers for each fantasy team in the league
-        nfl_teams: dataframe containing different identifiers for each NFL team
-        nfl_schedule: dataframe containing NFL schedules throughout the years with elo statistics for both teams
-        players: dataframe containing demographics and rates for current NFL players
-        num_sims: integer specifying the number of Monte Carlo simulations to run
-        earliest: integer describing the earliest week to pull statistics from (YYYYWW)
-        reference_games: integer describing the number of games to use as a prior for rates
-        basaloppstringtime: list of the four weighting factors when calculating rates
+    Attributes:  
+        season: integer specifying the season of interest.  
+        week: integer specifiying the week of interest.  
+        oauth: yahoo_oauth object contain user credentials and auth tokens  
+        lg: yahoo_fantasy_api league object used to connect to Yahoo's API  
+        gm: yahoo_fantasy_api game object used to connect to Yahoo's API  
+        name: string specifying the name of the fantasy to be analyzed  
+        settings: dictionary containing the scheduling and roster settings for the league in question  
+        scoring: dictionary containing the scoring categories and values for the league in question  
+        teams: list of dictionaries containing identifiers for each fantasy team in the league  
+        nfl_teams: dataframe containing different identifiers for each NFL team  
+        nfl_schedule: dataframe containing NFL schedules throughout the years with elo statistics for both teams  
+        players: dataframe containing demographics and rates for current NFL players  
+        num_sims: integer specifying the number of Monte Carlo simulations to run  
+        earliest: integer describing the earliest week to pull statistics from (YYYYWW)  
+        reference_games: integer describing the number of games to use as a prior for rates  
+        basaloppstringtime: list of the four weighting factors when calculating rates  
         schedule: dataframe containing the fantasy schedule for the league and season in question
     """
 
@@ -83,15 +83,17 @@ class League:
             sfb (bool, optional): whether to implement SFB13 settings and scoring, defaults to False.
             bestball (str, optional): which platform to use when implementing best ball settings/scoring, defaults to a blank string (no bestball).
         """
-        self.latest_season = datetime.datetime.now().year - int(
-            datetime.datetime.now().month < 6
-        )
+        self.latest_season = datetime.datetime.now().year - int(datetime.datetime.now().month < 6)
+        """ Year of the most recent season """
         self.season = season if type(season) == int else self.latest_season
+        """ Season of interest, defaults to most recent season when no value is provided """
         self.load_credentials()
         self.load_oauth()
         self.load_league(name)
         self.current_week = self.lg.current_week()
+        """ Most recent week of the season of interest """
         self.week = week if type(week) == int else self.current_week
+        """ Week of interest during the season of interest, defaults to most recent week """
         self.load_settings(sfb, bestball)
         self.load_fantasy_teams()
         self.load_nfl_abbrevs()
@@ -106,6 +108,7 @@ class League:
         self.add_depth_charts()
         self.load_parameters(earliest, reference_games, basaloppstringtime)
         self.num_sims = num_sims if type(num_sims) == int else 10000
+        """ Number of simulations to run when assessing the league of interest """
         self.get_rates()
         self.war_sim()
         self.get_schedule()
@@ -356,7 +359,7 @@ class League:
         nfl_schedule = pd.concat([home, away], ignore_index=True)
         nfl_schedule.elo_diff = nfl_schedule.elo_diff / 1500
         nfl_schedule.opp_elo = 1500 / nfl_schedule.opp_elo
-        nfl_schedule.date = pd.to_datetime(nfl_schedule.date)
+        nfl_schedule.date = pd.to_datetime(nfl_schedule.date, format="%m/%d/%y")
         self.nfl_schedule = nfl_schedule.sort_values(by=["season", "week"], ignore_index=True)
 
     def refresh_oauth(self, threshold: int = 59):
@@ -732,7 +735,7 @@ class League:
         as_of = self.season * 100 + self.week
         if "until" in self.players.columns:
             del self.players["until"]
-        self.players["until"] = None
+        self.players["until"] = float("NaN")
         if as_of < self.latest_season * 100 + self.current_week:
             self.load_stats(self.season * 100 + 1, self.season * 100 + 17)
             self.stats = self.stats.loc[
