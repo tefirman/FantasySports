@@ -108,12 +108,9 @@ def load_picks(week: int) -> pd.DataFrame:
     actual = actual.loc[~actual.player.isin(excluded)].reset_index(drop=True)
     # Only able to account for one missed pick per player... THIS DOESN'T WORK!!! THIS DOESN'T WORK!!!
     actual.loc[actual.points_bid == 0,'points_bid'] = 1.0
-    # This isn't quite right, but fine for now...
-
     # # HOTFIX FOR WEEK 9!!!
     # actual = pd.concat([actual,pd.DataFrame({"player":['JK','Chicago Bears'],"pick":['MIA','OTI'],"points_bid":[1,1],'entry':[25.0,16.0]})])
     # # HOTFIX FOR WEEK 9!!!
-
     return actual
 
 def simulate_picks(games: pd.DataFrame, picks: pd.DataFrame, num_sims: int = 1000, num_entries: int = 50) -> pd.DataFrame:
@@ -125,7 +122,6 @@ def simulate_picks(games: pd.DataFrame, picks: pd.DataFrame, num_sims: int = 100
         picks (pd.DataFrame): dataframe containing details about picks that have already been made.
         num_sims (int, optional): number of simulations to perform, defaults to 1000.
         num_entries (int, optional): number of contestants in the group, defaults to 50.
-        pts_stdev (float, optional): standard deviation for the number of points bid on each matchup, defaults to 4.0.
 
     Returns:
         pd.DataFrame: dataframe containing simulated picks for each matchup and each contestant in each simulation.
@@ -291,6 +287,7 @@ fixed: list = [], initial_picks: str = "best", initial_pts: str = "best") -> pd.
         picks (pd.DataFrame): dataframe containing details about picks that have already been made.
         num_sims (int, optional): number of simulations to perform, defaults to 1000.
         num_entries (int, optional): number of contestants in the group, defaults to 50.
+        fixed (list, optional): list of strings containing teams guaranteed to be picked.
         initial_picks (str, optional): strategy to use during initial pick selection. Acceptable values: "best", "worst", "popular", "random"; defaults to "best".
         initial_pts (str, optional): strategy to use during initial points selection. Acceptable values: "best", "worst", "popular", "random"; defaults to "best".
 
