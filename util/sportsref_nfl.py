@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # -*-coding:utf-8 -*-
 """
-@File    :   sportsref_nfl.py
-@Time    :   2023/04/12 21:49:12
-@Author  :   Taylor Firman
-@Version :   1.0
-@Contact :   tefirman@gmail.com
+@File    :   sportsref_nfl.py  
+@Time    :   2023/04/12 21:49:12  
+@Author  :   Taylor Firman  
+@Version :   1.0  
+@Contact :   tefirman@gmail.com  
 @Desc    :   Collection of functions to easily pull down statistics from pro-football-reference.com
 """
 
@@ -22,7 +22,7 @@ import gzip
 import sys
 
 base_url = "https://www.pro-football-reference.com/"
-
+"""Base URL for Pro Football Reference used in all page requests."""
 
 def get_page(endpoint: str):
     """
@@ -53,7 +53,7 @@ def parse_table(raw_text: str, table_name: str):
     Parses out the desired table from the raw html text into a pandas dataframe.
 
     Args:
-        raw_text (bs4.BeautifulSoup): raw html from the page of interest.
+        raw_text (bs4.BeautifulSoup): raw html from the page of interest.  
         table_name (str): title of the table to extract.
 
     Returns:
@@ -188,7 +188,7 @@ def get_team_stadium(abbrev: str, season: int):
     Identifies the home stadium of the specified team during the specified season.
 
     Args:
-        abbrev (str): team abbreviation according to Pro Football Reference
+        abbrev (str): team abbreviation according to Pro Football Reference  
         season (int): year of the NFL season of interest
 
     Returns:
@@ -554,7 +554,7 @@ class Schedule:
         and calculates each team's starting elo rating based on 538's model (#RIP).
 
         Args:
-            init_elo (float, optional): initial elo rating to provide new teams with, defaults to 1300.
+            init_elo (float, optional): initial elo rating to provide new teams with, defaults to 1300.  
             regress_pct (float, optional): percentage to regress teams back to the mean between each season, defaults to 0.333.
         """
         ind = self.schedule.loc[self.schedule.elo1_pre.isnull()].index[0]
@@ -591,10 +591,10 @@ class Schedule:
         and calculates each team's win probability based on 538's model (#RIP).
 
         Args:
-            homefield (float, optional): elo rating boost for home-field advantage, defaults to 48.
-            travel (float, optional): elo rating penalty for travel, defaults to 0.004 per mile traveled.
-            rested (float, optional): elo rating boost for rested teams, defaults to 25.
-            playoffs (float, optional): elo rating expansion in the playoffs, defaults to 1.2.
+            homefield (float, optional): elo rating boost for home-field advantage, defaults to 48.  
+            travel (float, optional): elo rating penalty for travel, defaults to 0.004 per mile traveled.  
+            rested (float, optional): elo rating boost for rested teams, defaults to 25.  
+            playoffs (float, optional): elo rating expansion in the playoffs, defaults to 1.2.  
             elo2points (float, optional): conversion rate between elo and points, defaults to 0.04.
         """
         ind = self.schedule.loc[self.schedule.elo_prob1.isnull()].index[0]
@@ -644,16 +644,16 @@ class Boxscore:
     and parses them into a pandas dataframe.
 
     Attributes:
-        game_id: unique SportsRef identifier for the game in question.
-        raw_text: raw html for the Pro Football Reference page of the game in question.
-        season: season of the game in question.
-        week: week of the season for the game in question.
-        team1_abbrev: abbreviation for the home team.
-        team1_score: points scored by the home team.
-        team2_abbrev: abbreviation for the away team.
-        team2_score: points scored by the away team.
-        game_stats: dataframe containing relevant statistics for the game in question.
-        starters: dataframe containing the list of starting players for both teams.
+        game_id: unique SportsRef identifier for the game in question.  
+        raw_text: raw html for the Pro Football Reference page of the game in question.  
+        season: season of the game in question.  
+        week: week of the season for the game in question.  
+        team1_abbrev: abbreviation for the home team.  
+        team1_score: points scored by the home team.  
+        team2_abbrev: abbreviation for the away team.  
+        team2_score: points scored by the away team.  
+        game_stats: dataframe containing relevant statistics for the game in question.  
+        starters: dataframe containing the list of starting players for both teams.  
         snaps: dataframe containing the number of snaps played by every player on both teams.
     """
 
@@ -665,6 +665,7 @@ class Boxscore:
             game_id (str): unique SportsRef identifier for the game in question.
         """
         self.game_id = game_id
+        """Pro Football Reference identifier for the game in question."""
         self.get_raw_text()
         self.get_details()
         self.get_stats()
@@ -813,13 +814,13 @@ class Boxscore:
         Calculates individual QB elo value based on 538's model (#RIP).
 
         Args:
-            pass_att (float, optional): weighting factor for pass attempts, defaults to -2.2.
-            pass_cmp (float, optional): weighting factor for pass completions, defaults to 3.7.
-            pass_yds (float, optional): weighting factor for passing yards, defaults to 0.2.
-            pass_td (float, optional): weighting factor for passing touchdowns, defaults to 11.3.
-            pass_sacked (float, optional): weighting factor for sacks, defaults to -8.0.
-            rush_att (float, optional): weighting factor for rush attempts, defaults to -1.1.
-            rush_yds (float, optional): weighting factor for rush yards, defaults to 0.6.
+            pass_att (float, optional): weighting factor for pass attempts, defaults to -2.2.  
+            pass_cmp (float, optional): weighting factor for pass completions, defaults to 3.7.  
+            pass_yds (float, optional): weighting factor for passing yards, defaults to 0.2.  
+            pass_td (float, optional): weighting factor for passing touchdowns, defaults to 11.3.  
+            pass_sacked (float, optional): weighting factor for sacks, defaults to -8.0.  
+            rush_att (float, optional): weighting factor for rush attempts, defaults to -1.1.  
+            rush_yds (float, optional): weighting factor for rush yards, defaults to 0.6.  
             rush_td (float, optional): weighting factor for rushing touchdowns, defaults to 15.9.
         """
         qbs = self.game_stats.pos == 'QB'
@@ -856,11 +857,11 @@ def get_bulk_stats(
     Pulls individual player statistics for each game in the specified timeframe from Pro Football Reference.
 
     Args:
-        start_season (int): first season of interest.
-        start_week (int): first week of interest.
-        finish_season (int): last season of interest.
-        finish_week (int): last week of interest.
-        playoffs (bool, optional): whether to include playoff games, defaults to True.
+        start_season (int): first season of interest.  
+        start_week (int): first week of interest.  
+        finish_season (int): last season of interest.  
+        finish_week (int): last week of interest.  
+        playoffs (bool, optional): whether to include playoff games, defaults to True.  
         path(str, optional): file path where stats are/should be saved to, defaults to None.
 
     Returns:
@@ -919,10 +920,10 @@ best_qb_val: float = 34.313, qb_val_per_pick: float = -0.137):
     and infers initial QB elo values from draft positions.
 
     Args:
-        start_season (int): first season of interest.
-        finish_season (int): last season of interest.
-        path (str, optional): where to save the draft results in csv form, defaults to None.
-        best_qb_val (float, optional): QB elo value assigned to a first overall pick, defaults to 34.313.
+        start_season (int): first season of interest.  
+        finish_season (int): last season of interest.  
+        path (str, optional): where to save the draft results in csv form, defaults to None.  
+        best_qb_val (float, optional): QB elo value assigned to a first overall pick, defaults to 34.313.  
         qb_val_per_pick (float, optional): elo point decline per pick, defaults to -0.137.
 
     Returns:
@@ -952,7 +953,7 @@ def get_roster(team: str, season: int):
     Pulls the full team roster for the team and season of interest from Pro Football Reference.
 
     Args:
-        team (str): abbreviation for the team of interest.
+        team (str): abbreviation for the team of interest.  
         season (int): season of interest.
 
     Returns:
@@ -968,8 +969,8 @@ def get_bulk_rosters(start_season: int, finish_season: int, path: str = None):
     Pulls all NFL rosters during the specified timeframe from Pro Football Reference.
 
     Args:
-        start_season (int): first season of interest.
-        finish_season (int): last season of interest.
+        start_season (int): first season of interest.  
+        finish_season (int): last season of interest.  
         path (str, optional): where to save the rosters in csv form, defaults to None.
 
     Returns:
@@ -1001,11 +1002,11 @@ qb_games: int = 10, team_games: int = 20, elo_adj: float = 3.3):
     Pulls QB-related statistics and calculates QB elo ratings as they progress over time.
 
     Args:
-        start (int): first season of interest.
-        finish (int): last season of interest.
-        regress_pct (float, optional): percentage to regress QBs back to the mean between each season, defaults to 0.25.
-        qb_games (int, optional): number of games to use in the rolling average for individual QB elos, defaults to 10.
-        team_games (int, optional): number of games to use in the rolling average for team QB elos, defaults to 20.
+        start (int): first season of interest.  
+        finish (int): last season of interest.  
+        regress_pct (float, optional): percentage to regress QBs back to the mean between each season, defaults to 0.25.  
+        qb_games (int, optional): number of games to use in the rolling average for individual QB elos, defaults to 10.  
+        team_games (int, optional): number of games to use in the rolling average for team QB elos, defaults to 20.  
         elo_adj (float, optional): conversion factor between QB rating and team elos, defaults to 3.3.
 
     Returns:
