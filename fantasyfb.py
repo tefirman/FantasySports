@@ -36,8 +36,8 @@ class League:
     to simulate and assess the fantasy league in question.
 
     Attributes:  
-        season: integer specifying the season of interest.  
-        week: integer specifiying the week of interest.  
+        season: integer specifying the season of interest  
+        week: integer specifiying the week of interest  
         oauth: yahoo_oauth object contain user credentials and auth tokens  
         lg: yahoo_fantasy_api league object used to connect to Yahoo's API  
         gm: yahoo_fantasy_api game object used to connect to Yahoo's API  
@@ -72,15 +72,15 @@ class League:
         Initializes a League object using the parameters provided and class functions defined below.
 
         Args:
-            name (str, optional): string describing the name of the fantasy team in question, defaults to None.
-            season (int, optional): integer specifying the season of interest, defaults to None.
-            week (int, optional): integer specifiying the week of interest, defaults to None.
-            injurytries (int, optional): integer specifying the number of attempts to pull injury statuses, defaults to 10.
-            num_sims (int, optional): integer specifying the number of Monte Carlo simulations to run, defaults to 10000.
-            earliest (int, optional): integer describing the earliest week to pull statistics from (YYYYWW), defaults to None.
-            reference_games (int, optional): integer describing the number of games to use as a prior for rates, defaults to None.
-            basaloppstringtime (list, optional): list of the four weighting factors when calculating rates, defaults to an empty list.
-            sfb (bool, optional): whether to implement SFB13 settings and scoring, defaults to False.
+            name (str, optional): string describing the name of the fantasy team in question, defaults to None.  
+            season (int, optional): integer specifying the season of interest, defaults to None.  
+            week (int, optional): integer specifiying the week of interest, defaults to None.  
+            injurytries (int, optional): integer specifying the number of attempts to pull injury statuses, defaults to 10.  
+            num_sims (int, optional): integer specifying the number of Monte Carlo simulations to run, defaults to 10000.  
+            earliest (int, optional): integer describing the earliest week to pull statistics from (YYYYWW), defaults to None.  
+            reference_games (int, optional): integer describing the number of games to use as a prior for rates, defaults to None.  
+            basaloppstringtime (list, optional): list of the four weighting factors when calculating rates, defaults to an empty list.  
+            sfb (bool, optional): whether to implement SFB13 settings and scoring, defaults to False.  
             bestball (str, optional): which platform to use when implementing best ball settings/scoring, defaults to a blank string (no bestball).
         """
         self.latest_season = datetime.datetime.now().year - int(datetime.datetime.now().month < 6)
@@ -212,7 +212,7 @@ class League:
         Pulls league roster/schedule settings and scoring modifiers
 
         Args:
-            sfb (bool, optional): whether to use Scott Fish Bowl 13 settings, defaults to False.
+            sfb (bool, optional): whether to use Scott Fish Bowl 13 settings, defaults to False.  
             bestball (str, optional): which best ball settings to use if desired, defaults to "" (redraft).
         """
         # Pulling league settings
@@ -512,8 +512,8 @@ class League:
         Pulls a dataframe containing event rates based on per-game statistics during the specified timeframe.
 
         Args:
-            start (int): year and number of the first week of interest (YYYYWW, e.g. 202102 = week 2 of 2021).
-            finish (int): year and number of the last week of interest (YYYYWW, e.g. 202307 = week 7 of 2023).
+            start (int): year and number of the first week of interest (YYYYWW, e.g. 202102 = week 2 of 2021).  
+            finish (int): year and number of the last week of interest (YYYYWW, e.g. 202307 = week 7 of 2023).  
             path (str, optional): location of saved per-game statistics, defaults to "GameByGameFantasyFootballStats.csv".
 
         Returns:
@@ -628,7 +628,7 @@ class League:
         pre-pulled statistics saved locally and pulls new stats when necessary.
 
         Args:
-            start (int): year and number of the first week of interest (YYYYWW, e.g. 202102 = week 2 of 2021).
+            start (int): year and number of the first week of interest (YYYYWW, e.g. 202102 = week 2 of 2021).  
             finish (int): year and number of the last week of interest (YYYYWW, e.g. 202307 = week 7 of 2023).
         """
         self.pull_stats(start, finish)
@@ -699,8 +699,8 @@ class League:
         maximum likelihood fitting over five years.
 
         Args:
-            earliest (int, optional): year and number of the earliest week to be included in the prior for rate calculation, defaults to None.
-            reference_games (int, optional): number of games to include the prior for rate calculation, defaults to None.
+            earliest (int, optional): year and number of the earliest week to be included in the prior for rate calculation, defaults to None.  
+            reference_games (int, optional): number of games to include the prior for rate calculation, defaults to None.  
             basaloppstringtime (list, optional): list containing the basal factor, opponent elo factor, and depth chart factor, defaults to [].
         """
         params = pd.read_csv(
@@ -1476,12 +1476,12 @@ class League:
         and redraft settings using Monte Carlo simulations.
 
         Args:
-            postseason (bool, optional): whether to simulate the postseason in addition to the regular season, defaults to True.
-            payouts (list, optional): list of prize amounts for first, second, and third, defaults to [800, 300, 100].
+            postseason (bool, optional): whether to simulate the postseason in addition to the regular season, defaults to True.  
+            payouts (list, optional): list of prize amounts for first, second, and third, defaults to [800, 300, 100].  
             fixed_winner (list, optional): list containing the week and team name of a fixed winner, defaults to None.
 
         Returns:
-            schedule (pd.DataFrame): simulated results for each matchup throughout the season in question
+            schedule (pd.DataFrame): simulated results for each matchup throughout the season in question  
             standings (pd.DataFrame): simulated results for the final season standings and playoff projections
         """
         self.refresh_oauth()
@@ -2170,13 +2170,13 @@ class League:
         a simulation of the roster after a series of potential add & drop transactions.
 
         Args:
-            focus_on (list, optional): list of players to include in every potential trade, defaults to [].
-            exclude (list, optional): list of players to exclude from every potential trade, defaults to [].
-            limit_per (int, optional): number of players per position to analyze, defaults to 10.
-            team_name (str, optional): name of team to analyze trades for, defaults to None (and therefore team of interest).
-            postseason (bool, optional): whether to analyze postseason gains or just regular season, defaults to True.
-            verbose (bool, optional): whether to print out a status report as the code runs, defaults to True.
-            payouts (list, optional): list of payout amounts for top three finishers, defaults to [800, 300, 100].
+            focus_on (list, optional): list of players to include in every potential trade, defaults to [].  
+            exclude (list, optional): list of players to exclude from every potential trade, defaults to [].  
+            limit_per (int, optional): number of players per position to analyze, defaults to 10.  
+            team_name (str, optional): name of team to analyze trades for, defaults to None (and therefore team of interest).  
+            postseason (bool, optional): whether to analyze postseason gains or just regular season, defaults to True.  
+            verbose (bool, optional): whether to print out a status report as the code runs, defaults to True.  
+            payouts (list, optional): list of payout amounts for top three finishers, defaults to [800, 300, 100].  
             bestball (bool, optional): whether to use best ball settings during simulation, defaults to False.
 
         Returns:
@@ -2335,13 +2335,13 @@ class League:
         a simulation of the roster after a series of potential add transactions.
 
         Args:
-            focus_on (list, optional): list of players to include in every potential trade, defaults to [].
-            exclude (list, optional): list of players to exclude from every potential trade, defaults to [].
-            limit_per (int, optional): number of players per position to analyze, defaults to 10.
-            team_name (str, optional): name of team to analyze trades for, defaults to None (and therefore team of interest).
-            postseason (bool, optional): whether to analyze postseason gains or just regular season, defaults to True.
-            verbose (bool, optional): whether to print out a status report as the code runs, defaults to True.
-            payouts (list, optional): list of payout amounts for top three finishers, defaults to [800, 300, 100].
+            focus_on (list, optional): list of players to include in every potential trade, defaults to [].  
+            exclude (list, optional): list of players to exclude from every potential trade, defaults to [].  
+            limit_per (int, optional): number of players per position to analyze, defaults to 10.  
+            team_name (str, optional): name of team to analyze trades for, defaults to None (and therefore team of interest).  
+            postseason (bool, optional): whether to analyze postseason gains or just regular season, defaults to True.  
+            verbose (bool, optional): whether to print out a status report as the code runs, defaults to True.  
+            payouts (list, optional): list of payout amounts for top three finishers, defaults to [800, 300, 100].  
             bestball (bool, optional): whether to use best ball settings during simulation, defaults to False.
 
         Returns:
@@ -2465,12 +2465,12 @@ class League:
         a simulation of the roster after a series of potential drop transactions.
 
         Args:
-            focus_on (list, optional): list of players to include in every potential trade, defaults to [].
-            exclude (list, optional): list of players to exclude from every potential trade, defaults to [].
-            team_name (str, optional): name of team to analyze trades for, defaults to None (and therefore team of interest).
-            postseason (bool, optional): whether to analyze postseason gains or just regular season, defaults to True.
-            verbose (bool, optional): whether to print out a status report as the code runs, defaults to True.
-            payouts (list, optional): list of payout amounts for top three finishers, defaults to [800, 300, 100].
+            focus_on (list, optional): list of players to include in every potential trade, defaults to [].  
+            exclude (list, optional): list of players to exclude from every potential trade, defaults to [].  
+            team_name (str, optional): name of team to analyze trades for, defaults to None (and therefore team of interest).  
+            postseason (bool, optional): whether to analyze postseason gains or just regular season, defaults to True.  
+            verbose (bool, optional): whether to print out a status report as the code runs, defaults to True.  
+            payouts (list, optional): list of payout amounts for top three finishers, defaults to [800, 300, 100].  
             bestball (bool, optional): whether to use best ball settings during simulation, defaults to False.
 
         Returns:
@@ -2581,14 +2581,14 @@ class League:
         a simulation of the roster after a series of potential trade transactions.
 
         Args:
-            focus_on (list, optional): list of players to include in every potential trade, defaults to [].
-            exclude (list, optional): list of players to exclude from every potential trade, defaults to [].
-            given (list, optional): list of players to include in the trade in the background, defaults to [].
-            limit_per (int, optional): number of players per position to analyze, defaults to 10.
-            team_name (str, optional): name of team to analyze trades for, defaults to None (and therefore team of interest).
-            postseason (bool, optional): whether to analyze postseason gains or just regular season, defaults to True.
-            verbose (bool, optional): whether to print out a status report as the code runs, defaults to True.
-            payouts (list, optional): list of payout amounts for top three finishers, defaults to [800, 300, 100].
+            focus_on (list, optional): list of players to include in every potential trade, defaults to [].  
+            exclude (list, optional): list of players to exclude from every potential trade, defaults to [].  
+            given (list, optional): list of players to include in the trade in the background, defaults to [].  
+            limit_per (int, optional): number of players per position to analyze, defaults to 10.  
+            team_name (str, optional): name of team to analyze trades for, defaults to None (and therefore team of interest).  
+            postseason (bool, optional): whether to analyze postseason gains or just regular season, defaults to True.  
+            verbose (bool, optional): whether to print out a status report as the code runs, defaults to True.  
+            payouts (list, optional): list of payout amounts for top three finishers, defaults to [800, 300, 100].  
             bestball (bool, optional): whether to use best ball settings during simulation, defaults to False.
 
         Returns:
@@ -2810,8 +2810,8 @@ class League:
         of the season given one team winning or losing each matchup.
 
         Args:
-            team_name (str, optional): name of team to analyze matchup values for, defaults to None (and therefore team of interest).
-            postseason (bool, optional): whether to analyze postseason gains or just regular season, defaults to True.
+            team_name (str, optional): name of team to analyze matchup values for, defaults to None (and therefore team of interest).  
+            postseason (bool, optional): whether to analyze postseason gains or just regular season, defaults to True.  
             payouts (list, optional): list of payout amounts for top three finishers, defaults to [800, 300, 100].
 
         Returns:
@@ -2846,8 +2846,8 @@ def excelAutofit(df: pd.DataFrame, name: str, writer: pd.ExcelWriter, freeze_col
     with the columns autofitted and autoformatted.
 
     Args:
-        df (pd.DataFrame): dataframe to print to the excel spreadsheet.
-        name (str): name of the new tab to be added.
+        df (pd.DataFrame): dataframe to print to the excel spreadsheet.  
+        name (str): name of the new tab to be added.  
         writer (pd.ExcelWriter): ExcelWriter object representing the excel spreadsheet.
 
     Returns:
@@ -2902,9 +2902,9 @@ def sendEmail(subject: str, body: str, address: str, filename: str = None):
     Sends an email to the address provided with whichever subject, body, and attachements desired.
 
     Args:
-        subject (str): subject line of the email to be sent.
-        body (str): body text of the email to be sent.
-        address (str): email address to send the message to.
+        subject (str): subject line of the email to be sent.  
+        body (str): body text of the email to be sent.  
+        address (str): email address to send the message to.  
         filename (str, optional): location of a file to be attached to the email, defaults to None.
     """
     message = MIMEMultipart()
@@ -2929,6 +2929,12 @@ def sendEmail(subject: str, body: str, address: str, filename: str = None):
 
 
 def initialize_inputs():
+    """
+    Initializing arguments based on command line inputs provided by the user.
+
+    Returns:
+        optparse.Values: collection of cleaned input values based on inputs and basic logic.
+    """
     parser = optparse.OptionParser()
     parser.add_option(
         "--season",
