@@ -71,7 +71,7 @@ def pull_elo_rankings() -> pd.DataFrame:
     for col in elo.columns:
         if elo[col].str.replace(".", "", regex=False).str.isnumeric().all():
             elo[col] = elo[col].astype(float)
-    elo.Updated = pd.to_datetime(elo.Updated, infer_datetime_format=True)
+    elo.Updated = pd.to_datetime(elo.Updated)
     elo.Player = elo.Player.str.replace('\xa0',' ')
 
     # Merge in ace and double fault rates???
@@ -107,7 +107,7 @@ def load_elos(elo_loc: str = "TennisElo.csv") -> pd.DataFrame:
     """
     if os.path.exists(elo_loc):
         elo = pd.read_csv(elo_loc)
-        elo.Updated = pd.to_datetime(elo.Updated, infer_datetime_format=True)
+        elo.Updated = pd.to_datetime(elo.Updated)
         if elo.Updated.max() < datetime.datetime.now() - datetime.timedelta(days=7):
             elo = pull_elo_rankings()
             elo.to_csv(elo_loc, index=False)
