@@ -66,7 +66,10 @@ class USP:
         self.schedule[['week_num','game_date','team2_abbrev','elo_prob2']]\
         .rename(columns={'week_num':'week','team2_abbrev':'team','elo_prob2':'prob'})],ignore_index=True)
         self.probs = self.probs.loc[(self.probs.week >= first) & (self.probs.week <= last)].reset_index(drop=True)
-        self.probs.game_date = pd.to_datetime(self.probs.game_date,infer_datetime_format=True)
+        try:
+            self.probs.game_date = pd.to_datetime(self.probs.game_date, format="%Y-%m-%d")
+        except:
+            self.probs.game_date = pd.to_datetime(self.probs.game_date, format="%m/%d/%y") # Accounting for manual updates to schedule csv... Thanks Excel...
 
     def load_picks(self, picks_loc: str = None) -> pd.DataFrame:
         """
