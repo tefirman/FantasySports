@@ -359,7 +359,10 @@ class League:
         nfl_schedule = pd.concat([home, away], ignore_index=True)
         nfl_schedule.elo_diff = nfl_schedule.elo_diff / 1500
         nfl_schedule.opp_elo = 1500 / nfl_schedule.opp_elo
-        nfl_schedule.date = pd.to_datetime(nfl_schedule.date, format="%m/%d/%y")
+        try:
+            nfl_schedule.date = pd.to_datetime(nfl_schedule.date, format="%Y-%m-%d")
+        except:
+            nfl_schedule.date = pd.to_datetime(nfl_schedule.date, format="%m/%d/%y") # Accounting for manual updates to schedule csv... Thanks Excel...
         self.nfl_schedule = nfl_schedule.sort_values(by=["season", "week"], ignore_index=True)
 
     def refresh_oauth(self, threshold: int = 59):
@@ -397,11 +400,14 @@ class League:
             players = []
             # Rostered Players
             for page_ind in range(100):
-                page = self.lg.yhandler.get(
-                    "league/{}/players;start={};count=25;status=T/".format(
-                        self.lg_id, page_ind * 25
-                    )
-                )["fantasy_content"]["league"][1]["players"]
+                while True:
+                    try:
+                        page = self.lg.yhandler.get_players_raw(self.lg_id, page_ind * 25, "T")
+                        page = page["fantasy_content"]["league"][1]["players"]
+                        break
+                    except:
+                        print("Players query crapped out... Waiting 30 seconds and trying again...")
+                        time.sleep(30)
                 if page == []:
                     break
                 for player_ind in range(page["count"]):
@@ -422,8 +428,14 @@ class League:
             # Available Players
             for page_ind in range(100):
                 """Accounting for a weird player_id deletion in 2015..."""
-                page = self.lg.yhandler.get_players_raw(self.lg_id, page_ind * 25, "A")
-                page = page["fantasy_content"]["league"][1]["players"]
+                while True:
+                    try:
+                        page = self.lg.yhandler.get_players_raw(self.lg_id, page_ind * 25, "A")
+                        page = page["fantasy_content"]["league"][1]["players"]
+                        break
+                    except:
+                        print("Players query crapped out... Waiting 30 seconds and trying again...")
+                        time.sleep(30)
                 if page == []:
                     break
                 for player_ind in range(page["count"]):
@@ -456,7 +468,13 @@ class League:
             columns=["player_id", "selected_position", "fantasy_team"]
         )
         for team in self.teams:
-            tm = self.lg.to_team(team["team_key"])
+            while True:
+                try:
+                    tm = self.lg.to_team(team["team_key"])
+                    break
+                except:
+                    print("Team roster query crapped out... Waiting 30 seconds and trying again...")
+                    time.sleep(30)
             players = pd.DataFrame(tm.roster(self.week))
             if players.shape[0] == 0:
                 continue
@@ -964,6 +982,7 @@ class League:
             + self.basaloppstringtime[1] * (rel_stats["elo_diff"])
             + self.basaloppstringtime[2] * (1 - rel_stats["string"])
         )
+        rel_stats.loc[rel_stats.game_factor < 0.25,"game_factor"] = 0.25 # Setting lower limit for outliers
         rel_stats['rel_points'] = rel_stats.points/rel_stats.game_factor
         by_pos = pd.merge(
             left=rel_stats.groupby("position")
@@ -3109,6 +3128,9 @@ def main():
         reference_games=options.games,
         basaloppstringtime=options.basaloppstringtime,
     )
+    # # Assessing more complex trades...
+    # league.players.loc[league.players.name.isin(['Travis Kelce']),'fantasy_team'] = "The Algorithm"
+    # league.players.loc[league.players.name.isin(['Mike Evans','AJ Dillon']),'fantasy_team'] = "Football Cream"
     writer = pd.ExcelWriter(
         options.output
         + "FantasyFootballProjections_{}Week{}{}.xlsx".format(
