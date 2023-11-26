@@ -39,7 +39,7 @@ def get_starters(team):
         schedule = pd.concat([schedule,pd.DataFrame(entry,index=[schedule.shape[0]])])
     schedule = schedule.rename(columns={'':'home_away','Opp':'opp',columns[7]:'starter','Opp Starter':'opp_starter'})
     schedule['team_full'] = team
-    schedule['date'] = pd.to_datetime(schedule.Date.str.split(str(latest_season)).str[0] + str(latest_season),infer_datetime_format=True)
+    schedule['date'] = pd.to_datetime(schedule.Date.str.split(str(latest_season)).str[0] + str(latest_season))
     schedule = schedule[['date','team_full','home_away','opp','opp_full','starter','opp_starter']]
     starters = schedule.loc[schedule.starter != ''].drop_duplicates(subset='starter',keep='first').starter.tolist()
     while len(starters) < (schedule.starter == '').sum():
@@ -466,7 +466,7 @@ def add_injuries(by_player):
         inj_proj = [player.split(',') for player in requests.get("https://raw.githubusercontent.com/" + \
         "tefirman/FantasySports/master/res/baseball/injured_list.csv",verify=False).text.split('\r')]
         inj_proj = pd.DataFrame(inj_proj[1:],columns=inj_proj[0])
-    inj_proj.until = pd.to_datetime(inj_proj.until,infer_datetime_format=True)
+    inj_proj.until = pd.to_datetime(inj_proj.until)
     inj_proj = inj_proj.loc[inj_proj.until >= datetime.datetime.now()]
     by_player = pd.merge(left=by_player,right=inj_proj,how='left',on=['full_name','editorial_team_abbr'])
     by_player.loc[by_player.status.isin(['DTD']) & by_player.until.isnull(),'until'] = datetime.datetime.now() + datetime.timedelta(days=1)
@@ -849,8 +849,8 @@ def main():
     if os.path.exists('GameByGameFantasyBaseballBattingStats.csv'):
         batting = pd.read_csv('GameByGameFantasyBaseballBattingStats.csv',dtype={'game_id':str})
         pitching = pd.read_csv('GameByGameFantasyBaseballPitchingStats.csv',dtype={'game_id':str})
-        batting.date = pd.to_datetime(batting.date,infer_datetime_format=True)
-        pitching.date = pd.to_datetime(pitching.date,infer_datetime_format=True)
+        batting.date = pd.to_datetime(batting.date)
+        pitching.date = pd.to_datetime(pitching.date)
         if (datetime.datetime.now() - batting.date.max()).days > 1:
             new_batting,new_pitching = mlb.get_games(str(batting.date.max() + \
             datetime.timedelta(days=1)),str(datetime.datetime.now() - datetime.timedelta(days=1)))
