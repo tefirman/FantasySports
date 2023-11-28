@@ -726,24 +726,31 @@ class League:
             + "tefirman/FantasySports/main/res/football/weighting_factors.csv"
         )
         if earliest:
-            self.earliest = earliest
+            self.earliest = {}
+            for pos in ["QB","RB","WR","TE","K","DEF"]:
+                self.earliest[pos] = earliest
         else:
-            prior = params.loc[params.week == self.week, "prior"].values[0]
-            self.earliest = (self.season - prior // 17) * 100 + self.week - prior % 17
-            if (self.earliest % 100 == 0) | (self.earliest % 100 > 50):
-                self.earliest -= 83  # Assuming 17 weeks... Need to change this soon...
+            priors = params.loc[params.week == self.week].set_index("position").to_dict()['prior']
+            self.earliest = {}
+            for pos in priors:
+                self.earliest[pos] = (self.season - priors[pos] // 17) * 100 + self.week - priors[pos] % 17
+                if (self.earliest[pos] % 100 == 0) | (self.earliest[pos] % 100 > 50):
+                    self.earliest[pos] -= 83  # Assuming 17 weeks... Need to change this soon...
         if reference_games:
-            self.reference_games = reference_games
+            self.reference_games = {}
+            for pos in ["QB","RB","WR","TE","K","DEF"]:
+                self.reference_games[pos] = reference_games
         else:
-            self.reference_games = params.loc[params.week == self.week, "games"].values[0]
+            self.reference_games = params.loc[params.week == self.week].set_index("position").to_dict()['games']
         if basaloppstringtime:
-            self.basaloppstringtime = basaloppstringtime
+            self.basaloppstringtime = pd.DataFrame({"position":["QB","RB","WR","TE","K","DEF"]})
+            self.basaloppstringtime["basal"] = basaloppstringtime[0]
+            self.basaloppstringtime["opp_elo_weight"] = basaloppstringtime[1]
+            self.basaloppstringtime["string_weight"] = basaloppstringtime[2]
+            self.basaloppstringtime["time_scale"] = basaloppstringtime[3]
         else:
-            self.basaloppstringtime = list(
-                params.loc[
-                    params.week == self.week, ["basal", "opp_elo", "string", "time_factor"]
-                ].values[0]
-            )
+            self.basaloppstringtime = params.loc[params.week == self.week, \
+            ["position", "basal", "opp_elo_weight", "string_weight", "time_scale"]]
 
     def add_injuries(self):
         """
@@ -972,16 +979,15 @@ class League:
         """
         as_of = self.season * 100 + self.week
         if not hasattr(self,"stats") or reload:
-            self.load_stats(self.earliest, as_of - 1)
-            rel_stats = self.stats.copy()
-        else:
-            rel_stats = self.stats.loc[(self.stats.season*100 + self.stats.week <= as_of - 1) & \
-            (self.stats.season*100 + self.stats.week >= self.earliest)].reset_index()
-        rel_stats["game_factor"] = (
-            self.basaloppstringtime[0]
-            + self.basaloppstringtime[1] * (rel_stats["elo_diff"])
-            + self.basaloppstringtime[2] * (1 - rel_stats["string"])
-        )
+            self.load_stats(min(self.earliest.values()), as_of - 1)
+        rel_stats = self.stats.copy()
+        for pos in self.earliest:
+            rel_stats = rel_stats.loc[(rel_stats["position"] != pos) | \
+            ((rel_stats.season*100 + rel_stats.week <= as_of - 1) & \
+            (rel_stats.season*100 + rel_stats.week >= self.earliest[pos]))].reset_index(drop=True)
+        rel_stats = pd.merge(left=rel_stats,right=self.basaloppstringtime,how='left',on='position')
+        rel_stats["game_factor"] = rel_stats["basal"] + rel_stats["opp_elo_weight"]*rel_stats["elo_diff"] \
+            + rel_stats["string_weight"]*(1 - rel_stats["string"])
         rel_stats.loc[rel_stats.game_factor < 0.25,"game_factor"] = 0.25 # Setting lower limit for outliers
         rel_stats['rel_points'] = rel_stats.points/rel_stats.game_factor
         by_pos = pd.merge(
@@ -997,11 +1003,14 @@ class League:
             on="position",
         )
         by_pos["player_id_sr"] = "avg_" + by_pos["position"]
-        rel_stats = rel_stats.groupby(["player_id_sr","position"]).head(self.reference_games)
+        for pos in self.reference_games:
+            rel_stats = pd.concat([rel_stats.loc[rel_stats.position != pos],\
+            rel_stats.loc[rel_stats.position == pos].groupby(["player_id_sr","position"])\
+            .head(self.reference_games[pos])],ignore_index=True)
         rel_stats["weeks_ago"] = (
             17 * (as_of // 100 - rel_stats.season) + as_of % 100 - rel_stats.week
         )
-        rel_stats["time_factor"] = 1 - rel_stats.weeks_ago * self.basaloppstringtime[-1]
+        rel_stats["time_factor"] = 1 - rel_stats.weeks_ago*rel_stats.time_scale
         rel_stats = rel_stats.loc[rel_stats.time_factor > 0].reset_index(drop=True)
         rel_stats = pd.merge(
             left=rel_stats,
@@ -1053,24 +1062,26 @@ class League:
             how="inner",
             on="position",
         )
-        inds = by_player.num_games < self.reference_games
+        for pos in self.reference_games:
+            by_player.loc[by_player.position == pos,'ref_games'] = self.reference_games[pos]
+        inds = by_player.num_games < by_player.ref_games
         by_player.loc[inds, "points_squared"] = (
             by_player.loc[inds, "num_games"]
             * (
                 by_player.loc[inds, "points_stdev"] ** 2
                 + by_player.loc[inds, "points_rate"] ** 2
             )
-            + (self.reference_games - by_player.loc[inds, "num_games"])
+            + (by_player.loc[inds, "ref_games"] - by_player.loc[inds, "num_games"])
             * (
                 by_player.loc[inds, "pos_stdev"] ** 2
                 + by_player.loc[inds, "pos_avg"] ** 2
             )
-        ) / self.reference_games
+        ) / by_player.loc[inds, "ref_games"]
         by_player.loc[inds, "points_rate"] = (
             by_player.loc[inds, "num_games"] * by_player.loc[inds, "points_rate"]
-            + (self.reference_games - by_player.loc[inds, "num_games"])
+            + (by_player.loc[inds, "ref_games"] - by_player.loc[inds, "num_games"])
             * by_player.loc[inds, "pos_avg"]
-        ) / self.reference_games
+        ) / by_player.loc[inds, "ref_games"]
         by_player.loc[inds, "points_stdev"] = (
             by_player.loc[inds, "points_squared"]
             - by_player.loc[inds, "points_rate"] ** 2
@@ -1318,13 +1329,11 @@ class League:
             right_on="team",
         )
         self.players.elo_diff = self.players.elo_diff.fillna(0.0)
-        self.players["opp_factor"] = (self.basaloppstringtime[1] * self.players["elo_diff"])
-        self.players["string_factor"] = self.basaloppstringtime[2] * (1 - self.players["string"])
-        self.players["game_factor"] = (
-            self.basaloppstringtime[0]
-            + self.players["opp_factor"]
-            + self.players["string_factor"]
-        )
+        if "opp_elo_weight" not in self.players.columns:
+            self.players = pd.merge(left=self.players,right=self.basaloppstringtime,how='left',on='position')
+        self.players["opp_factor"] = (self.players['opp_elo_weight'] * self.players["elo_diff"])
+        self.players["string_factor"] = self.players['string_weight'] * (1 - self.players["string"])
+        self.players["game_factor"] = self.players['basal'] + self.players["opp_factor"] + self.players["string_factor"]
         self.players["points_avg"] = self.players["points_rate"]*self.players["game_factor"]#.fillna(1.0)
         del self.players["team"], self.players["elo_diff"]
         # WAR is linear with points_avg, but slope/intercept depends on position
