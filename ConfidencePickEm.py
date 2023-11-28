@@ -108,9 +108,12 @@ def load_picks(week: int) -> pd.DataFrame:
     actual = actual.loc[~actual.player.isin(excluded)].reset_index(drop=True)
     # Only able to account for one missed pick per player... THIS DOESN'T WORK!!! THIS DOESN'T WORK!!!
     actual.loc[actual.points_bid == 0,'points_bid'] = 1.0
-    # # HOTFIX FOR WEEK 9!!!
-    # actual = pd.concat([actual,pd.DataFrame({"player":['JK','Chicago Bears'],"pick":['MIA','OTI'],"points_bid":[1,1],'entry':[25.0,16.0]})])
-    # # HOTFIX FOR WEEK 9!!!
+    # # HOTFIX FOR WEEK 11!!!
+    # actual = pd.concat([actual,pd.DataFrame({"player":['Tua Lipa','JK','JK','JK',\
+    # 'Kyle','Kyle','Kyle',"Rent's Due LLC","Richie Rich $$$","LittleClan","dbalz","DAAA…….BEARS!"],\
+    # "pick":['DET','WSH','SEA','NYJ','WSH','SEA','NYJ','GB','NYJ','NYJ','NYJ','NYJ'],\
+    # "points_bid":[1,1,2,3,1,2,3,1,1,1,1,1],'entry':[55.0,26.0,26.0,26.0,30.0,30.0,30.0,44.0,45.0,32.0,56.0,19.0]})])
+    # # HOTFIX FOR WEEK 11!!!
     return actual
 
 def simulate_picks(games: pd.DataFrame, picks: pd.DataFrame, num_sims: int = 1000, num_entries: int = 50) -> pd.DataFrame:
@@ -150,7 +153,7 @@ def simulate_picks(games: pd.DataFrame, picks: pd.DataFrame, num_sims: int = 100
     all_picks = pd.merge(left=all_picks,right=picks,how='left',on=['entry','points_bid'])
     all_picks = all_picks.loc[all_picks.pick.isnull()]
     # print(all_picks.groupby('entry').size().sort_values())
-    # print(picks.loc[picks.entry.isin([16,29,25])])
+    # print(picks.loc[picks.entry.isin([45,19,32,56])])
     if all_picks.entry.nunique() == num_entries:
         sims['points_bid_sim'] = sims.apply(lambda x: np.random.normal(x['pts_avg'],x['pts_stdev']),axis=1)
         sims = sims.sort_values(by=['num_sim','entry','points_bid_sim'],ascending=True)
@@ -210,6 +213,8 @@ def add_my_picks(sims: pd.DataFrame, fixed: list = [], pick_pref: str = "best", 
     my_entries.loc[away_fixed,'pick'] = my_entries.loc[away_fixed,'team2_abbrev']
     my_entries.loc[away_fixed,'win_prob'] = my_entries.loc[away_fixed,'elo_prob2']
     my_entries.loc[away_fixed,'pick_pts'] = my_entries.loc[away_fixed,'pick_pts2']
+    # my_entries.loc[my_entries.team1_abbrev.isin(['MIA']) \
+    # | my_entries.team2_abbrev.isin(['MIA']),'win_prob'] += 1
     my_entries = my_entries.sort_values(by=['num_sim','win_prob'],ascending=False,ignore_index=True)
     if str(point_pref).lower() not in ["best","popular","worst","random"]:
         print('Invalid preference value ("best", "popular", "worst", "random"), using "best" by default...')
@@ -221,6 +226,8 @@ def add_my_picks(sims: pd.DataFrame, fixed: list = [], pick_pref: str = "best", 
     elif point_pref.lower() == "random":
         np.random.shuffle(my_points)
     my_entries['points_bid'] = my_points*num_sims
+    # my_entries.loc[my_entries.team1_abbrev.isin(['MIA']) \
+    # | my_entries.team2_abbrev.isin(['MIA']),'win_prob'] -= 1
     sims = pd.concat([sims,my_entries],ignore_index=True)
     sims = sims.sort_values(by=["num_sim","entry"],ascending=True,ignore_index=True)
     if "points_won" in sims.columns:
@@ -239,7 +246,11 @@ def simulate_games(sims: pd.DataFrame, fixed: list = []) -> pd.DataFrame:
     Returns:
         pd.DataFrame: same simulation dataframe, but with game/point outcomes updated.
     """
-    sims['game_sim'] = np.random.rand(sims.shape[0])
+    matchups = sims[['num_sim','team1_abbrev','team2_abbrev']].drop_duplicates(ignore_index=True)
+    matchups['game_sim'] = np.random.rand(matchups.shape[0])
+    if "game_sim" in sims.columns:
+        del sims['game_sim']
+    sims = pd.merge(left=sims,right=matchups,how='inner',on=["num_sim","team1_abbrev","team2_abbrev"])
     home_win = sims.game_sim < sims.elo_prob1
     sims.loc[home_win,'winner'] = sims.loc[home_win,'team1_abbrev']
     sims.loc[~home_win,'winner'] = sims.loc[~home_win,'team2_abbrev']
@@ -335,6 +346,9 @@ fixed: list = [], initial_picks: str = "best", initial_pts: str = "best") -> pd.
             for switch_from in range(1,games.shape[0] - change + 1):
                 up = (sims.entry == 0) & (sims.points_bid == switch_from)
                 down = (sims.entry == 0) & (sims.points_bid == switch_from + change)
+                # if up.sum() == 0 or down.sum() == 0 \
+                # or sims.loc[up,'pick'].values[0] in ['MIA'] \
+                # or sims.loc[down,'pick'].values[0] in ['MIA']:
                 if up.sum() == 0 or down.sum() == 0:
                     continue # One of the point values have already been used...
                 sims.loc[up,'points_bid'] = switch_from + change
