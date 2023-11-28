@@ -57,8 +57,14 @@ Options:
   --email=EMAIL         where to send the final projections spreadsheet
 ```
 
+## Planned Updates
+
+- Optimizing weighting factors based on position in `fantasyfb.py`.
+- Expanded html documentation of the entire package.
+- Incorporating unit tests for each script.
+
 ## Contact
 
-Taylor Firman, @tefirman51, [taylorfirman.com](http://www.taylorfirman.com)
+Taylor Firman, [@tefirman51](https://twitter.com/tefirman51), [taylorfirman.com](http://www.taylorfirman.com)
 
 
