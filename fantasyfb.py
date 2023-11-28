@@ -3153,7 +3153,7 @@ def main():
         "opp_factor",
         "string_factor",
     ]:
-        rosters[col] = round(rosters[col], 3)
+        rosters[col] = round(rosters[col].astype(float), 3)
     writer = excelAutofit(
         rosters[
             [
@@ -3201,7 +3201,7 @@ def main():
         "opp_factor",
         "string_factor",
     ]:
-        available[col] = round(available[col], 3)
+        available[col] = round(available[col].astype(float), 3)
     writer = excelAutofit(
         available[
             [
