@@ -70,6 +70,8 @@ class USP:
             self.probs.game_date = pd.to_datetime(self.probs.game_date, format="%Y-%m-%d")
         except:
             self.probs.game_date = pd.to_datetime(self.probs.game_date, format="%m/%d/%y") # Accounting for manual updates to schedule csv... Thanks Excel...
+        self.thanksgiving = cal.holidays(start=str(datetime.datetime.now().year) + '-11-15', end=str(datetime.datetime.now().year) + '-12-01').to_pydatetime()[0]
+        self.tg_week = self.probs.loc[self.probs.game_date == self.thanksgiving,'week'].unique()[0]
 
     def load_picks(self, picks_loc: str = None) -> pd.DataFrame:
         """
@@ -96,7 +98,7 @@ class USP:
             elif str(col).endswith(".1"):
                 self.picks = self.picks.rename(columns={col:"team_" + col[:-2] + "b"})
             elif col == "Giving":
-                self.picks = self.picks.rename(columns={col:"team_" + str(col) + "c"})
+                self.picks = self.picks.rename(columns={col:"team_" + str(self.tg_week) + "c"})
         team_names = self.schedule.team1_abbrev.unique().tolist()
         translation = {"BAL":"RAV","KC":"KAN","JAC":"JAX","NO":"NOR","SF":"SFO",\
         "TB":"TAM","IND":"CLT","LAC":"SDG","GB":"GNB","HOU":"HTX","TEN":"OTI",\
@@ -116,8 +118,7 @@ class USP:
         Args:
             limit (int, optional): maximum number of pick combinations to retain between each iteration, defaults to 1000.
         """
-        thanksgiving = cal.holidays(start=str(datetime.datetime.now().year) + '-11-15', end=str(datetime.datetime.now().year) + '-12-01').to_pydatetime()[0]
-        probs_tg = self.probs.loc[self.probs.game_date == thanksgiving].reset_index(drop=True)
+        probs_tg = self.probs.loc[self.probs.game_date == self.thanksgiving].reset_index(drop=True)
         winners = self.probs.loc[self.probs.prob == 1].reset_index(drop=True)
         self.picks["points_so_far"] = 0.0
         for week in winners.week.unique():
