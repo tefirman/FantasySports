@@ -267,20 +267,9 @@ def main():
     "J. Hurts","J. Jefferson","A. St. Brown","L. Jackson","J. Chase","R. Mostert","A. Thielen",\
     "T. Etienne Jr.","D. Moore","C. Kupp"]
 
-    dkrm_tf.players.loc[dkrm_tf.players.name.isin(['B. Purdy']),'points_avg'] = 11.46
-    dkrm_tf.players.loc[dkrm_tf.players.name.isin(['D. Samuel']),'points_avg'] = 22.4
-    dkrm_tf.players.loc[dkrm_tf.players.name.isin(['G. Kittle']),'points_avg'] = 4.9
-    dkrm_tf.players.loc[dkrm_tf.players.name.isin(['J. Moody']),'points_avg'] = 7.0
-    dkrm_tf.players.loc[dkrm_tf.players.name.isin(['SFO']),'points_avg'] = 14.0
-    dkrm_tf.players.loc[dkrm_tf.players.name.isin(['T. Lockett']),'points_avg'] = 6.0
-    dkrm_tf.players.loc[dkrm_tf.players.name.isin(['Z. Charbonnet']),'points_avg'] = 9.8
-    dkrm_tf.players.loc[dkrm_tf.players.name.isin(['T. McLaurin']),'points_avg'] = 9.0
-    dkrm_tf.players.loc[dkrm_tf.players.name.isin(['B. Cooks']),'points_avg'] = 17.2
-    dkrm_tf.players.loc[dkrm_tf.players.name.isin(['A. Gibson']),'points_avg'] = 6.7
-    dkrm_tf.players.loc[dkrm_tf.players.name.isin(['T. Tagovailoa']),'points_avg'] = 10.82
-    dkrm_tf.players.loc[dkrm_tf.players.name.isin(['B. Hall']),'points_avg'] = 11.9
-    dkrm_tf.players.loc[dkrm_tf.players.name.isin(['J. Waddle']),'points_avg'] = 22.4
-    dkrm_tf.players.loc[dkrm_tf.players.name.isin(['G. Zuerlein']),'points_avg'] = 1.0
+    # TNF SCORING UPDATES
+    # dkrm_tf.players.loc[dkrm_tf.players.name.isin(['B. Purdy']),'points_avg'] = 11.46
+    # TNF SCORING UPDATES
 
     dkrm_tf.players['taken'] = dkrm_tf.players.name.isin(["DAL","Z. Jones","T. Lawrence","K. Pickett"]) # Showdown Entries, Exclusions
     # taken_inds = dkrm_tf.players.loc[dkrm_tf.players.name.isin(["A. Gibson",\
