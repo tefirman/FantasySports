@@ -471,11 +471,11 @@ class League:
             while True:
                 try:
                     tm = self.lg.to_team(team["team_key"])
+                    players = pd.DataFrame(tm.roster(self.week))
                     break
                 except:
                     print("Team roster query crapped out... Waiting 30 seconds and trying again...")
                     time.sleep(30)
-            players = pd.DataFrame(tm.roster(self.week))
             if players.shape[0] == 0:
                 continue
             if (~players.player_id.isin(self.players.player_id)).any():
