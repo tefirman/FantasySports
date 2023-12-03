@@ -141,17 +141,23 @@ def get_depth_chart(team_abbrev: str):
                 depth = pd.concat([depth,pd.DataFrame({'player':[players[pos*num_strings + string]],\
                 'pos':[positions[pos]],'string':[string + 1]})],ignore_index=True)
     depth.loc[depth.pos.isin(['PK']),'pos'] = 'K'
-    wrs = depth.pos == 'WR'
-    depth.loc[wrs,'string'] = 1 + (depth.loc[wrs].string.rank(method='first') - 1)/3
     depth = depth.loc[depth.player != '-'].reset_index(drop=True)
     for status in ['P','Q','O','PUP','SUSP','IR']:
         injured = depth.player.str.endswith(' ' + status)
+        depth.loc[injured,'status'] = status
         depth.loc[injured,'player'] = depth.loc[injured,'player'].str.split(' ').str[:-1].apply(' '.join)
+    injured = depth.loc[depth.status.isin(['O','PUP','SUSP','IR'])].reset_index(drop=True)
+    injured.string = float('inf')
+    depth = pd.concat([depth.loc[~depth.status.isin(['O','PUP','SUSP','IR'])],injured],ignore_index=True)
+    depth['string'] = depth.groupby('pos').string.rank(method='first')
+    wrs = depth.pos == 'WR'
+    depth.loc[wrs,'string'] = 1 + (depth.loc[wrs,'string'] - 1)/3
     corrections = pd.read_csv("https://raw.githubusercontent.com/tefirman/FantasySports/main/res/football/name_corrections.csv")
     depth = pd.merge(left=depth, right=corrections.rename(columns={'name':'player'}), how="left", on="player")
     to_fix = ~depth.new_name.isnull()
     depth.loc[to_fix, "player"] = depth.loc[to_fix, "new_name"]
-    del depth['new_name']
+    del depth['new_name'], depth['status']
+    depth = depth.sort_values(by=["pos","string"],ignore_index=True)
     return depth
 
 
