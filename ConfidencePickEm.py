@@ -108,12 +108,9 @@ def load_picks(week: int) -> pd.DataFrame:
     actual = actual.loc[~actual.player.isin(excluded)].reset_index(drop=True)
     # Only able to account for one missed pick per player... THIS DOESN'T WORK!!! THIS DOESN'T WORK!!!
     actual.loc[actual.points_bid == 0,'points_bid'] = 1.0
-    # # HOTFIX FOR WEEK 11!!!
-    # actual = pd.concat([actual,pd.DataFrame({"player":['Tua Lipa','JK','JK','JK',\
-    # 'Kyle','Kyle','Kyle',"Rent's Due LLC","Richie Rich $$$","LittleClan","dbalz","DAAA…….BEARS!"],\
-    # "pick":['DET','WSH','SEA','NYJ','WSH','SEA','NYJ','GB','NYJ','NYJ','NYJ','NYJ'],\
-    # "points_bid":[1,1,2,3,1,2,3,1,1,1,1,1],'entry':[55.0,26.0,26.0,26.0,30.0,30.0,30.0,44.0,45.0,32.0,56.0,19.0]})])
-    # # HOTFIX FOR WEEK 11!!!
+    # HOTFIX FOR WEEK 11!!!
+    actual = pd.concat([actual,pd.DataFrame({"player":["D. Sop"],"pick":['SEA'],"points_bid":[1],'entry':[25.0]})])
+    # HOTFIX FOR WEEK 11!!!
     return actual
 
 def simulate_picks(games: pd.DataFrame, picks: pd.DataFrame, num_sims: int = 1000, num_entries: int = 50) -> pd.DataFrame:
@@ -143,11 +140,14 @@ def simulate_picks(games: pd.DataFrame, picks: pd.DataFrame, num_sims: int = 100
     home_pick = sims.pick_sim < sims.pick_prob1
     sims.loc[home_pick,'pick'] = sims.loc[home_pick,'team1_abbrev']
     sims.loc[~home_pick,'pick'] = sims.loc[~home_pick,'team2_abbrev']
-    sims.loc[home_pick,'pts_avg'] = 1.131*sims.loc[home_pick,'pick_pts1'] - 0.259
-    sims.loc[~home_pick,'pts_avg'] = 1.131*sims.loc[~home_pick,'pick_pts2'] - 0.259
+    # sims.loc[home_pick,'pts_avg'] = 1.131*sims.loc[home_pick,'pick_pts1'] - 0.259
+    # sims.loc[~home_pick,'pts_avg'] = 1.131*sims.loc[~home_pick,'pick_pts2'] - 0.259
+    sims.loc[home_pick,'pts_avg'] = sims.loc[home_pick,'pick_pts1']
+    sims.loc[~home_pick,'pts_avg'] = sims.loc[~home_pick,'pick_pts2']
     sims['rel_pts'] = sims['pts_avg']/games.shape[0]
-    sims['pts_stdev_true'] = (-0.441*sims['rel_pts']**2.0 + 0.446*sims['rel_pts'] + 0.097)*games.shape[0]
-    sims['pts_stdev'] = sims['pts_stdev_true']*0.82
+    # sims['pts_stdev_true'] = (-0.441*sims['rel_pts']**2.0 + 0.446*sims['rel_pts'] + 0.097)*games.shape[0]
+    sims['pts_stdev_true'] = (-0.5*sims['rel_pts']**2.0 + 0.519*sims['rel_pts'] + 0.08)*games.shape[0]
+    sims['pts_stdev'] = sims['pts_stdev_true']*1.09 # Simulation fudge factor
     all_picks = pd.DataFrame({"entry":[val//games.shape[0] for val in range(games.shape[0]*num_entries)],\
     "points_bid":[val%games.shape[0] + 1 for val in range(games.shape[0]*num_entries)]})
     all_picks = pd.merge(left=all_picks,right=picks,how='left',on=['entry','points_bid'])
@@ -162,12 +162,12 @@ def simulate_picks(games: pd.DataFrame, picks: pd.DataFrame, num_sims: int = 100
     # right=sims.groupby('pick').points_bid.std().reset_index().rename(columns={"points_bid":"actual_stdev"}),how='inner',on='pick')
     # comparison = pd.merge(left=comparison,right=sims.groupby('pick')[['pts_avg','pts_stdev','pts_stdev_true']].mean().reset_index(),how='inner',on='pick')
     # print(comparison)
-    # print(comparison.corr())
+    # print(comparison[['actual_avg','pts_avg','actual_stdev','pts_stdev','pts_stdev_true']].corr())
     # print("St. Dev. Mean Squared Error: " + str(sum((comparison.actual_stdev - comparison.pts_stdev_true)**2.0)))
     sims = pd.concat([sims,already_picked],ignore_index=True).sort_values(by=['num_sim','entry'],ascending=True)
     return sims
 
-def add_my_picks(sims: pd.DataFrame, fixed: list = [], pick_pref: str = "best", point_pref: str = "best") -> pd.DataFrame:
+def add_my_picks(sims: pd.DataFrame, fixed: list = [], pick_pref: str = "best", point_pref: str = "best", prioritize: list = []) -> pd.DataFrame:
     """
     Updates the user's entries in the provided simulations based on the specified strategies.
 
@@ -213,8 +213,8 @@ def add_my_picks(sims: pd.DataFrame, fixed: list = [], pick_pref: str = "best", 
     my_entries.loc[away_fixed,'pick'] = my_entries.loc[away_fixed,'team2_abbrev']
     my_entries.loc[away_fixed,'win_prob'] = my_entries.loc[away_fixed,'elo_prob2']
     my_entries.loc[away_fixed,'pick_pts'] = my_entries.loc[away_fixed,'pick_pts2']
-    # my_entries.loc[my_entries.team1_abbrev.isin(['MIA']) \
-    # | my_entries.team2_abbrev.isin(['MIA']),'win_prob'] += 1
+    my_entries.loc[my_entries.team1_abbrev.isin(prioritize) \
+    | my_entries.team2_abbrev.isin(prioritize),'win_prob'] += 1
     my_entries = my_entries.sort_values(by=['num_sim','win_prob'],ascending=False,ignore_index=True)
     if str(point_pref).lower() not in ["best","popular","worst","random"]:
         print('Invalid preference value ("best", "popular", "worst", "random"), using "best" by default...')
@@ -226,8 +226,8 @@ def add_my_picks(sims: pd.DataFrame, fixed: list = [], pick_pref: str = "best", 
     elif point_pref.lower() == "random":
         np.random.shuffle(my_points)
     my_entries['points_bid'] = my_points*num_sims
-    # my_entries.loc[my_entries.team1_abbrev.isin(['MIA']) \
-    # | my_entries.team2_abbrev.isin(['MIA']),'win_prob'] -= 1
+    my_entries.loc[my_entries.team1_abbrev.isin(prioritize) \
+    | my_entries.team2_abbrev.isin(prioritize),'win_prob'] -= 1
     sims = pd.concat([sims,my_entries],ignore_index=True)
     sims = sims.sort_values(by=["num_sim","entry"],ascending=True,ignore_index=True)
     if "points_won" in sims.columns:
@@ -288,7 +288,7 @@ def assess_sims(sims: pd.DataFrame, picks: pd.DataFrame(), pot_size: float = 500
     return results
 
 def optimize_picks(games: pd.DataFrame, picks: pd.DataFrame, num_sims: int = 1000, num_entries: int = 50, \
-fixed: list = [], initial_picks: str = "best", initial_pts: str = "best") -> pd.DataFrame:
+fixed: list = [], initial_picks: str = "best", initial_pts: str = "best", prioritize: list = []) -> pd.DataFrame:
     """
     Gradually changes each pick one by one and keeps any that improve expected earnings.
     Once picks have been settled, gradually swaps point values and keeps any that improve expected earnings.
@@ -306,7 +306,7 @@ fixed: list = [], initial_picks: str = "best", initial_pts: str = "best") -> pd.
         pd.DataFrame: dataframe containing simulated picks and game results with optimal picks made for the user.
     """
     sims = simulate_picks(games, picks, num_sims, num_entries)
-    sims = add_my_picks(sims, fixed, pick_pref=initial_picks)
+    sims = add_my_picks(sims, fixed, pick_pref=initial_picks, prioritize=prioritize)
     sims = simulate_games(sims)
     results = assess_sims(sims, picks)
     baseline = results.loc[results.entry == 0].iloc[0]
@@ -320,7 +320,7 @@ fixed: list = [], initial_picks: str = "best", initial_pts: str = "best") -> pd.
             oppo = my_picks.iloc[ind]['team1_abbrev'] if pick == my_picks.iloc[ind]['team2_abbrev'] else my_picks.iloc[ind]['team2_abbrev']
             if pick in fixed:
                 continue
-            sims = add_my_picks(sims, [team for team in my_picks.pick if team != pick] + [oppo])
+            sims = add_my_picks(sims, [team for team in my_picks.pick if team != pick] + [oppo], prioritize=prioritize)
             results = assess_sims(sims, picks)
             switch = results.loc[results.entry == 0].iloc[0]
             print('{} --> {}: ${:.2f} --> ${:.2f}'.format(pick,oppo,baseline['earnings'],switch['earnings']))
@@ -331,12 +331,12 @@ fixed: list = [], initial_picks: str = "best", initial_pts: str = "best") -> pd.
         print(deltas)
         update = (deltas.change > 0).any() or ((deltas.change == 0).any() and np.random.rand() > 0.5)
         if update:
-            sims = add_my_picks(sims, [team for team in my_picks.pick if team != deltas.iloc[0]['orig_pick']] + [deltas.iloc[0]['new_pick']])
+            sims = add_my_picks(sims, [team for team in my_picks.pick if team != deltas.iloc[0]['orig_pick']] + [deltas.iloc[0]['new_pick']], prioritize=prioritize)
             results = assess_sims(sims, picks)
             baseline = results.loc[results.entry == 0].iloc[0]
     # Point changes
     final_picks = sims.loc[(sims.entry == 0) & (sims.num_sim == 0),'pick'].tolist()
-    sims = add_my_picks(sims, final_picks, point_pref=initial_pts)
+    sims = add_my_picks(sims, final_picks, point_pref=initial_pts, prioritize=prioritize)
     results = assess_sims(sims, picks)
     baseline = results.loc[results.entry == 0].iloc[0]
     for change in range(4,0,-1):
@@ -346,10 +346,9 @@ fixed: list = [], initial_picks: str = "best", initial_pts: str = "best") -> pd.
             for switch_from in range(1,games.shape[0] - change + 1):
                 up = (sims.entry == 0) & (sims.points_bid == switch_from)
                 down = (sims.entry == 0) & (sims.points_bid == switch_from + change)
-                # if up.sum() == 0 or down.sum() == 0 \
-                # or sims.loc[up,'pick'].values[0] in ['MIA'] \
-                # or sims.loc[down,'pick'].values[0] in ['MIA']:
-                if up.sum() == 0 or down.sum() == 0:
+                if up.sum() == 0 or down.sum() == 0 \
+                or sims.loc[up,'pick'].values[0] in prioritize \
+                or sims.loc[down,'pick'].values[0] in prioritize:
                     continue # One of the point values have already been used...
                 sims.loc[up,'points_bid'] = switch_from + change
                 sims.loc[down,'points_bid'] = switch_from
@@ -453,6 +452,12 @@ def main():
         help="comma-separated list of teams to automatically pick regardless of odds",
     )
     parser.add_option(
+        "--prioritize",
+        action="store",
+        dest="prioritize",
+        help="comma-separated list of teams to automatically give the highest points possible",
+    )
+    parser.add_option(
         "--optimize",
         action="store",
         dest="optimize",
@@ -460,6 +465,9 @@ def main():
     )
     options, args = parser.parse_args()
     options.fixed = options.fixed.split(',') if options.fixed else []
+    options.prioritize = options.prioritize.split(',') if options.prioritize else []
+    if len(options.prioritize) > 0:
+        options.optimize = "best"
 
     # Loading the current week's schedule
     if os.path.exists(options.schedule):
@@ -489,7 +497,7 @@ def main():
     # Simulating a full Confidence Pick'em contest
     sims = simulate_picks(games, picks, options.num_sims, options.num_entries)
     if schedule.still_to_play.sum() < 10:
-        sims = add_my_picks(sims, options.fixed)
+        sims = add_my_picks(sims, options.fixed, prioritize=options.prioritize)
     sims = simulate_games(sims)
     results = assess_sims(sims,picks)
     if picks.shape[0] > 0:
@@ -508,7 +516,8 @@ def main():
 
     if options.optimize:
         # Identifying optimal picks for the current week
-        sims = optimize_picks(games, picks, options.num_sims, options.num_entries, options.fixed, options.optimize, options.optimize)
+        sims = optimize_picks(games, picks, options.num_sims, options.num_entries, \
+        options.fixed, options.optimize, options.optimize, options.prioritize)
     
     # Identifying the relative impact of each pick
     my_picks = pick_deltas(sims, picks)
