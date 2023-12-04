@@ -103,7 +103,7 @@ class Collection:
         '. ' + self.league.players['name'].str.split(' ').str[1:].apply(' '.join)
         self.league.players.loc[self.league.players.player_id_sr.isin(['RobiAl02']),'name'] += ' II'
         self.league.players.loc[self.league.players.player_id_sr.isin(['WilsCe01','MimsMa00','HardMe00',\
-        'CharDJ00','ParhDo00','JameRi00','WilsJe01','JoneMa02','EtieTr00','StroPi00','JoneTo04']),'name'] += ' Jr.'
+        'CharDJ00','ParhDo00','JameRi00','WilsJe01','JoneMa02','EtieTr00','StroPi00','JoneTo04','BeckOd00']),'name'] += ' Jr.'
         self.league.players.loc[self.league.players.player_id_sr.isin(['MetcJo00','McClRa00','AustCa00']),'name'] += ' III'
         self.league.players.loc[self.league.players.position == 'DEF','name'] = \
         self.league.players.loc[self.league.players.position == 'DEF','current_team']
@@ -198,7 +198,7 @@ class Collection:
             lineups = lineups.groupby('name_QB1').head(limit).reset_index(drop=True) # Switch this to CPT for showdowns...
         lineups = pd.merge(left=lineups,right=self.players.loc[~self.players.pos.isin(['QB']) \
         & self.players.my_card & ~self.players.taken & uninjured,['name','points_avg','price','dummy']]\
-        .rename(columns={col:"{}_{}{}".format(col,pos,ind + 1) for col in ["name","points_avg","price"]}),how='inner',on='dummy')
+        .rename(columns={col:"{}_FLEX1".format(col) for col in ["name","points_avg","price"]}),how='inner',on='dummy')
         lineups['points_avg'] = lineups[[col for col in lineups.columns if col.startswith('points_avg_')]].sum(axis=1)
         lineups['price'] = lineups[[col for col in lineups.columns if col.startswith('price_')]].sum(axis=1)
         name_cols = [col for col in lineups.columns if col.startswith('name_')]
@@ -218,7 +218,75 @@ class Collection:
         # lineups = lineups.sort_values(by='price',ascending=False,ignore_index=True)
         lineups = lineups.groupby('name_QB1').head(limit).reset_index(drop=True)
         lineups['name'] = lineups[name_cols].apply(", ".join,axis=1)
-        return lineups
+        self.lineups = lineups.copy()
+        # return lineups
+    
+    def write_to_spreadsheet(self, filename: str = None):
+        """
+        Writes final results to an excel spreadsheet in three tabs:
+            - Standings: optimal pick combinations for each contestant ranked by projected points.
+            - This Week: user's optimal picks for the current week.
+            - Next 3 Weeks: user's optimal picks for the next three weeks.
+
+        Args:
+            name (str): name of the contestant of interest.
+            filename (str, optional): where to save the results spreadsheet, defaults to "DKRM_{MMDDYY}.xlsx".
+        """
+        if filename is None:
+            filename = "DKRM_{}.xlsx".format(self.date.strftime("%m%d%y"))
+        writer = pd.ExcelWriter(filename,engine="xlsxwriter")
+        writer.book.add_format({"align": "vcenter"})
+        uninjured = self.players.until.isnull() | (self.players.until < 17)
+        starters = self.players.string < 2
+        cols = ["name","pos","current_team","points_avg","WAR","price","proj_price","price_delta"]
+        writer = excel_autofit(self.players.loc[uninjured & starters,cols].sort_values(by="price_delta",ascending=False), "All Cards", writer)
+        writer.sheets["All Cards"].freeze_panes(1, 1)
+        writer = excel_autofit(self.players.loc[self.players.my_card].sort_values(by="price_delta"), "My Cards", writer)
+        if hasattr(self,'lineups'):
+            writer = excel_autofit(self.lineups[["name","points_avg","price"] + \
+            [col for col in self.lineups.columns if col.startswith("name_")] + \
+            [col for col in self.lineups.columns if col.startswith("points_avg_")] + \
+            [col for col in self.lineups.columns if col.startswith("price_")]], "Possible Lineups", writer)
+        writer.close()
+
+def excel_autofit(df: pd.DataFrame, name: str, writer: pd.ExcelWriter, hidden: list = []) -> pd.ExcelWriter:
+    """
+    Writes the provided dataframe to a new tab in an excel spreadsheet 
+    with the columns autofitted and autoformatted.
+
+    Args:
+        df (pd.DataFrame): dataframe to print to the excel spreadsheet.
+        name (str): name of the new tab to be added.
+        writer (pd.ExcelWriter): ExcelWriter object representing the excel spreadsheet.
+        hidden (list): list of column names that should be hidden in the excel spreadsheet.
+
+    Returns:
+        pd.ExcelWriter: same excel spreadsheet provided originally with the new tab added.
+    """
+    f = writer.book.add_format({"num_format": "0.00"})
+    f.set_align("center")
+    f.set_align("vcenter")
+    m = writer.book.add_format({"num_format": "$0"})
+    m.set_align("center")
+    m.set_align("vcenter")
+    df.to_excel(writer, sheet_name=name, index=False)
+    for idx, col in enumerate(df):
+        series = df[col]
+        max_len = min(
+            max((series.astype(str).map(len).max(), len(str(series.name)))) + 5, 100
+        )
+        if col == "Earnings":
+            writer.sheets[name].set_column(idx, idx, max_len, m, {"hidden": col in hidden})
+        else:
+            writer.sheets[name].set_column(idx, idx, max_len, f, {"hidden": col in hidden})
+    writer.sheets[name].autofilter(
+        "A1:"
+        + (
+            chr(64 + (df.shape[1] - 1) // 26) + chr(65 + (df.shape[1] - 1) % 26)
+        ).replace("@", "")
+        + str(df.shape[0] + 1)
+    )
+    return writer
 
 def main():
     # Initializing input arguments
@@ -259,31 +327,38 @@ def main():
     stacks = {"WR":{"B. Purdy":["D. Samuel"],\
                     "T. Tagovailoa":["J. Waddle"],\
                     "J. Allen":["G. Davis"]},\
-              "RB":{"T. Tagovailoa":["B. Hall"]},\
-              "TE":{"B. Purdy":["G. Kittle"]},\
-              "DEF":{"B. Purdy":["SFO"]},\
-              "K":{"B. Purdy":["J. Moody"]}}
+              "TE":{"B. Purdy":["G. Kittle"],\
+                    "P. Mahomes":["T. Kelce"]}}
     superstars = ["J. Herbert","P. Mahomes","S. Barkley","J. Allen","T. Hill","C. McCaffrey",\
     "J. Hurts","J. Jefferson","A. St. Brown","L. Jackson","J. Chase","R. Mostert","A. Thielen",\
     "T. Etienne Jr.","D. Moore","C. Kupp"]
 
-    # TNF SCORING UPDATES
-    # dkrm_tf.players.loc[dkrm_tf.players.name.isin(['B. Purdy']),'points_avg'] = 11.46
-    # TNF SCORING UPDATES
+    # # TNF SCORING UPDATES
+    # dkrm_tf.players.loc[dkrm_tf.players.name.isin(['B. Cooks']),'points_avg'] = 16.5
+    # dkrm_tf.players.loc[dkrm_tf.players.name.isin(['DAL']),'points_avg'] = -1.0
+    # dkrm_tf.players.loc[dkrm_tf.players.name.isin(['T. Lockett']),'points_avg'] = 9.7
+    # dkrm_tf.players.loc[dkrm_tf.players.name.isin(['Z. Charbonnet']),'points_avg'] = 16.9
+    # # TNF SCORING UPDATES
 
-    dkrm_tf.players['taken'] = dkrm_tf.players.name.isin(["DAL","Z. Jones","T. Lawrence","K. Pickett"]) # Showdown Entries, Exclusions
+    # dkrm_tf.players['taken'] = dkrm_tf.players.name.isin(["DAL","Z. Jones","T. Lawrence","K. Pickett"]) # Showdown Entries, Exclusions
     # taken_inds = dkrm_tf.players.loc[dkrm_tf.players.name.isin(["A. Gibson",\
     # "D. Parker","J. Smith-Schuster"])].drop_duplicates(subset=["name"],keep="first").index
     # dkrm_tf.players.loc[taken_inds,'taken'] = True # When I'm only using one of two cards for a particular player
 
-    best = pd.DataFrame()
+    dkrm_tf.best_lineups(stacks, superstars, options.limit)
+    dkrm_tf.write_to_spreadsheet()
+    best = dkrm_tf.lineups.iloc[:1][['name','points_avg','price']]
+    taken_inds = dkrm_tf.players.loc[dkrm_tf.players.name.isin(dkrm_tf.lineups.iloc[0]['name'].split(', ')) \
+        & ~dkrm_tf.players.taken].drop_duplicates(subset=["name"],keep="first").index
+    dkrm_tf.players.loc[taken_inds,'taken'] = True
     while True:
         try:
-            lineups = dkrm_tf.best_lineups(stacks, superstars, options.limit)
+            dkrm_tf.best_lineups(stacks, superstars, options.limit)
         except:
             break
-        best = pd.concat([best,lineups.iloc[:1][['name','points_avg','price']]],ignore_index=True)
-        taken_inds = dkrm_tf.players.loc[dkrm_tf.players.name.isin(lineups.iloc[0]['name'].split(', ')) & ~dkrm_tf.players.taken].drop_duplicates(subset=["name"],keep="first").index
+        best = pd.concat([best,dkrm_tf.lineups.iloc[:1][['name','points_avg','price']]],ignore_index=True)
+        taken_inds = dkrm_tf.players.loc[dkrm_tf.players.name.isin(dkrm_tf.lineups.iloc[0]['name'].split(', ')) \
+            & ~dkrm_tf.players.taken].drop_duplicates(subset=["name"],keep="first").index
         dkrm_tf.players.loc[taken_inds,'taken'] = True
     print(best.to_string(index=False))
     remaining = dkrm_tf.players.loc[~dkrm_tf.players.taken & dkrm_tf.players.my_card]\
