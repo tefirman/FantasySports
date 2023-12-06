@@ -1247,7 +1247,7 @@ class League:
             many_mile_sched.loc[many_mile_sched.week == as_of % 100, "score_2"] = 0.0
             standings = schedule.loc[
                 schedule.week < self.settings["playoff_start_week"]
-            ]
+            ].reset_index(drop=True)
             standings["win_1"] = (standings.score_1 > standings.score_2).astype(int)
             standings["win_2"] = 1 - standings.win_1
             standings = pd.concat([standings.rename(
