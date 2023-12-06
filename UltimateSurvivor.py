@@ -186,7 +186,7 @@ class USP:
         standings['earnings'] = 100.0*standings.winner + 75.0*standings.runner_up + 50.0*standings.third + (715.0/8.0)*standings.playoffs
         standings = standings.groupby('Player').mean().reset_index()
         self.best_combos = pd.merge(left=self.best_combos,right=standings[['Player','winner','runner_up','third','playoffs','earnings']],how='inner',on='Player')
-        self.best_combos = self.best_combos.sort_values(by='earnings',ascending=False,ignore_index=True)
+        self.best_combos = self.best_combos.sort_values(by=['earnings','projected_points'],ascending=False,ignore_index=True)
 
     def write_to_spreadsheet(self, name: str, filename: str = "UltimateSurvivorCombos.xlsx"):
         """
