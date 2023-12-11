@@ -29,13 +29,13 @@ WillMi07,Mike Williams,WR,17
 MontDa01,David Montgomery,RB,9
 JoneZa00,Zay Jones,WR,10
 SmitIr01,Irv Smith Jr.,TE,3
-JoneAa00,Aaron Jones,RB,13
-WatsCh00,Christian Watson,WR,3
+JoneAa00,Aaron Jones,RB,14
+WatsCh00,Christian Watson,WR,14
 BateRa00,Rashod Bateman,WR,4
 WatsDe00,Deshaun Watson,QB,17
 StxxAm00,Amon-Ra St. Brown,WR,5
 GibbJa01,Jahmyr Gibbs,RB,6
-MitcEl00,Elijah Mitchell,RB,5
+MitcEl00,Elijah Mitchell,RB,14
 BurkTr00,Treylon Burks,WR,11
 JohnJu02,Juwan Johnson,TE,7
 FreiPa00,Pat Freiermuth,TE,10
@@ -74,8 +74,12 @@ BurrJo01,Joe Burrow,QB,17
 EverGe00,Gerald Everett,TE,11
 GibsAn00,Antonio Gibson,RB,11
 WalkKe00,Kenneth Walker III,RB,13
-ShahRa00,Rashid Shaheed,WR,13
+ShahRa00,Rashid Shaheed,WR,14
 SchuDa00,Dalton Schultz,TE,13
 KirkCh01,Christian Kirk,WR,15
 DellNa00,Tank Dell,WR,17
 StevRh00,Rhamondre Stevenson,RB,15
+SmitGe00,Geno Smith,QB,14
+PachIs00,Isiah Pacheco,RB,14
+HerbJu00,Justin Herbert,QB,15
+HillTa00,Taysom Hill,TE,14
