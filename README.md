@@ -10,7 +10,7 @@ Still working on uploading this package to PyPI, but in the meantime, you can cr
 ```
 git clone https://github.com/tefirman/FantasySports.git
 cd FantasySports
-conda create --name fantasy --file environment.yml
+conda env create -f environment.yml
 conda activate fantasy
 ```
 
