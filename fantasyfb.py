@@ -1243,16 +1243,17 @@ class League:
                 & (many_mile_sched.week <= as_of % 100)
             ]
             del many_mile_sched["season"]
-            many_mile_sched.loc[many_mile_sched.week == as_of % 100, "score_1"] = 0.0
-            many_mile_sched.loc[many_mile_sched.week == as_of % 100, "score_2"] = 0.0
+            if as_of < self.season*100 + self.current_week:
+                many_mile_sched.loc[many_mile_sched.week == as_of % 100, "score_1"] = 0.0
+                many_mile_sched.loc[many_mile_sched.week == as_of % 100, "score_2"] = 0.0
             standings = schedule.loc[
                 schedule.week < self.settings["playoff_start_week"]
             ].reset_index(drop=True)
             standings["win_1"] = (standings.score_1 > standings.score_2).astype(int)
             standings["win_2"] = 1 - standings.win_1
             standings = pd.concat([standings.rename(
-                columns={col: col.replace("_1", "") for col in standings.columns}
-            ),
+                    columns={col: col.replace("_1", "") for col in standings.columns}
+                ),
                 standings.rename(
                     columns={col: col.replace("_2", "") for col in standings.columns}
                 )],
@@ -1637,7 +1638,7 @@ class League:
             "playoffs",
         ] = 0
         standings["playoff_bye"] = 0
-        if int(self.settings["num_playoff_teams"]) == 6:
+        if self.settings["num_playoff_teams"] == 6:
             standings.loc[standings.index % len(self.teams) < 2, "playoff_bye"] = 1
         algorithm = (
             schedule.team_1.isin(["The Algorithm"]).any()
@@ -1668,7 +1669,7 @@ class League:
                     .copy()
                     .reset_index()
                 )
-            if self.settings["num_playoff_teams"] == "6":
+            if self.settings["num_playoff_teams"] == 6:
                 playoffs = pd.merge(
                     left=playoffs,
                     right=scores.loc[
