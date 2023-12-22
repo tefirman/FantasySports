@@ -63,7 +63,7 @@ def load_pick_probs(week: int) -> pd.DataFrame:
     pick_probs.pick_pts2 = pick_probs.pick_pts2*1.131 - 0.259
     return pick_probs[['team1_abbrev','team2_abbrev','pick_prob1','pick_prob2','pick_pts1','pick_pts2']]
 
-def load_picks(week: int) -> pd.DataFrame:
+def load_picks(week: int, schedule: pd.DataFrame) -> pd.DataFrame:
     """
     Parses actual picks made by each player from a direct copy of the "Group Picks" tab of Yahoo's Pick'em GUI.
     Literally just Ctrl+A, then copy paste into a plain text file. Sadly, the raw html doesn't contain the required data.
@@ -76,42 +76,110 @@ def load_picks(week: int) -> pd.DataFrame:
     """
     if os.path.exists("ActualConfidencePicks_Week{}.txt".format(week)):
         tempData = open("ActualConfidencePicks_Week{}.txt".format(week),'r')
-        raw_data = tempData.read().split('Team Name\tPoints\n')[-1]\
-        .split("\nYahoo! Sports - NBC Sports Network.")[0].replace('\n(','\r(').split('\n')
+        raw_str = tempData.read()
+        matchup_vals = raw_str.split('Favored\t')[-1].split('\nTeam Name\tPoints')[0].split('\n')[::2]
+        favorites = matchup_vals[0].split('\t')[:-1]
+        underdogs = matchup_vals[1].split('\t')[1:-1]
+        pick_vals = raw_str.split('Team Name\tPoints\n')[-1].split("\nYahoo! Sports")[0].replace('\n(','\r(').split('\n')
         tempData.close()
     else:
-        raw_data = []
-    actual = pd.DataFrame(columns=["player","pick","points_bid"])
-    for vals in raw_data:
+        favorites,underdogs,pick_vals = [],[],[]
+    matchups = pd.DataFrame({"favorite":favorites,"underdog":underdogs})
+    matchups['matchup_ind'] = matchups.index
+    actual = pd.DataFrame(columns=["player","pick"])
+    for vals in pick_vals:
         player = vals.split('\t')[0]
         picks = vals.split('\t')[1:-1]
         actual = pd.concat([actual,pd.DataFrame({'player':[player]*len(picks),'pick':picks})],ignore_index=True)
-    actual = actual.loc[~actual.pick.isin(['--',' '])].reset_index(drop=True)
-    actual['points_bid'] = actual.pick.str.split('\r').str[-1].str[1:-1].astype(int)
+    actual['points_bid'] = actual.pick.str.split('\r').str[-1].str[1:-1]
+    actual.loc[actual.points_bid == '','points_bid'] = '0'
+    actual.points_bid = actual.points_bid.astype(int)
     actual['pick'] = actual.pick.str.split('\r').str[0]
+    actual.loc[actual.pick.isin(['--',' ']),'pick'] = 'UNK'
+    actual['matchup_ind'] = actual.index%matchups.shape[0]
+    for player in actual.player.unique():
+        val = 0
+        while ((actual.player == player) & (actual.points_bid == 0)).any():
+            while ((actual.player == player) & (actual.points_bid == val)).any():
+                val += 1
+            bad_inds = actual.loc[(actual.player == player) & (actual.points_bid == 0)].index
+            actual.loc[bad_inds[0],'points_bid'] = val
+    actual = pd.merge(left=actual,right=matchups,how='inner',on='matchup_ind')
     nfl_teams = pd.read_csv("https://raw.githubusercontent.com/tefirman/FantasySports/main/res/football/team_abbrevs.csv")
-    actual = pd.merge(left=actual,right=nfl_teams[['yahoo','real_abbrev']].rename(columns={"yahoo":"pick"}),how='left',on='pick')
-    actual.loc[~actual.real_abbrev.isnull(),'pick'] = actual.loc[~actual.real_abbrev.isnull(),'real_abbrev']
-    del actual['real_abbrev']
+    for col in ['pick','favorite','underdog']:
+        actual = pd.merge(left=actual,right=nfl_teams[['yahoo','real_abbrev']].rename(columns={"yahoo":col}),how='left',on=col)
+        actual.loc[~actual.real_abbrev.isnull(),col] = actual.loc[~actual.real_abbrev.isnull(),'real_abbrev']
+        del actual['real_abbrev']
+    if actual.shape[0] > 0:
+        actual['matchup_abbrev'] = actual.apply(lambda x: ''.join(sorted([x['favorite'],x['underdog']])),axis=1)
+        schedule['matchup_abbrev'] = schedule.apply(lambda x: ''.join(sorted([x['team1_abbrev'],x['team2_abbrev']])),axis=1)
+        actual = pd.merge(left=actual,right=schedule.loc[~schedule.still_to_play,['matchup_abbrev']],how='inner',on='matchup_abbrev')
+        del schedule['matchup_abbrev'], actual['matchup_abbrev'], actual['matchup_ind']
     my_picks = actual.loc[actual.player == "Firman's Educated Guesses"].reset_index(drop=True)
     my_picks["entry"] = 0.0
     actual = actual.loc[actual.player != "Firman's Educated Guesses"].reset_index(drop=True)
     actual["entry"] = actual.player.rank(method='dense')
     actual = pd.concat([my_picks,actual])
-    num_picks = actual.groupby('pick').size().to_frame('freq').reset_index()
-    # This isn't quite right, but fine for now...
-    already = num_picks.loc[num_picks.freq > 1,'pick'].unique().tolist()
-    actual = actual.loc[actual.pick.isin(already)].reset_index(drop=True)
-    # Only able to account for one missed pick per player...
-    num_missing = actual.loc[actual.points_bid == 0].groupby('player').size().to_frame("missed").reset_index()
-    excluded = num_missing.loc[num_missing.missed > 1,'player'].unique()
-    actual = actual.loc[~actual.player.isin(excluded)].reset_index(drop=True)
-    # Only able to account for one missed pick per player... THIS DOESN'T WORK!!! THIS DOESN'T WORK!!!
-    actual.loc[actual.points_bid == 0,'points_bid'] = 1.0
-    # HOTFIX FOR WEEK 11!!!
-    actual = pd.concat([actual,pd.DataFrame({"player":["D. Sop"],"pick":['SEA'],"points_bid":[1],'entry':[25.0]})])
-    # HOTFIX FOR WEEK 11!!!
     return actual
+
+def load_schedule(sched_loc: str = "NFLSchedule.csv", week: int = None, vegas: bool = False):
+    if os.path.exists(sched_loc):
+        schedule = pd.read_csv(sched_loc)
+    else:
+        s = sr.Schedule(2015,datetime.datetime.now().year,False,True,False)
+        schedule = s.schedule.copy()
+        schedule.to_csv(sched_loc,index=False)
+    schedule = schedule.loc[schedule.season == datetime.datetime.now().year].reset_index(drop=True)
+    if week is None:
+        week = schedule.loc[schedule.pts_win.isnull(),'week'].min()
+    schedule = schedule.loc[schedule.week == week].reset_index(drop=True)
+    schedule['still_to_play'] = schedule.score1.isnull() & schedule.score2.isnull() & schedule.pts_win.isnull() & schedule.pts_lose.isnull()
+    if vegas:
+        veg_probs = load_vegas("Week{}Spreads.txt".format(week))
+        if veg_probs is not None:
+            veg_probs = veg_probs.rename(columns={"home_abbrev":"team1_abbrev",\
+            "away_abbrev":"team2_abbrev","home_prob":"elo_prob1","away_prob":"elo_prob2"})
+            del schedule['elo_prob1'], schedule['elo_prob2']
+            schedule = pd.merge(left=schedule,right=veg_probs,how='inner',on=["team1_abbrev","team2_abbrev"])
+    return schedule
+
+def load_vegas(vegas_loc: str = None):
+    # Checking that the spread data actually exists
+    if os.path.exists(vegas_loc):
+        tempData = open(vegas_loc,"r")
+        raw_str = tempData.read().split('Upcoming\n')[-1].split('\nGame Info\nNFL odds guide')[0]
+        tempData.close()
+    else:
+        print("Can't find Vegas spreads for this week... Skipping...")
+        return None
+    # Loading Vegas moneylines/spreads
+    details = raw_str.split('\nGame Info\n')
+    matchups = pd.DataFrame()
+    for game in details:
+        game_deets = game.split('\n')
+        matchups = pd.concat([matchups,pd.DataFrame({"away_team":[game_deets[4].split('(')[0]],\
+        "away_moneyline":[float(game_deets[6])],"away_spread":[float(game_deets[8])],\
+        "home_team":[game_deets[13].split('(')[0]],"home_moneyline":[float(game_deets[15])],\
+        "home_spread":[float(game_deets[17])]})],ignore_index=True)
+    # Converting to probabilities
+    home_fave = matchups.home_moneyline < 0
+    matchups.loc[home_fave,'home_prob'] = abs(matchups.loc[home_fave,'home_moneyline'])/(100 + abs(matchups.loc[home_fave,'home_moneyline']))
+    matchups.loc[~home_fave,'home_prob'] = 100/(100 + matchups.loc[~home_fave,'home_moneyline'])
+    away_fave = matchups.away_moneyline < 0
+    matchups.loc[away_fave,'away_prob'] = abs(matchups.loc[away_fave,'away_moneyline'])/(100 + abs(matchups.loc[away_fave,'away_moneyline']))
+    matchups.loc[~away_fave,'away_prob'] = 100/(100 + matchups.loc[~away_fave,'away_moneyline'])
+    matchups['norm_sum'] = matchups.home_prob + matchups.away_prob
+    matchups.home_prob /= matchups.norm_sum
+    matchups.away_prob /= matchups.norm_sum
+    del matchups['norm_sum']
+    # Converting team names to SportsRef abbreviations
+    nfl_teams = pd.read_csv("https://raw.githubusercontent.com/tefirman/FantasySports/main/res/football/team_abbrevs.csv")
+    for team in ['home','away']:
+        matchups['name'] = matchups[team + '_team'].str.split(' ').str[:-1].apply(' '.join)
+        matchups.loc[matchups.name.isin(['New York','Los Angeles']),'name'] = matchups.loc[matchups.name.isin(['New York','Los Angeles']),team + '_team']
+        matchups = pd.merge(left=matchups,right=nfl_teams[["name","real_abbrev"]].rename(columns={"real_abbrev":team + "_abbrev"}),how='inner',on=['name'])
+        del matchups['name']
+    return matchups[['home_abbrev','home_prob','away_abbrev','away_prob']]
 
 def simulate_picks(games: pd.DataFrame, picks: pd.DataFrame, num_sims: int = 1000, num_entries: int = 50) -> pd.DataFrame:
     """
@@ -153,7 +221,7 @@ def simulate_picks(games: pd.DataFrame, picks: pd.DataFrame, num_sims: int = 100
     all_picks = pd.merge(left=all_picks,right=picks,how='left',on=['entry','points_bid'])
     all_picks = all_picks.loc[all_picks.pick.isnull()]
     # print(all_picks.groupby('entry').size().sort_values())
-    # print(picks.loc[picks.entry.isin([45,19,32,56])])
+    # print(picks.loc[picks.entry.isin([15,18,25,31,35,46,53,29]),['player','entry']].drop_duplicates())
     if all_picks.entry.nunique() == num_entries:
         sims['points_bid_sim'] = sims.apply(lambda x: np.random.normal(x['pts_avg'],x['pts_stdev']),axis=1)
         sims = sims.sort_values(by=['num_sim','entry','points_bid_sim'],ascending=True)
@@ -430,6 +498,12 @@ def main():
         help="week of the NFL season to simulate and assess",
     )
     parser.add_option(
+        "--vegas",
+        action="store_true",
+        dest="vegas",
+        help="whether to use Vegas odds instead of the 538 methodology",
+    )
+    parser.add_option(
         "--num_entries",
         action="store",
         type="int",
@@ -470,22 +544,13 @@ def main():
         options.optimize = "best"
 
     # Loading the current week's schedule
-    if os.path.exists(options.schedule):
-        schedule = pd.read_csv(options.schedule)
-    else:
-        s = sr.Schedule(2015,datetime.datetime.now().year,False,True,False)
-        schedule = s.schedule.copy()
-        schedule.to_csv(options.schedule,index=False)
-    schedule = schedule.loc[schedule.season == datetime.datetime.now().year].reset_index(drop=True)
-    if not options.week:
-        options.week = schedule.loc[schedule.pts_win.isnull(),'week'].min()
-    schedule = schedule.loc[schedule.week == options.week].reset_index(drop=True)
-    schedule['still_to_play'] = schedule.score1.isnull() & schedule.score2.isnull() & schedule.pts_win.isnull() & schedule.pts_lose.isnull()
-    winners = schedule.loc[~schedule.still_to_play,'winner_abbrev']
+    schedule = load_schedule(options.schedule, options.week, options.vegas)
+    options.week = schedule.week.unique()[0]
 
     # Loading pick probabilities for the current week
     pick_probs = load_pick_probs(options.week)
-    picks = load_picks(options.week)
+    picks = load_picks(options.week,schedule)
+    winners = schedule.loc[~schedule.still_to_play,'winner_abbrev']
     picks.loc[picks.pick.isin(winners),'points_won'] = picks.loc[picks.pick.isin(winners),'points_bid']
     picks.points_bid = picks.points_bid.fillna(1.0)
     picks.points_won = picks.points_won.fillna(0.0)
