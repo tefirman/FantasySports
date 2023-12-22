@@ -79,6 +79,9 @@ class Collection:
         self.cards['name'] = self.cards['FirstName'].str[0] + '. ' + self.cards['LastName']
         self.cards['listable'] = ~self.cards.Set.isin(['Starter'])
         self.cards['my_card'] = True
+        if str(rarity).title() == "Rare":
+            self.cards.loc[self.cards.Rarity.isin(["Core"]) & self.cards.Position.isin(["QB"]) \
+            & ~self.cards.name.isin(["J. Herbert","P. Mahomes","J. Allen","J. Hurts","L. Jackson"]),"Rarity"] = "Rare"
         if str(rarity).title() in ["Core","Rare","Elite","Legendary","Reignmaker"]:
             self.cards = self.cards.loc[self.cards.Rarity == rarity.title()].reset_index(drop=True)
         self.players = pd.merge(left=self.players,right=self.cards[['name','Position','my_card','listable','Set']]\
@@ -123,8 +126,8 @@ class Collection:
         self.players = pd.merge(left=self.players,right=self.league.players[["name","current_team",\
         "WAR","points_avg","pct_rostered","string","until"]],how='inner',on=["name","current_team"])
         # Excluding J. Williams from DEN for now, but need to fix this...
-        self.players = self.players.loc[~self.players['name'].isin(['J. Williams']) \
-        | ~self.players['current_team'].isin(['DEN'])].reset_index(drop=True)
+        self.players = self.players.loc[~self.players['name'].isin(['J. Williams'])].reset_index(drop=True)# \
+        # | ~self.players['current_team'].isin(['DEN'])].reset_index(drop=True)
         self.idp_names = pd.merge(left=self.idp_names,right=self.players.loc[self.players.pos.isin(['DEF']),["current_team","points_avg"]],how='inner',on='current_team')
     
     def add_proj_price(self, plot_proj=False):
@@ -157,15 +160,13 @@ class Collection:
         print("My Listable Cards")
         print(self.players.loc[self.players.my_card & self.players.listable].sort_values(by="price_delta").to_string(index=False))
     
-    def best_lineups(self, stacks={}, superstars=[], limit=1000):
+    def best_lineups(self, stacks={}, superstars=[], independent=[], limit=1000):
         self.players['dummy'] = 1
         if 'taken' not in self.players.columns:
             self.players["taken"] = False
-        
         # INCORPORATE DIFFERENT CONTEST TYPES!!!
         positions = {"QB":1,"WR":2,"RB":2,"TE":1,"K":1,'DEF':1}
         # INCORPORATE DIFFERENT CONTEST TYPES!!!
-
         lineups = pd.DataFrame({'dummy':[1]})
         uninjured = self.players.until.isnull() | (self.players.until < self.league.current_week)
         for pos in positions:
@@ -192,7 +193,8 @@ class Collection:
             
             lineups['superstars'] = lineups['name'].apply(lambda x: len([val for val in x.split(', ') if val in superstars]))
             lineups = lineups.loc[lineups.superstars <= 1].reset_index(drop=True)
-
+            lineups['independent'] = lineups['name'].apply(lambda x: len([val for val in x.split(', ') if val in independent]))
+            lineups = lineups.loc[lineups.independent <= 1].reset_index(drop=True)
             lineups = lineups.sort_values(by='points_avg',ascending=False,ignore_index=True)
             # lineups = lineups.sort_values(by='price',ascending=False,ignore_index=True)
             lineups = lineups.groupby('name_QB1').head(limit).reset_index(drop=True) # Switch this to CPT for showdowns...
@@ -214,12 +216,13 @@ class Collection:
                     lineups = lineups.loc[lineups['name'].str.contains(qb) | ~lineups['name'].str.contains(stack)]
         lineups['superstars'] = lineups['name'].apply(lambda x: len([val for val in x.split(', ') if val in superstars]))
         lineups = lineups.loc[lineups.superstars <= 1].reset_index(drop=True)
+        lineups['independent'] = lineups['name'].apply(lambda x: len([val for val in x.split(', ') if val in independent]))
+        lineups = lineups.loc[lineups.independent <= 1].reset_index(drop=True)
         lineups = lineups.sort_values(by='points_avg',ascending=False,ignore_index=True)
         # lineups = lineups.sort_values(by='price',ascending=False,ignore_index=True)
         lineups = lineups.groupby('name_QB1').head(limit).reset_index(drop=True)
         lineups['name'] = lineups[name_cols].apply(", ".join,axis=1)
         self.lineups = lineups.copy()
-        # return lineups
     
     def write_to_spreadsheet(self, filename: str = None):
         """
@@ -317,13 +320,7 @@ def main():
 
     dkrm_tf = Collection(options.date, options.rarity)
     dkrm_tf.print_values()
-    stacks = {}
-    # stacks = {"WR":{"K. Pickett":["D. Johnson"],\
-    #                 "B. Purdy":["D. Samuel"],\
-    #                 "T. Lawrence":["C. Ridley","C. Kirk"],\
-    #                 "T. Tagovailoa":["J. Waddle"],\
-    #                 "J. Allen":["G. Davis"]},\
-    #           "TE":{"B. Purdy":["G. Kittle"]}}
+    # stacks = {}
     stacks = {"WR":{"B. Purdy":["D. Samuel"],\
                     "T. Tagovailoa":["J. Waddle"],\
                     "J. Allen":["G. Davis"]},\
@@ -332,20 +329,18 @@ def main():
     superstars = ["J. Herbert","P. Mahomes","S. Barkley","J. Allen","T. Hill","C. McCaffrey",\
     "J. Hurts","J. Jefferson","A. St. Brown","L. Jackson","J. Chase","R. Mostert","A. Thielen",\
     "T. Etienne Jr.","D. Moore","C. Kupp"]
+    independent = []
 
-    # # TNF SCORING UPDATES
-    # dkrm_tf.players.loc[dkrm_tf.players.name.isin(['B. Cooks']),'points_avg'] = 16.5
-    # dkrm_tf.players.loc[dkrm_tf.players.name.isin(['DAL']),'points_avg'] = -1.0
-    # dkrm_tf.players.loc[dkrm_tf.players.name.isin(['T. Lockett']),'points_avg'] = 9.7
-    # dkrm_tf.players.loc[dkrm_tf.players.name.isin(['Z. Charbonnet']),'points_avg'] = 16.9
-    # # TNF SCORING UPDATES
+    # TNF SCORING UPDATES
+    # dkrm_tf.players.loc[dkrm_tf.players.name.isin(['D. Adams']),'points_avg'] = 27.1
+    # TNF SCORING UPDATES
 
     # dkrm_tf.players['taken'] = dkrm_tf.players.name.isin(["DAL","Z. Jones","T. Lawrence","K. Pickett"]) # Showdown Entries, Exclusions
     # taken_inds = dkrm_tf.players.loc[dkrm_tf.players.name.isin(["A. Gibson",\
     # "D. Parker","J. Smith-Schuster"])].drop_duplicates(subset=["name"],keep="first").index
     # dkrm_tf.players.loc[taken_inds,'taken'] = True # When I'm only using one of two cards for a particular player
 
-    dkrm_tf.best_lineups(stacks, superstars, options.limit)
+    dkrm_tf.best_lineups(stacks, superstars, independent, options.limit)
     dkrm_tf.write_to_spreadsheet()
     best = dkrm_tf.lineups.iloc[:1][['name','points_avg','price']]
     taken_inds = dkrm_tf.players.loc[dkrm_tf.players.name.isin(dkrm_tf.lineups.iloc[0]['name'].split(', ')) \
@@ -353,7 +348,7 @@ def main():
     dkrm_tf.players.loc[taken_inds,'taken'] = True
     while True:
         try:
-            dkrm_tf.best_lineups(stacks, superstars, options.limit)
+            dkrm_tf.best_lineups(stacks, superstars, independent, options.limit)
         except:
             break
         best = pd.concat([best,dkrm_tf.lineups.iloc[:1][['name','points_avg','price']]],ignore_index=True)
