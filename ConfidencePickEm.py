@@ -113,7 +113,8 @@ def load_picks(week: int, schedule: pd.DataFrame) -> pd.DataFrame:
     if actual.shape[0] > 0:
         actual['matchup_abbrev'] = actual.apply(lambda x: ''.join(sorted([x['favorite'],x['underdog']])),axis=1)
         schedule['matchup_abbrev'] = schedule.apply(lambda x: ''.join(sorted([x['team1_abbrev'],x['team2_abbrev']])),axis=1)
-        actual = pd.merge(left=actual,right=schedule.loc[~schedule.still_to_play,['matchup_abbrev']],how='inner',on='matchup_abbrev')
+        # actual = pd.merge(left=actual,right=schedule.loc[~schedule.still_to_play,['matchup_abbrev']],how='inner',on='matchup_abbrev')
+        actual = pd.merge(left=actual,right=schedule[['still_to_play','matchup_abbrev']],how='inner',on='matchup_abbrev')
         del schedule['matchup_abbrev'], actual['matchup_abbrev'], actual['matchup_ind']
     my_picks = actual.loc[actual.player == "Firman's Educated Guesses"].reset_index(drop=True)
     my_picks["entry"] = 0.0
@@ -147,7 +148,7 @@ def load_vegas(vegas_loc: str = None):
     # Checking that the spread data actually exists
     if os.path.exists(vegas_loc):
         tempData = open(vegas_loc,"r")
-        raw_str = tempData.read().split('Upcoming\n')[-1].split('\nGame Info\nNFL odds guide')[0]
+        raw_str = tempData.read().split('Upcoming\n')[-1].split('\nGame Info\nFinal\nFinal')[0]
         tempData.close()
     else:
         print("Can't find Vegas spreads for this week... Skipping...")
