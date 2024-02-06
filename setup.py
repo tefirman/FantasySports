@@ -1,0 +1,36 @@
+from setuptools import setup
+
+setup(
+    name='FantasySports',
+    version='0.1.0',    
+    description='A example Python package',
+    url='https://github.com/tefirman/FantasySports',
+    author='Taylor Firman',
+    author_email='tefirman@gmail.com',
+    license='MIT',
+    packages=['FantasySports'],
+    install_requires=["numpy",
+                      "pandas",
+                      "wget",
+                      "yahoo_oauth",
+                      "yahoo_fantasy_api",
+                      "python-dotenv",
+                      "XlsxWriter",
+                      "geopy",
+                      "matplotlib",
+                      "beautifulsoup4",
+                      "Unidecode",
+                      "black",
+                      "lxml",
+                      "scipy",
+                      "pdoc"],
+
+    classifiers=[
+        'Development Status :: 1 - Planning',
+        'Intended Audience :: Sports Nerds',
+        'License :: OSI Approved :: MIT License',
+        'Operating System :: POSIX :: Linux',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.10',
+    ],
+)
