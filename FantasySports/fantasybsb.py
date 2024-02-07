@@ -14,7 +14,7 @@ import numpy as np
 import datetime
 import time
 import os
-from util import sportsref_mlb as mlb
+import sportsref_mlb as mlb
 from bs4 import BeautifulSoup
 from pytz import timezone
 import unidecode
