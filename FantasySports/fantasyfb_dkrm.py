@@ -2,7 +2,7 @@
 import pandas as pd
 import datetime
 import fantasyfb as fb
-from util import sportsref_nfl as sr
+import sportsref_nfl as sr
 import matplotlib.pyplot as plt
 import numpy as np
 import os
