@@ -20,7 +20,7 @@ import os
 import sys
 import datetime
 import numpy as np
-from util import sportsref_nfl as sr
+import sportsref_nfl as sr
 import optparse
 from pandas.tseries.holiday import USFederalHolidayCalendar
 cal = USFederalHolidayCalendar()
