@@ -13,7 +13,7 @@ import pandas as pd
 import os
 import shutil
 import numpy as np
-from util import sportsref_nfl as sr
+import sportsref_nfl as sr
 import time
 import datetime
 from pytz import timezone
