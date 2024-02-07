@@ -13,7 +13,7 @@ the player receives the amount of points assigned to that game and the player wi
 the most points that week wins.
 '''
 
-from util import sportsref_nfl as sr
+import sportsref_nfl as sr
 import pandas as pd
 import os
 import datetime
