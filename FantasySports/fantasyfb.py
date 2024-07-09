@@ -29,6 +29,9 @@ from email.mime.text import MIMEText
 from dotenv import load_dotenv
 import traceback
 
+# Probably not smart long term, but doing it for now...
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 class League:
     """
@@ -80,7 +83,7 @@ class League:
             earliest (int, optional): integer describing the earliest week to pull statistics from (YYYYWW), defaults to None.  
             reference_games (int, optional): integer describing the number of games to use as a prior for rates, defaults to None.  
             basaloppstringtime (list, optional): list of the four weighting factors when calculating rates, defaults to an empty list.  
-            sfb (bool, optional): whether to implement SFB13 settings and scoring, defaults to False.  
+            sfb (bool, optional): whether to implement SFB14 settings and scoring, defaults to False.  
             bestball (str, optional): which platform to use when implementing best ball settings/scoring, defaults to a blank string (no bestball).
         """
         self.latest_season = datetime.datetime.now().year - int(datetime.datetime.now().month < 6)
@@ -237,17 +240,28 @@ class League:
         self.scoring.loc[(self.scoring.display_name == "Int") & (self.scoring.value <= 0),"display_name"] = "Int Thrown"
         self.scoring = self.scoring.drop_duplicates(subset=["display_name"]).set_index("display_name")['value'].to_dict()
         if sfb:
-            self.settings['playoff_start_week'] = 12
-            self.settings['num_playoff_teams'] = 6
-            self.scoring = {'Pass Yds':0.04,'Pass Comp':0.1,'Pass TD':6.0,'Pass 1D':0.1,'Pass 300+':0.0,\
-            'Int Thrown':0.0,'Rush Yds':0.1,'Rush Att':0.25,'Rush TD':6.0,'Rush 1D':1.0,'Rush 100+':0.0,\
-            'Rec Yds':0.1,'Rec':1.0,'Rec TD':6.0,'Rec 1D':1.0,'Rec 100+':0.0,'Ret Yds':0.0,'Ret TD':6.0,\
-            'TE Rec Bonus':1.0,'TE 1D Bonus':1.0,'2-PT':2.0,'Fum Lost':0.0,'Fum Ret TD':6.0,\
+            # # SFB13
+            # self.settings['playoff_start_week'] = 12
+            # self.settings['num_playoff_teams'] = 6
+            # self.scoring = {'Pass Yds':0.04,'Pass Comp':0.1,'Pass TD':6.0,'Pass 1D':0.1,'Pass 300+':0.0,\
+            # 'Int Thrown':0.0,'Rush Yds':0.1,'Rush Att':0.25,'Rush TD':6.0,'Rush 1D':1.0,'Rush 100+':0.0,\
+            # 'Rec Yds':0.1,'Rec':1.0,'Rec TD':6.0,'Rec 1D':1.0,'Rec 100+':0.0,'Ret Yds':0.0,'Ret TD':6.0,\
+            # 'TE Rec Bonus':1.0,'TE 1D Bonus':1.0,'2-PT':2.0,'Fum Lost':0.0,'Fum Ret TD':6.0,\
+            # 'FG 0-19':2.0,'FG 20-29':2.5,'FG 30-39':3.5,'FG 40-49':4.5,'FG 50+':5.5,'PAT Made':3.3,\
+            # 'Sack':0.0,'Int':0.0,'Fum Rec':0.0,'TD':0.0,'Safe':0.0,'Blk Kick':0.0,\
+            # 'Pts Allow 0':0.0,'Pts Allow 1-6':0.0,'Pts Allow 7-13':0.0,'Pts Allow 14-20':0.0,\
+            # 'Pts Allow 21-27':0.0,'Pts Allow 28-34':0.0,'Pts Allow 35+':0.0,'XPR':0.0}
+            # self.roster_spots = pd.DataFrame({'position':['QB','RB','WR','TE','W/R/T','Q/W/R/T','K','BN'],'count':[1,2,3,1,2,1,1,11]})
+            # SFB14
+            self.scoring = {'Pass Yds':0.02,'Pass Comp':0.0,'Pass TD':6.0,'Pass 1D':0.0,'Pass 300+':0.0,\
+            'Int Thrown':0.0,'Rush Yds':0.1,'Rush Att':0.25,'Rush TD':6.0,'Rush 1D':0.5,'Rush 100+':0.0,\
+            'Rec Yds':0.1,'Rec':0.75,'Rec TD':6.0,'Rec 1D':0.5,'Rec 100+':0.0,'Ret Yds':0.2,'Ret TD':10.0,\
+            'TE Rec Bonus':0.75,'TE 1D Bonus':1.0,'2-PT':2.0,'Fum Lost':0.0,'Fum Ret TD':6.0,\
             'FG 0-19':2.0,'FG 20-29':2.5,'FG 30-39':3.5,'FG 40-49':4.5,'FG 50+':5.5,'PAT Made':3.3,\
             'Sack':0.0,'Int':0.0,'Fum Rec':0.0,'TD':0.0,'Safe':0.0,'Blk Kick':0.0,\
             'Pts Allow 0':0.0,'Pts Allow 1-6':0.0,'Pts Allow 7-13':0.0,'Pts Allow 14-20':0.0,\
             'Pts Allow 21-27':0.0,'Pts Allow 28-34':0.0,'Pts Allow 35+':0.0,'XPR':0.0}
-            self.roster_spots = pd.DataFrame({'position':['QB','RB','WR','TE','W/R/T','Q/W/R/T','K','BN'],'count':[1,2,3,1,2,1,1,11]})
+            self.roster_spots = pd.DataFrame({'position':['QB','RB','WR','TE','W/R/T','Q/W/R/T','K','BN'],'count':[1,1,1,1,5,1,1,11]})
         elif str(bestball).lower() in ["dk", "draftkings"]:
             self.settings['playoff_start_week'] = 14
             self.settings['num_playoff_teams'] = 2
@@ -1015,7 +1029,7 @@ class League:
         rel_stats = pd.merge(
             left=rel_stats,
             right=rel_stats.groupby(["player_id_sr","position"])
-            .agg({"time_factor": sum, "name": "count"})
+            .agg({"time_factor": "sum", "name": "count"})
             .rename(
                 columns={"name": "num_games", "time_factor": "time_factor_sum"}
             )
@@ -1082,10 +1096,10 @@ class League:
             + (by_player.loc[inds, "ref_games"] - by_player.loc[inds, "num_games"])
             * by_player.loc[inds, "pos_avg"]
         ) / by_player.loc[inds, "ref_games"]
-        by_player.loc[inds, "points_stdev"] = (
+        by_player.loc[inds, "points_stdev"] = ((
             by_player.loc[inds, "points_squared"]
             - by_player.loc[inds, "points_rate"] ** 2
-        ) ** 0.5
+        ) ** 0.5).astype(float)
         by_player.player_id_sr = by_player.player_id_sr.fillna("")
         league_avg = by_player.loc[by_player.player_id_sr.str.startswith("avg_")].reset_index(drop=True)
         league_avg['string'] = 2.0
@@ -1280,9 +1294,9 @@ class League:
         schedule.loc[switch, "temp"] = schedule.loc[switch, "team_1"]
         schedule.loc[switch, "team_1"] = schedule.loc[switch, "team_2"]
         schedule.loc[switch, "team_2"] = schedule.loc[switch, "temp"]
-        schedule.loc[switch, "temp"] = schedule.loc[switch, "score_1"]
-        schedule.loc[switch, "score_1"] = schedule.loc[switch, "score_2"]
-        schedule.loc[switch, "score_2"] = schedule.loc[switch, "temp"]
+        schedule.loc[switch, "temp"] = schedule.loc[switch, "score_1"].astype(float)
+        schedule.loc[switch, "score_1"] = schedule.loc[switch, "score_2"].astype(float)
+        schedule.loc[switch, "score_2"] = schedule.loc[switch, "temp"].astype(float)
         schedule = (
             schedule[["week", "team_1", "team_2", "score_1", "score_2"]]
             .drop_duplicates()
@@ -1329,7 +1343,7 @@ class League:
             left_on="current_team",
             right_on="team",
         )
-        self.players.elo_diff = self.players.elo_diff.fillna(0.0)
+        self.players.elo_diff = self.players.elo_diff.infer_objects(copy=False).fillna(0.0)
         if "opp_elo_weight" not in self.players.columns:
             self.players = pd.merge(left=self.players,right=self.basaloppstringtime,how='left',on='position')
         self.players["opp_factor"] = (self.players['opp_elo_weight'] * self.players["elo_diff"])
