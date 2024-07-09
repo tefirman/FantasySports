@@ -17,6 +17,7 @@ import pandas as pd
 import os
 import datetime
 from geopy.distance import geodesic
+from io import StringIO
 import shutil
 import gzip
 import sys
@@ -48,12 +49,12 @@ def get_page(endpoint: str):
     return soup
 
 
-def parse_table(raw_text: str, table_name: str):
+def parse_table(raw_text: BeautifulSoup, table_name: str):
     """
     Parses out the desired table from the raw html text into a pandas dataframe.
 
     Args:
-        raw_text (bs4.BeautifulSoup): raw html from the page of interest.  
+        raw_text (BeautifulSoup): raw html from the page of interest.  
         table_name (str): title of the table to extract.
 
     Returns:
@@ -102,7 +103,7 @@ def get_intl_games():
     ).text
     soup = BeautifulSoup(response, "html.parser")
     tables = soup.find_all("table", attrs={"class": "wikitable sortable"})[1:-1]
-    intl_games = pd.concat(pd.read_html(str(tables)), ignore_index=True)
+    intl_games = pd.concat(pd.read_html(StringIO(str(tables))), ignore_index=True)
     intl_games = intl_games.loc[~intl_games.Date.isnull() & ~intl_games.Date.isin(["TBD"])].reset_index(drop=True)
     intl_games.Year = intl_games.Year.astype(str).str.split(" ").str[0].astype(int)
     intl_games["team1"] = intl_games["Designated home team"].str.split("\[").str[0]
@@ -251,12 +252,16 @@ def get_address(stadium_id: str):
         str: address of the specified stadium according to Pro Football Reference.
     """
     raw_text = get_page("stadiums/{}.htm".format(stadium_id))
-    address = raw_text.find(id="meta").find("p").text
+    if stadium_id == "BRA00":
+        address = "Av. Miguel Ignácio Curi, 111 - Vila Carmosina, São Paulo - SP, 08295-005, Brazil"
+    else:
+        address = raw_text.find(id="meta").find("p").text
     fixes = {
         "New Jersey": "NJ",
         "Park Houston": "Park, Houston",
         "Blvd Opa-Locka": "Blvd, Opa-Locka",
         "Northumberland Development Project": "782 High Rd, London N17 0BX, UK",
+        "Toronto, Ontario M5V 1J3": "Toronto, ON M5V 1J3, Canada"
     }
     for fix in fixes:
         address = address.replace(fix, fixes[fix])
@@ -307,6 +312,10 @@ def get_coordinates(address: str, zips: pd.DataFrame):
         coords = "48.2188,11.6248"
     elif stad_zip == "Hesse":
         coords = "50.0686,8.6455"
+    elif stad_zip == "Canada":
+        coords = "43.6414,-79.3892"
+    elif stad_zip == "Brazil":
+        coords = "-23.5453,-46.4742"
     else:
         print("Can't find zip code provided: " + str(stad_zip))
         print("Using centerpoint of US...")
@@ -374,13 +383,14 @@ class Schedule:
                 season_sched = season_sched.rename(columns={'visitor_team':'winner',\
                 'visitor_team_abbrev':'winner_abbrev','home_team':'loser','home_team_abbrev':'loser_abbrev'})
                 season_sched[['yards_win','to_win','yards_lose','to_lose']] = None
+            # self.schedule = pd.concat([self.schedule, season_sched.dropna(axis=1)], ignore_index=True)
             self.schedule = pd.concat([self.schedule, season_sched], ignore_index=True)
 
     def add_weeks(self):
         """
         Infers season week based on game dates for each season.
         """
-        self.schedule.game_date = pd.to_datetime(self.schedule.game_date)
+        self.schedule.game_date = pd.to_datetime(self.schedule.game_date, format="mixed")
         min_date = self.schedule.groupby("season").game_date.min().reset_index()
         self.schedule = pd.merge(
             left=self.schedule,
@@ -393,6 +403,9 @@ class Schedule:
             self.schedule.game_date - self.schedule.game_date_min
         ).dt.days
         self.schedule["week"] = self.schedule.days_into_season // 7 + 1
+        # NFL scheduled 2024 Christmas games on a Wednesday... Why...
+        mismatch = (self.schedule.week_num != self.schedule.week.astype(str)) & self.schedule.week_num.str.isnumeric()
+        self.schedule.loc[mismatch,"week"] = self.schedule.loc[mismatch,"week_num"].astype(int)
 
     def convert_to_home_away(self):
         """
@@ -425,7 +438,7 @@ class Schedule:
             how="left",
             on=["game_date", "team1", "team2"],
         )
-        self.schedule.international = self.schedule.international.fillna(False)
+        self.schedule.international = self.schedule.international.notna()
         self.schedule.loc[self.schedule.international, "game_location"] = "N"
         if self.schedule.international.sum() < intl.shape[0]:
             print("Missing some international games!!!")
@@ -455,6 +468,7 @@ class Schedule:
         zips = download_zip_codes()
         for ind in range(teams.shape[0]):
             team = teams.iloc[ind]
+            # print(team["abbrev"])
             stadium_id = get_team_stadium(team["abbrev"], team["season"])
             address = get_address(stadium_id)
             coords = get_coordinates(address, zips)
@@ -476,6 +490,7 @@ class Schedule:
         ]
         zips = download_zip_codes()
         for box in self.schedule.loc[neutral, "boxscore_abbrev"]:
+            # print(box)
             stadium_id = get_game_stadium(box)
             if stadium_id in ["","attendance"]:
                 stad_name = self.schedule.loc[self.schedule.boxscore_abbrev == box,"Stadium"].values[0]
@@ -485,6 +500,10 @@ class Schedule:
                     stadium_id = "LON02"
                 elif stad_name == "Deutsche Bank Park":
                     stadium_id = "FRA00"
+                elif stad_name == "Arena Corinthians":
+                    stadium_id = "BRA00"
+                elif stad_name == "Allianz Arena":
+                    stadium_id = "MUN01"
             address = get_address(stadium_id)
             coords = get_coordinates(address, zips)
             self.schedule.loc[
@@ -529,8 +548,8 @@ class Schedule:
                 (self.schedule.week == week) & self.schedule.team2.isin(rested),
                 "rested2",
             ] = True
-        self.schedule.rested1 = self.schedule.rested1.fillna(False)
-        self.schedule.rested2 = self.schedule.rested2.fillna(False)
+        self.schedule.rested1 = self.schedule.rested1.astype(bool).fillna(False)
+        self.schedule.rested2 = self.schedule.rested2.astype(bool).fillna(False)
     
     def add_elo_columns(self, qbelo: bool = False):
         """
@@ -757,7 +776,7 @@ class Boxscore:
         self.game_stats = pd.merge(left=self.game_stats,right=advanced[['player_id',\
         'pass_first_down','rush_first_down','rec_first_down']],how='left',on='player_id')
         for col in ['pass_first_down','rush_first_down','rec_first_down']:
-            self.game_stats[col] = self.game_stats[col].fillna(0.0)
+            self.game_stats[col] = self.game_stats[col].astype(float).fillna(0.0)
 
     def get_starters(self):
         """
