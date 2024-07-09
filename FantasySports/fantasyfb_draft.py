@@ -132,7 +132,7 @@ def main():
     num_spots = league.roster_spots.loc[league.roster_spots.position != 'IR','count'].sum()
     num_teams = len(league.teams)
     if (options.sfb or options.bestball) and num_teams != 12:
-        print("SFB13 uses 12 team divisions!!! Pick a different league!!!")
+        print("SFB14 uses 12 team divisions!!! Pick a different league!!!")
         sys.exit(0)
 
     # Validating payouts input
@@ -166,9 +166,11 @@ def main():
         ]
 
     if options.sfb:
-        # SFB13 ADP Source: https://goingfor2.com/the-best-only-scott-fish-bowl-sfb13-sleeper-adp/
-        adp = pd.read_csv("SFB13_ADP.csv")
-        adp['name'] = adp['LAST NAME'] + ' ' + adp['FIRST NAME']
+        # # SFB13 ADP Source: https://goingfor2.com/the-best-only-scott-fish-bowl-sfb13-sleeper-adp/
+        # adp = pd.read_csv("SFB13_ADP.csv")
+        # SFB14 ADP Source: https://goingfor2.com/sfb14adp/
+        adp = pd.read_csv("SFB14_ADP.csv")
+        adp['name'] = adp['FIRST NAME'] + ' ' + adp['LAST NAME']
         adp = adp.rename(columns={'ADP':'avg_pick','POSITION':'position','TEAM':'Team'})
     elif options.bestball:
         # Best Ball ADP Source: https://www.fantasypros.com/nfl/adp/best-ball-overall.php
