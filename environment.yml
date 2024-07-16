@@ -18,3 +18,4 @@ dependencies:
     - lxml
     - scipy
     - pdoc
+    - html5lib
