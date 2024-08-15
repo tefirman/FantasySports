@@ -174,12 +174,14 @@ def main():
         adp = adp.rename(columns={'ADP':'avg_pick','POSITION':'position','TEAM':'Team'})
     elif options.bestball:
         # Best Ball ADP Source: https://www.fantasypros.com/nfl/adp/best-ball-overall.php
-        adp = pd.read_csv("FantasyPros_2023_Overall_ADP_Rankings_Bestball.csv")
+        # adp = pd.read_csv("FantasyPros_2023_Overall_ADP_Rankings_Bestball.csv")
+        adp = pd.read_csv("FantasyPros_2024_Overall_ADP_Rankings_Bestball.csv")
         adp = adp.rename(columns={'Player':'name','AVG':'avg_pick','POS':'position'})
         adp.position = adp.position.str[:2]
     else:
         # Redraft ADP Source: https://www.fantasypros.com/nfl/adp/half-point-ppr-overall.php
-        adp = pd.read_csv("FantasyPros_2023_Overall_ADP_Rankings_Redraft.csv")
+        # adp = pd.read_csv("FantasyPros_2023_Overall_ADP_Rankings_Redraft.csv")
+        adp = pd.read_csv("FantasyPros_2024_Overall_ADP_Rankings_Redraft.csv")
         adp = adp.rename(columns={'Player':'name','AVG':'avg_pick','POS':'position'})
         adp.position = adp.position.str[:2]
     corrections = pd.read_csv("https://raw.githubusercontent.com/tefirman/FantasySports/main/res/football/name_corrections.csv")

@@ -132,8 +132,10 @@ def main():
 
     league = fb.League(options.teamname)
 
-    # Redraft Prices Source: https://football.fantasysports.yahoo.com/f1/53063/draftanalysis?type=salcap
-    adp = pd.read_csv("Yahoo_2023_Overall_SalaryCap_Rankings_Redraft.csv")
+    # # Redraft Prices Source: https://football.fantasysports.yahoo.com/f1/53063/draftanalysis?type=salcap
+    # adp = pd.read_csv("Yahoo_2023_Overall_SalaryCap_Rankings_Redraft.csv")
+    # Redraft Prices Source: https://football.fantasysports.yahoo.com/f1/draftanalysis?type=salcap
+    adp = pd.read_csv("Yahoo_2024_Overall_SalaryCap_Rankings_Redraft.csv")
     corrections = pd.read_csv("https://raw.githubusercontent.com/tefirman/FantasySports/main/res/football/name_corrections.csv")
     adp = pd.merge(left=adp, right=corrections, how="left", on="name")
     to_fix = ~adp.new_name.isnull()
