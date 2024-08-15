@@ -97,7 +97,7 @@ def get_schedule(season: int, playoffs=False):
             "away_abbrev": links[0].attrs["href"].split("/")[2],
             "home_team": links[1].text,
             "home_abbrev": links[1].attrs["href"].split("/")[2],
-            "boxscore_word": links[2].attrs["href"].split("/")[-1].split(".")[0],
+            "boxscore_word": links[2].attrs["href"].split("/")[-1].split(".")[0] if len(links) > 2 else "",
         }
         if " (" in game.text:
             entry["away_score"] = int(game.text.split(" (")[1].split(")")[0])
