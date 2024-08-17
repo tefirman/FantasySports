@@ -207,7 +207,7 @@ def main():
         exclude += league.players.loc[league.players.position == 'K','name'].tolist()
     if os.path.exists(str(options.inprogress)):
         progress = pd.read_csv(options.inprogress)
-        pick_num = progress.shape[0]
+        pick_num = progress.shape[0] - 1
         given_order = progress.iloc[:progress.fantasy_team.nunique()].fantasy_team.tolist()
         league = provide_pick_order(league, already=given_order, sfb=options.sfb, superflex=options.superflex)
         league.players = pd.merge(left=league.players,right=progress[['player_id_sr','fantasy_team']],how='left',on='player_id_sr',suffixes=('','_prev'))
@@ -231,7 +231,7 @@ def main():
         elif round_num%2 == 0 and not options.sfb:
             rel_pick = num_teams - rel_pick - 1
         
-        if round_num > 10 and options.bestball:
+        if round_num > 10 and (options.bestball or options.sfb):
             # Initially keeping average replacements for more realistic simulations,
             # but there's no waiver wire in bestball, eliminating averages half way through
             league.players = league.players.loc[~league.players.player_id_sr.astype(str).str.startswith('avg_')].reset_index(drop=True)
