@@ -1,33 +1,33 @@
-abbrev,real_abbrev,name,yahoo,fivethirtyeight
-ARI,CRD,Arizona,Ari,ARI
-ATL,ATL,Atlanta,Atl,ATL
-BAL,RAV,Baltimore,Bal,BAL
-BUF,BUF,Buffalo,Buf,BUF
-CAR,CAR,Carolina,Car,CAR
-CHI,CHI,Chicago,Chi,CHI
-CIN,CIN,Cincinnati,Cin,CIN
-CLE,CLE,Cleveland,Cle,CLE
-DAL,DAL,Dallas,Dal,DAL
-DEN,DEN,Denver,Den,DEN
-DET,DET,Detroit,Det,DET
-GNB,GNB,Green Bay,GB,GB
-HOU,HTX,Houston,Hou,HOU
-IND,CLT,Indianapolis,Ind,IND
-JAX,JAX,Jacksonville,Jax,JAX
-KAN,KAN,Kansas City,KC,KC
-LAC,SDG,Los Angeles Chargers,LAC,LAC
-LAR,RAM,Los Angeles Rams,LAR,LAR
-MIA,MIA,Miami,Mia,MIA
-MIN,MIN,Minnesota,Min,MIN
-NOR,NOR,New Orleans,NO,NO
-NWE,NWE,New England,NE,NE
-NYG,NYG,New York Giants,NYG,NYG
-NYJ,NYJ,New York Jets,NYJ,NYJ
-OAK,RAI,Las Vegas,LV,OAK
-PHI,PHI,Philadelphia,Phi,PHI
-PIT,PIT,Pittsburgh,Pit,PIT
-SEA,SEA,Seattle,Sea,SEA
-SFO,SFO,San Francisco,SF,SF
-TAM,TAM,Tampa Bay,TB,TB
-TEN,OTI,Tennessee,Ten,TEN
-WAS,WAS,Washington,Was,WSH
+abbrev,real_abbrev,name,yahoo,fivethirtyeight,mascot
+ARI,CRD,Arizona,Ari,ARI,Cardinals
+ATL,ATL,Atlanta,Atl,ATL,Falcons
+BAL,RAV,Baltimore,Bal,BAL,Ravens
+BUF,BUF,Buffalo,Buf,BUF,Bills
+CAR,CAR,Carolina,Car,CAR,Panthers
+CHI,CHI,Chicago,Chi,CHI,Bears
+CIN,CIN,Cincinnati,Cin,CIN,Bengals
+CLE,CLE,Cleveland,Cle,CLE,Browns
+DAL,DAL,Dallas,Dal,DAL,Cowboys
+DEN,DEN,Denver,Den,DEN,Broncos
+DET,DET,Detroit,Det,DET,Lions
+GNB,GNB,Green Bay,GB,GB,Packers
+HOU,HTX,Houston,Hou,HOU,Texans
+IND,CLT,Indianapolis,Ind,IND,Colts
+JAX,JAX,Jacksonville,Jax,JAX,Jaguars
+KAN,KAN,Kansas City,KC,KC,Chiefs
+LAC,SDG,Los Angeles Chargers,LAC,LAC,Chargers
+LAR,RAM,Los Angeles Rams,LAR,LAR,Rams
+MIA,MIA,Miami,Mia,MIA,Dolphins
+MIN,MIN,Minnesota,Min,MIN,Vikings
+NOR,NOR,New Orleans,NO,NO,Saints
+NWE,NWE,New England,NE,NE,Patriots
+NYG,NYG,New York Giants,NYG,NYG,Giants
+NYJ,NYJ,New York Jets,NYJ,NYJ,Jets
+OAK,RAI,Las Vegas,LV,OAK,Raiders
+PHI,PHI,Philadelphia,Phi,PHI,Eagles
+PIT,PIT,Pittsburgh,Pit,PIT,Steelers
+SEA,SEA,Seattle,Sea,SEA,Seahawks
+SFO,SFO,San Francisco,SF,SF,49ers
+TAM,TAM,Tampa Bay,TB,TB,Buccaneers
+TEN,OTI,Tennessee,Ten,TEN,Titans
+WAS,WAS,Washington,Was,WSH,Commanders
