@@ -30,7 +30,7 @@ class USP:
         self.season = season
         self.load_probs(schedule_loc)
         self.load_picks(picks_loc)
-        self.week = int(self.picks.columns[-1].split('_')[-1][:-1]) + 1
+        self.week = int(self.picks.columns[-1].split('_')[-1][:-1]) + 1 if self.picks.shape[1] > 1 else 1
         self.best_combos(limit)
         self.season_sims(num_sims)
 
@@ -149,10 +149,15 @@ class USP:
             if week == probs_tg.week.unique()[0]: # Thanksgiving
                 self.combos = pd.merge(left=self.combos,right=self.probs.loc[(self.probs.week == week) & (self.probs.prob >= 0.5),['dummy','team','prob']]\
                 .rename(columns={'team':f'team_{week}c','prob':f'prob_{week}c'}),how='inner',on='dummy')
-                self.combos = self.combos.loc[self.combos[f'team_{week}b'] < self.combos[f'team_{week}c']].reset_index(drop=True)
-                self.combos = self.combos.loc[self.combos[f'team_{week}a'].isin(probs_tg.team.tolist()) \
-                | self.combos[f'team_{week}b'].isin(probs_tg.team.tolist()) \
-                | self.combos[f'team_{week}c'].isin(probs_tg.team.tolist())].reset_index(drop=True)
+                if week%2 == 1:
+                    self.combos.rename(columns={f'team_{week}c':f'team_{week}b'},inplace=True)
+                    self.combos = self.combos.loc[self.combos[f'team_{week}a'].isin(probs_tg.team.tolist()) \
+                    | self.combos[f'team_{week}b'].isin(probs_tg.team.tolist())].reset_index(drop=True)
+                else:
+                    self.combos = self.combos.loc[self.combos[f'team_{week}b'] < self.combos[f'team_{week}c']].reset_index(drop=True)
+                    self.combos = self.combos.loc[self.combos[f'team_{week}a'].isin(probs_tg.team.tolist()) \
+                    | self.combos[f'team_{week}b'].isin(probs_tg.team.tolist()) \
+                    | self.combos[f'team_{week}c'].isin(probs_tg.team.tolist())].reset_index(drop=True)
                 team_cols = [team for team in self.combos.columns if team.startswith('team_')]
                 self.combos = self.combos.loc[self.combos[team_cols].nunique(axis=1) >= len(team_cols) - int(week >= 12)].reset_index(drop=True)
                 self.combos['tot_prob'] = self.combos[[team for team in self.combos.columns if team.startswith('prob_')]].sum(axis=1)
