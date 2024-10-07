@@ -15,6 +15,8 @@ the most points that week wins.
 
 import sportsref_nfl as sr
 import pandas as pd
+from bs4 import BeautifulSoup
+from io import StringIO
 import os
 import datetime
 import numpy as np
@@ -37,31 +39,83 @@ def load_pick_probs(week: int) -> pd.DataFrame:
     tempData.close()
     games = raw_str.split("Spread and Confidence\n")[-1].split('\n\n')[0].split('\tFavorite\t \n')
     fave = [game.split('\n')[7].split('\t')[0] for game in games]
-    fave = [nfl_teams.loc[nfl_teams.yahoo.str.upper().isin([team]),'real_abbrev'].values[0] for team in fave]
+    fave = [nfl_teams.loc[nfl_teams.yahoo.isin([team]),'real_abbrev'].values[0] for team in fave]
     fave_pct = [float(game.split('\n')[3].replace('%',''))/100.0 for game in games]
     fave_pts = [float(game.split('\n')[8].split('\t')[0]) for game in games]
     underdog = [game.split('\n')[7].split('\t')[-1] for game in games]
-    underdog = [nfl_teams.loc[nfl_teams.yahoo.str.upper().isin([team]),'real_abbrev'].values[0] for team in underdog]
+    underdog = [nfl_teams.loc[nfl_teams.yahoo.isin([team]),'real_abbrev'].values[0] for team in underdog]
     underdog_pct = [float(game.split('\n')[6].replace('%',''))/100.0 for game in games]
     underdog_pts = [float(game.split('\n')[8].split('\t')[-1]) for game in games]
     home_fave = ['@' in game.split('\n')[1] for game in games]
-    pick_probs = pd.DataFrame({'fave_abbrev':fave,'underdog_abbrev':underdog,'fave_pick_prob':fave_pct,\
-    'underdog_pick_prob':underdog_pct,'fave_pick_pts':fave_pts,'underdog_pick_pts':underdog_pts,'home_fave':home_fave})
+    spread = [float(game.split('\n')[-1].split()[0]) for game in games]
+    pick_probs = pd.DataFrame({'fave_abbrev':fave,'underdog_abbrev':underdog,\
+    'fave_pick_prob':fave_pct,'underdog_pick_prob':underdog_pct,\
+    'fave_pick_pts':fave_pts,'underdog_pick_pts':underdog_pts,\
+    'home_fave':home_fave,'spread':spread})
     pick_probs.loc[pick_probs.home_fave,'team1_abbrev'] = pick_probs.loc[pick_probs.home_fave,'fave_abbrev']
     pick_probs.loc[pick_probs.home_fave,'pick_prob1'] = pick_probs.loc[pick_probs.home_fave,'fave_pick_prob']
     pick_probs.loc[pick_probs.home_fave,'pick_pts1'] = pick_probs.loc[pick_probs.home_fave,'fave_pick_pts']
+    pick_probs.loc[pick_probs.home_fave,'spread1'] = pick_probs.loc[pick_probs.home_fave,'spread']
     pick_probs.loc[pick_probs.home_fave,'team2_abbrev'] = pick_probs.loc[pick_probs.home_fave,'underdog_abbrev']
     pick_probs.loc[pick_probs.home_fave,'pick_prob2'] = pick_probs.loc[pick_probs.home_fave,'underdog_pick_prob']
     pick_probs.loc[pick_probs.home_fave,'pick_pts2'] = pick_probs.loc[pick_probs.home_fave,'underdog_pick_pts']
+    pick_probs.loc[pick_probs.home_fave,'spread2'] = -1*pick_probs.loc[pick_probs.home_fave,'spread']
     pick_probs.loc[~pick_probs.home_fave,'team1_abbrev'] = pick_probs.loc[~pick_probs.home_fave,'underdog_abbrev']
     pick_probs.loc[~pick_probs.home_fave,'pick_prob1'] = pick_probs.loc[~pick_probs.home_fave,'underdog_pick_prob']
     pick_probs.loc[~pick_probs.home_fave,'pick_pts1'] = pick_probs.loc[~pick_probs.home_fave,'underdog_pick_pts']
+    pick_probs.loc[~pick_probs.home_fave,'spread1'] = -1*pick_probs.loc[~pick_probs.home_fave,'spread']
     pick_probs.loc[~pick_probs.home_fave,'team2_abbrev'] = pick_probs.loc[~pick_probs.home_fave,'fave_abbrev']
     pick_probs.loc[~pick_probs.home_fave,'pick_prob2'] = pick_probs.loc[~pick_probs.home_fave,'fave_pick_prob']
     pick_probs.loc[~pick_probs.home_fave,'pick_pts2'] = pick_probs.loc[~pick_probs.home_fave,'fave_pick_pts']
+    pick_probs.loc[~pick_probs.home_fave,'spread2'] = pick_probs.loc[~pick_probs.home_fave,'spread']
     pick_probs.pick_pts1 = pick_probs.pick_pts1*1.131 - 0.259
     pick_probs.pick_pts2 = pick_probs.pick_pts2*1.131 - 0.259
-    return pick_probs[['team1_abbrev','team2_abbrev','pick_prob1','pick_prob2','pick_pts1','pick_pts2']]
+    pick_probs["win_prob1"] = pick_probs["spread1"]*0.031 + 0.5
+    pick_probs["win_prob2"] = pick_probs["spread2"]*0.031 + 0.5
+    return pick_probs[['team1_abbrev','team2_abbrev','pick_prob1','pick_prob2',\
+    'pick_pts1','pick_pts2','spread1','spread2','win_prob1','win_prob2']]
+
+def load_pick_probs_alt(probs_html: str) -> pd.DataFrame:
+    tempData = open(probs_html,"r")
+    response = tempData.read()
+    tempData.close()
+    soup = BeautifulSoup(response, "html.parser")
+    tables = soup.find_all("div", attrs={"class": "ysf-matchup-dist yspmainmodule"})
+    teams, pcts = [], []
+    for table in tables:
+        teams.extend(table.find_all("dd", attrs={"class": "team"}))
+        pcts.extend(table.find_all("dd", attrs={"class": "percent"}))
+    probs = pd.DataFrame({"team":[team.text[:-1] for team in teams],"pick_prob":[pct.text[:-1] for pct in pcts]})
+    probs.team = probs.team.str.replace("@ ","").str.replace("(LAR)", "Rams")\
+    .str.replace("(LAC)", "Chargers").str.replace("(NYJ)", "Jets").str.replace("(NYG)", "Giants")
+    nfl_teams = pd.read_csv("https://raw.githubusercontent.com/tefirman/FantasySports/main/res/football/team_abbrevs.csv")
+    probs = pd.merge(left=probs,right=nfl_teams[["name","yahoo"]].rename(columns={"name":"team","yahoo":"pick"}),how="inner",on="team")
+    probs.pick_prob = probs.pick_prob.astype(float)/100.0
+    return probs
+
+def load_picks_alt(pick_html: str) -> pd.DataFrame:
+    tempData = open(pick_html,"r")
+    response = tempData.read()
+    tempData.close()
+    soup = BeautifulSoup(response, "html.parser")
+    tables = soup.find_all("table", attrs={"class": "yspNflPickGroupPickTable yspNflPickGroupPickTablePadded"})
+    actual = pd.concat(pd.read_html(StringIO(str(tables))), ignore_index=True)
+    actual = actual.iloc[:,:-2].reset_index(drop=True)
+    picks = pd.DataFrame(columns=["player","pick","fave","underdog","spread"])
+    for ind in range(1,actual.shape[1]):
+        picks = pd.concat([picks,actual.iloc[4:,[0,ind]].rename(columns={0:"player",ind:"pick"})],ignore_index=True)
+        picks.fave = picks.fave.fillna(actual.iloc[0,ind])
+        picks.underdog = picks.underdog.fillna(actual.iloc[2,ind])
+        picks.spread = picks.spread.fillna(actual.iloc[1,ind])
+    picks["points_bid"] = picks.pick.str.split(" \(").str[-1].str.split("\)").str[0]
+    picks["pick"] = picks.pick.str.split(" \(").str[0]
+    winners = soup.find_all("td", attrs={"class": "yspNflPickWin"})
+    winners = [team.text for team in winners]
+    picks.loc[picks.fave.isin(winners),"winner"] = picks.loc[picks.fave.isin(winners),"fave"]
+    picks.loc[picks.underdog.isin(winners),"winner"] = picks.loc[picks.underdog.isin(winners),"underdog"]
+    picks["finished"] = ~picks.winner.isnull()
+    picks["points_won"] = picks.pick.isin(winners).astype(int)*picks.points_bid
+    return picks
 
 def load_picks(week: int, schedule: pd.DataFrame) -> pd.DataFrame:
     """
@@ -148,7 +202,7 @@ def load_vegas(vegas_loc: str = None):
     # Checking that the spread data actually exists
     if os.path.exists(vegas_loc):
         tempData = open(vegas_loc,"r")
-        raw_str = tempData.read().split('Upcoming\n')[-1].split('\nGame Info\nFinal\nFinal')[0]
+        raw_str = tempData.read().split('Upcoming\n')[-1].split('\nGame Info\nNFL odds guide')[0]
         tempData.close()
     else:
         print("Can't find Vegas spreads for this week... Skipping...")
@@ -176,10 +230,8 @@ def load_vegas(vegas_loc: str = None):
     # Converting team names to SportsRef abbreviations
     nfl_teams = pd.read_csv("https://raw.githubusercontent.com/tefirman/FantasySports/main/res/football/team_abbrevs.csv")
     for team in ['home','away']:
-        matchups['name'] = matchups[team + '_team'].str.split(' ').str[:-1].apply(' '.join)
-        matchups.loc[matchups.name.isin(['New York','Los Angeles']),'name'] = matchups.loc[matchups.name.isin(['New York','Los Angeles']),team + '_team']
-        matchups = pd.merge(left=matchups,right=nfl_teams[["name","real_abbrev"]].rename(columns={"real_abbrev":team + "_abbrev"}),how='inner',on=['name'])
-        del matchups['name']
+        matchups = pd.merge(left=matchups,right=nfl_teams[["mascot","real_abbrev"]]\
+        .rename(columns={"mascot":team + '_team',"real_abbrev":team + "_abbrev"}),how='inner',on=[team + '_team'])
     return matchups[['home_abbrev','home_prob','away_abbrev','away_prob']]
 
 def simulate_picks(games: pd.DataFrame, picks: pd.DataFrame, num_sims: int = 1000, num_entries: int = 50) -> pd.DataFrame:
@@ -329,7 +381,7 @@ def simulate_games(sims: pd.DataFrame, fixed: list = []) -> pd.DataFrame:
     sims.loc[sims.winner != sims.pick,'points_won'] = 0.0
     return sims
 
-def assess_sims(sims: pd.DataFrame, picks: pd.DataFrame(), pot_size: float = 500.0) -> pd.DataFrame:
+def assess_sims(sims: pd.DataFrame, picks: pd.DataFrame, pot_size: float = 500.0) -> pd.DataFrame:
     """
     Assesses the overall results for each contestant in the simulations provided.
 
@@ -538,7 +590,7 @@ def main():
         dest="optimize",
         help="which starting point to use during pick optimization (best, worst, popular, random)",
     )
-    options, args = parser.parse_args()
+    options = parser.parse_args()[0]
     options.fixed = options.fixed.split(',') if options.fixed else []
     options.prioritize = options.prioritize.split(',') if options.prioritize else []
     if len(options.prioritize) > 0:
@@ -557,6 +609,9 @@ def main():
     picks.points_won = picks.points_won.fillna(0.0)
     if picks.shape[0] > 0:
         options.num_entries = picks.entry.nunique()
+    
+    # picks = picks.loc[picks.pick.isin(["TAM","ATL","NYJ","MIN"])].reset_index(drop=True)
+
     games = pd.merge(left=schedule[['team1_abbrev','team2_abbrev','elo_prob1','elo_prob2','still_to_play']],\
     right=pick_probs,how='inner',on=['team1_abbrev','team2_abbrev'])
 
