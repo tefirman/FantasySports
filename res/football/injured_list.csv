@@ -1,12 +1,12 @@
 player_id_sr,name,position,until
-ChubNi00,Nick Chubb,RB,4
+ChubNi00,Nick Chubb,RB,6
 LoveJo03,Jordan Love,QB,2
 EdwaCl00,Clyde Edwards-Helaire,RB,4
-NacuPu00,Puka Nacua,WR,6
-MitcKe01,Keaton Mitchell,RB,4
+NacuPu00,Puka Nacua,WR,7
+MitcKe01,Keaton Mitchell,RB,7
 BrooJo02,Jonathon Brooks,RB,3
 MostRa00,Raheem Mostert,RB,2
-McCaCh01,Christian McCaffrey,RB,5
+McCaCh01,Christian McCaffrey,RB,7
 BrowMa04,Marquise Brown,WR,17
 HiggTe00,Tee Higgins,WR,2
 WalkKe00,Kenneth Walker III,RB,2
@@ -16,3 +16,6 @@ SamuDe00,Deebo Samuel,WR,4
 BrowAJ00,A.J. Brown,WR,5
 TagoTu00,Tua Tagovailoa,QB,4
 PachIs00,Isiah Pacheco,RB,8
+EtieTr00,Travis Etienne,RB,7
+CollNi00,Nico Collins,WR,9
+RiceRa01,Rashee Rice,WR,17
